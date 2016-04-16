@@ -2,7 +2,8 @@ package com.dev.geochallenger.models;
 
 import com.dev.geochallenger.models.api.GeoApi;
 import com.dev.geochallenger.models.entities.Poi;
-import com.dev.geochallenger.models.entities.cities.CitiesEntity;
+import com.dev.geochallenger.models.entities.cities.PlacesEntity;
+import com.dev.geochallenger.models.entities.cities.detailed.PlaceDetailedEntity;
 import com.dev.geochallenger.models.entities.directions.GoogleDirectionsEntity;
 import com.dev.geochallenger.models.interfaces.IModel;
 import com.dev.geochallenger.models.interfaces.OnDataLoaded;
@@ -45,7 +46,7 @@ public class RetrofitModel implements IModel {
 
     @Override
     public void getPoiList(final OnDataLoaded<List<Poi>> dataLoaded) {
-        final Call<List<Poi>> listCall = service.listPois();
+        final Call<List<Poi>> listCall = service.listPois("");
         listCall.enqueue(new Callback<List<Poi>>() {
             @Override
             public void onResponse(Call<List<Poi>> call, Response<List<Poi>> response) {
@@ -92,16 +93,32 @@ public class RetrofitModel implements IModel {
     }
 
     @Override
-    public void getCities(String input, String key, final OnDataLoaded<CitiesEntity> dataLoaded) {
-        final Call<CitiesEntity> cities = service.getCities(input, "en", key);
-        cities.enqueue(new Callback<CitiesEntity>() {
+    public void getPlaces(String input, String key, final OnDataLoaded<PlacesEntity> dataLoaded) {
+        final Call<PlacesEntity> cities = service.getPlaces(input, "en", key);
+        cities.enqueue(new Callback<PlacesEntity>() {
             @Override
-            public void onResponse(Call<CitiesEntity> call, Response<CitiesEntity> response) {
+            public void onResponse(Call<PlacesEntity> call, Response<PlacesEntity> response) {
                 dataLoaded.onSuccess(response.body());
             }
 
             @Override
-            public void onFailure(Call<CitiesEntity> call, Throwable t) {
+            public void onFailure(Call<PlacesEntity> call, Throwable t) {
+                dataLoaded.onError(t);
+            }
+        });
+    }
+
+    @Override
+    public void getPlace(String placeid, String key, final OnDataLoaded<PlaceDetailedEntity> dataLoaded) {
+        final Call<PlaceDetailedEntity> cities = service.getPlaceDetailed(placeid, key);
+        cities.enqueue(new Callback<PlaceDetailedEntity>() {
+            @Override
+            public void onResponse(Call<PlaceDetailedEntity> call, Response<PlaceDetailedEntity> response) {
+                dataLoaded.onSuccess(response.body());
+            }
+
+            @Override
+            public void onFailure(Call<PlaceDetailedEntity> call, Throwable t) {
                 dataLoaded.onError(t);
             }
         });

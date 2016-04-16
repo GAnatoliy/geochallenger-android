@@ -5,18 +5,18 @@ package com.dev.geochallenger.models.entities;
  */
 public class Poi {
 
-    private int poiId;
+    private int id;
     private String title;
     private String address;
     private float latitude;
     private float longitude;
 
     public int getPoiId() {
-        return poiId;
+        return id;
     }
 
     public void setPoiId(int poiId) {
-        this.poiId = poiId;
+        this.id = poiId;
     }
 
     public String getTitle() {

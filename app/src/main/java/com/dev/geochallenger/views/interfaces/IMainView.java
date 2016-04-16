@@ -1,8 +1,8 @@
 package com.dev.geochallenger.views.interfaces;
 
 import com.dev.geochallenger.models.entities.Poi;
-import com.dev.geochallenger.models.entities.cities.CitiesEntity;
-import com.dev.geochallenger.views.interfaces.IView;
+import com.dev.geochallenger.models.entities.cities.PlacesEntity;
+import com.google.android.gms.maps.model.LatLng;
 
 import java.util.List;
 
@@ -13,6 +13,7 @@ public interface IMainView extends IView {
 
     void initMap(List<Poi> pois);
 
-    void populateAutocompeteList(CitiesEntity citiesEntity);
+    void populateAutocompeteList(PlacesEntity placesEntity);
 
+    void setMapLocation(LatLng latLng);
 }

@@ -1,7 +1,8 @@
 package com.dev.geochallenger.models.api;
 
 import com.dev.geochallenger.models.entities.Poi;
-import com.dev.geochallenger.models.entities.cities.CitiesEntity;
+import com.dev.geochallenger.models.entities.cities.PlacesEntity;
+import com.dev.geochallenger.models.entities.cities.detailed.PlaceDetailedEntity;
 import com.dev.geochallenger.models.entities.directions.GoogleDirectionsEntity;
 
 import java.util.List;
@@ -22,7 +23,7 @@ public interface GeoApi {
             "Accept: application/json",
             "Content-Type: application/json"})
     @GET("api/pois")
-    Call<List<Poi>> listPois();
+    Call<List<Poi>> listPois(@Query("query") String query);
 
     @Headers({
             "Accept: application/json",
@@ -49,7 +50,14 @@ public interface GeoApi {
             "Accept: application/json",
             "Content-Type: application/json"})
     @GET("https://maps.googleapis.com/maps/api/place/autocomplete/json")
-    Call<CitiesEntity> getCities(@Query("input") String input,
+    Call<PlacesEntity> getPlaces(@Query("input") String input,
                                  @Query("language") String language,
                                  @Query("key") String key);
+
+    @Headers({
+            "Accept: application/json",
+            "Content-Type: application/json"})
+    @GET("https://maps.googleapis.com/maps/api/place/details/json")
+    Call<PlaceDetailedEntity> getPlaceDetailed(@Query("placeid") String placeid,
+                                               @Query("key") String key);
 }

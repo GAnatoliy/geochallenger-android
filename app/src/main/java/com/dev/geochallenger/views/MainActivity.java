@@ -17,7 +17,7 @@ import android.widget.Toast;
 import com.dev.geochallenger.R;
 import com.dev.geochallenger.models.RetrofitModel;
 import com.dev.geochallenger.models.entities.Poi;
-import com.dev.geochallenger.models.entities.cities.CitiesEntity;
+import com.dev.geochallenger.models.entities.cities.PlacesEntity;
 import com.dev.geochallenger.models.entities.cities.Predictions;
 import com.dev.geochallenger.presenters.MainPresenter;
 import com.dev.geochallenger.views.interfaces.ABaseActivityView;
@@ -27,6 +27,7 @@ import com.google.android.gms.auth.GoogleAuthUtil;
 import com.google.android.gms.common.AccountPicker;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapView;
 import com.google.android.gms.maps.MapsInitializer;
@@ -51,6 +52,7 @@ public class MainActivity extends ABaseActivityView<MainPresenter> implements IM
     private SearchView searchView;
     private List<SearchItem> mSuggestionsList;
     private String SCOPE = "oauth2:https://www.googleapis.com/auth/userinfo.profile";
+    private PlacesEntity placesEntity;
 
     @Override
     protected MainPresenter createPresenter() {
@@ -139,9 +141,10 @@ public class MainActivity extends ABaseActivityView<MainPresenter> implements IM
             @Override
             public void onItemClick(View view, int position) {
                 TextView textView = (TextView) view.findViewById(R.id.textView_item_text);
-                CharSequence text = textView.getText();
-//                mHistoryDatabase.addItem(new SearchItem(text));
-                Toast.makeText(getApplicationContext(), text + ", position: " + position, Toast.LENGTH_SHORT).show();
+                final Predictions predictions = placesEntity.getPredictions()[position];
+                final String place_id = predictions.getPlace_id();
+                presenter.getDetailedPlaceInfo(place_id, getString(R.string.google_directions_key));
+
             }
         });
 
@@ -216,12 +219,18 @@ public class MainActivity extends ABaseActivityView<MainPresenter> implements IM
     }
 
     @Override
-    public void populateAutocompeteList(CitiesEntity citiesEntity) {
+    public void populateAutocompeteList(PlacesEntity placesEntity) {
+        this.placesEntity = placesEntity;
         mSuggestionsList.clear();
-        for (Predictions predictions : citiesEntity.getPredictions()) {
+        for (Predictions predictions : placesEntity.getPredictions()) {
             mSuggestionsList.add(new SearchItem(predictions.getDescription()));
         }
 
+    }
+
+    @Override
+    public void setMapLocation(LatLng latLng) {
+        map.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, 14.0f));
     }
 
     @Override

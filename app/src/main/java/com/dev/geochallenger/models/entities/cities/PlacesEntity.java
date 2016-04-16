@@ -3,7 +3,7 @@ package com.dev.geochallenger.models.entities.cities;
 /**
  * Created by a_dibrivnyj on 4/16/16.
  */
-public class CitiesEntity {
+public class PlacesEntity {
     private Predictions[] predictions;
 
     private String status;
