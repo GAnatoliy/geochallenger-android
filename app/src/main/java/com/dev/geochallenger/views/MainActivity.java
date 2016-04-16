@@ -1,11 +1,10 @@
-package com.dev.geochallenger;
+package com.dev.geochallenger.views;
 
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
-import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -14,17 +13,17 @@ import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.dev.geochallenger.R;
 import com.dev.geochallenger.models.RetrofitModel;
 import com.dev.geochallenger.models.entities.Poi;
 import com.dev.geochallenger.presenters.MainPresenter;
-import com.dev.geochallenger.views.IMainView;
 import com.dev.geochallenger.views.interfaces.ABaseActivityView;
+import com.dev.geochallenger.views.interfaces.IMainView;
 import com.google.android.gms.auth.api.Auth;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.android.gms.auth.api.signin.GoogleSignInResult;
 import com.google.android.gms.common.ConnectionResult;
-import com.google.android.gms.common.SignInButton;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.common.api.OptionalPendingResult;
 import com.google.android.gms.common.api.ResultCallback;
@@ -33,9 +32,7 @@ import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapView;
 import com.google.android.gms.maps.MapsInitializer;
 import com.google.android.gms.maps.model.LatLng;
-import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
-import com.google.gson.Gson;
 import com.lapism.searchview.adapter.SearchAdapter;
 import com.lapism.searchview.adapter.SearchItem;
 import com.lapism.searchview.view.SearchCodes;
@@ -57,8 +54,7 @@ public class MainActivity extends ABaseActivityView<MainPresenter> implements IM
 
     @Override
     protected MainPresenter createPresenter() {
-        RetrofitModel retrofitModel = new RetrofitModel();
-        return new MainPresenter(this, retrofitModel);
+        return new MainPresenter(this, RetrofitModel.getInstance());
     }
 
     @Override

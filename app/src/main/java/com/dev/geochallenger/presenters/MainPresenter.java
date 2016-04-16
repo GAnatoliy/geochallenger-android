@@ -4,7 +4,7 @@ import com.dev.geochallenger.models.entities.Poi;
 import com.dev.geochallenger.models.interfaces.IModel;
 import com.dev.geochallenger.models.interfaces.OnDataLoaded;
 import com.dev.geochallenger.presenters.interfaces.IPresenter;
-import com.dev.geochallenger.views.IMainView;
+import com.dev.geochallenger.views.interfaces.IMainView;
 
 import java.util.List;
 

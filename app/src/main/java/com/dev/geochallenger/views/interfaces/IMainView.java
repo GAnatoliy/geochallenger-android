@@ -1,4 +1,4 @@
-package com.dev.geochallenger.views;
+package com.dev.geochallenger.views.interfaces;
 
 import com.dev.geochallenger.models.entities.Poi;
 import com.dev.geochallenger.views.interfaces.IView;

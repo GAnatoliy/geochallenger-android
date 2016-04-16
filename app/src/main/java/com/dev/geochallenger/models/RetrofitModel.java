@@ -35,7 +35,7 @@ public class RetrofitModel implements IModel {
         service = retrofit.create(GeoApi.class);
     }
 
-    public RetrofitModel getInstance() {
+    public static RetrofitModel getInstance() {
         if (instance == null) {
             instance = new RetrofitModel();
         }
