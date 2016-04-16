@@ -2,6 +2,7 @@ package com.dev.geochallenger.models.interfaces;
 
 
 import com.dev.geochallenger.models.entities.Poi;
+import com.dev.geochallenger.models.entities.cities.CitiesEntity;
 import com.dev.geochallenger.models.entities.directions.GoogleDirectionsEntity;
 
 import java.util.List;
@@ -13,4 +14,6 @@ public interface IModel {
     void getPoiDetails(String id, OnDataLoaded<Poi> dataLoaded);
 
     void calculateRoute(String origin, String destination, String waypoints, String key, OnDataLoaded<GoogleDirectionsEntity> dataLoaded);
+
+    void getCities(String input, String key, final OnDataLoaded<CitiesEntity> dataLoaded);
 }

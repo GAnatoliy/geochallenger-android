@@ -9,6 +9,7 @@ android {
         minSdkVersion 15
         targetSdkVersion 22
         versionCode 1
+        multiDexEnabled true
         versionName "1.0"
     }
     signingConfigs {
@@ -46,11 +47,12 @@ dependencies {
 //google map
     compile 'com.google.android.gms:play-services-maps:8.4.0'
     compile 'com.google.android.gms:play-services-plus:8.4.0'
-    compile 'com.google.android.gms:play-services:8.4.0'
 //scrollview
     compile 'com.lapism:searchview:2.2'
 //google sign in
     compile 'com.google.android.gms:play-services-auth:8.4.0'
+
+    compile 'com.android.support:multidex:1.0.1'
 }
 
 apply plugin: 'com.google.gms.google-services'

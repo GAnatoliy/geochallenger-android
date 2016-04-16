@@ -2,6 +2,7 @@ package com.dev.geochallenger.models;
 
 import com.dev.geochallenger.models.api.GeoApi;
 import com.dev.geochallenger.models.entities.Poi;
+import com.dev.geochallenger.models.entities.cities.CitiesEntity;
 import com.dev.geochallenger.models.entities.directions.GoogleDirectionsEntity;
 import com.dev.geochallenger.models.interfaces.IModel;
 import com.dev.geochallenger.models.interfaces.OnDataLoaded;
@@ -89,4 +90,22 @@ public class RetrofitModel implements IModel {
             }
         });
     }
+
+    @Override
+    public void getCities(String input, String key, final OnDataLoaded<CitiesEntity> dataLoaded) {
+        final Call<CitiesEntity> cities = service.getCities(input, "en", key);
+        cities.enqueue(new Callback<CitiesEntity>() {
+            @Override
+            public void onResponse(Call<CitiesEntity> call, Response<CitiesEntity> response) {
+                dataLoaded.onSuccess(response.body());
+            }
+
+            @Override
+            public void onFailure(Call<CitiesEntity> call, Throwable t) {
+                dataLoaded.onError(t);
+            }
+        });
+    }
+
+
 }

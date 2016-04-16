@@ -1,5 +1,6 @@
 package com.dev.geochallenger.views;
 
+import android.accounts.AccountManager;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -16,18 +17,16 @@ import android.widget.Toast;
 import com.dev.geochallenger.R;
 import com.dev.geochallenger.models.RetrofitModel;
 import com.dev.geochallenger.models.entities.Poi;
+import com.dev.geochallenger.models.entities.cities.CitiesEntity;
+import com.dev.geochallenger.models.entities.cities.Predictions;
 import com.dev.geochallenger.presenters.MainPresenter;
 import com.dev.geochallenger.views.interfaces.ABaseActivityView;
 import com.dev.geochallenger.views.interfaces.IMainView;
-import com.google.android.gms.auth.api.Auth;
-import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
-import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
-import com.google.android.gms.auth.api.signin.GoogleSignInResult;
+import com.google.android.gms.auth.GoogleAuthException;
+import com.google.android.gms.auth.GoogleAuthUtil;
+import com.google.android.gms.common.AccountPicker;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
-import com.google.android.gms.common.api.OptionalPendingResult;
-import com.google.android.gms.common.api.ResultCallback;
-import com.google.android.gms.common.api.Status;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapView;
 import com.google.android.gms.maps.MapsInitializer;
@@ -38,6 +37,7 @@ import com.lapism.searchview.adapter.SearchItem;
 import com.lapism.searchview.view.SearchCodes;
 import com.lapism.searchview.view.SearchView;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -45,12 +45,12 @@ public class MainActivity extends ABaseActivityView<MainPresenter> implements IM
 
     private static final String TAG = MainActivity.class.getSimpleName();
     private static final int RC_SIGN_IN = 1;
+    private static final int REQUEST_CODE_PICK_ACCOUNT = 1000;
     private MapView mapView;
     private GoogleMap map;
     private SearchView searchView;
     private List<SearchItem> mSuggestionsList;
-    private Button signInButton;
-    private GoogleApiClient mGoogleApiClient;
+    private String SCOPE = "oauth2:https://www.googleapis.com/auth/userinfo.profile";
 
     @Override
     protected MainPresenter createPresenter() {
@@ -87,6 +87,26 @@ public class MainActivity extends ABaseActivityView<MainPresenter> implements IM
         // Needs to call MapsInitializer before doing any CameraUpdateFactory calls
         MapsInitializer.initialize(this);
 
+        initSearchView();
+
+        Button signInButton = (Button) findViewById(R.id.sign_in_button);
+        signInButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                getAccount();
+            }
+        });
+
+    }
+
+    public void getAccount() {
+        String[] accountTypes = new String[]{"com.google"};
+        Intent intent = AccountPicker.newChooseAccountIntent(null, null,
+                accountTypes, false, null, null, null, null);
+        startActivityForResult(intent, REQUEST_CODE_PICK_ACCOUNT);
+    }
+
+    public void initSearchView() {
         searchView = (SearchView) findViewById(R.id.search_view);
         searchView.setVersion(SearchCodes.VERSION_TOOLBAR);
         searchView.setStyle(SearchCodes.STYLE_TOOLBAR_CLASSIC);
@@ -97,6 +117,18 @@ public class MainActivity extends ABaseActivityView<MainPresenter> implements IM
             @Override
             public void onMenuClick() {
                 Toast.makeText(getApplicationContext(), "menu", Toast.LENGTH_SHORT).show();
+            }
+        });
+        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String query) {
+                return false;
+            }
+
+            @Override
+            public boolean onQueryTextChange(String newText) {
+                presenter.findPlaces(newText, getString(R.string.google_directions_key));
+                return true;
             }
         });
 
@@ -116,94 +148,34 @@ public class MainActivity extends ABaseActivityView<MainPresenter> implements IM
 
         searchView.setAdapter(mSearchAdapter);
 
-
-        googleSignIn();
     }
 
-    public void googleSignIn() {
-        GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
-                .requestEmail()
-                .build();
-
-
-        mGoogleApiClient = new GoogleApiClient.Builder(this)
-                .enableAutoManage(this, this)
-                .addApi(Auth.GOOGLE_SIGN_IN_API, gso)
-                .build();
-
-
-        signInButton = (Button) findViewById(R.id.sign_in_button);
-
-        OptionalPendingResult<GoogleSignInResult> opr = Auth.GoogleSignInApi.silentSignIn(mGoogleApiClient);
-        if (opr.isDone()) {
-            // If the user's cached credentials are valid, the OptionalPendingResult will be "done"
-            // and the GoogleSignInResult will be available instantly.
-            Log.d(TAG, "Got cached sign-in");
-            GoogleSignInResult result = opr.get();
-            handleSignInResult(result);
-        } else {
-            opr.setResultCallback(new ResultCallback<GoogleSignInResult>() {
-                @Override
-                public void onResult(GoogleSignInResult googleSignInResult) {
-                    handleSignInResult(googleSignInResult);
-                }
-            });
-        }
-    }
-
-    private void signIn() {
-        Intent signInIntent = Auth.GoogleSignInApi.getSignInIntent(mGoogleApiClient);
-        startActivityForResult(signInIntent, RC_SIGN_IN);
-    }
-
-    private void signOut() {
-        Auth.GoogleSignInApi.signOut(mGoogleApiClient).setResultCallback(
-                new ResultCallback<Status>() {
-                    @Override
-                    public void onResult(Status status) {
-                        updateUI(false);
-                    }
-                });
-    }
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
-        // Result returned from launching the Intent from GoogleSignInApi.getSignInIntent(...);
-        if (requestCode == RC_SIGN_IN) {
-            GoogleSignInResult result = Auth.GoogleSignInApi.getSignInResultFromIntent(data);
-            handleSignInResult(result);
-        }
-    }
-
-    private void handleSignInResult(GoogleSignInResult result) {
-        Log.d(TAG, "handleSignInResult:" + result.isSuccess());
-        if (result.isSuccess()) {
-            GoogleSignInAccount acct = result.getSignInAccount();
-//            mStatusTextView.setText(getString(R.string.signed_in_fmt, acct.getDisplayName()));
-            updateUI(true);
-
-        } else {
-            updateUI(false);
-        }
-    }
-
-    private void updateUI(final boolean b) {
-        signInButton.setText(!b ? "Sign In" : "Sign Out");
-
-        signInButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (b) {
-                    signOut();
-                } else {
-                    signIn();
-                }
+        if (requestCode == REQUEST_CODE_PICK_ACCOUNT) {
+            // Receiving a result from the AccountPicker
+            if (resultCode == RESULT_OK) {
+                final String mEmail = data.getStringExtra(AccountManager.KEY_ACCOUNT_NAME);
+                new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        String token = "";
+                        try {
+                            token = GoogleAuthUtil.getToken(MainActivity.this, mEmail, SCOPE);
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        } catch (GoogleAuthException e) {
+                            e.printStackTrace();
+                        }
+                        Log.d(TAG, "handleSignInResult. token: " + token);
+                    }
+                }).start();
             }
-        });
+        }
     }
-
 
     @Override
     public void onResume() {
@@ -231,7 +203,7 @@ public class MainActivity extends ABaseActivityView<MainPresenter> implements IM
 
     @Override
     public void initMap(List<Poi> pois) {
-        mSuggestionsList.clear();
+
         if (pois != null) {
             for (Poi poi : pois) {
                 final MarkerOptions snippet = new MarkerOptions()
@@ -239,11 +211,17 @@ public class MainActivity extends ABaseActivityView<MainPresenter> implements IM
                         .title(poi.getTitle())
                         .snippet(poi.getAddress());
                 map.addMarker(snippet);
-
-//            mSuggestionsList.addAll(mHistoryDatabase.getAllItems());
-                mSuggestionsList.add(new SearchItem(poi.getTitle()));
             }
         }
+    }
+
+    @Override
+    public void populateAutocompeteList(CitiesEntity citiesEntity) {
+        mSuggestionsList.clear();
+        for (Predictions predictions : citiesEntity.getPredictions()) {
+            mSuggestionsList.add(new SearchItem(predictions.getDescription()));
+        }
+
     }
 
     @Override
@@ -271,5 +249,15 @@ public class MainActivity extends ABaseActivityView<MainPresenter> implements IM
     @Override
     public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
 
+    }
+
+
+    @Override
+    public void onBackPressed() {
+        if (searchView != null && searchView.isSearchOpen()) {
+            searchView.hide(true);
+        } else {
+            super.onBackPressed();
+        }
     }
 }
