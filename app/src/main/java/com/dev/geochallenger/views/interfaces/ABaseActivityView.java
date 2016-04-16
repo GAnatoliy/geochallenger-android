@@ -55,9 +55,13 @@ public abstract class ABaseActivityView<T extends IPresenter> extends AppCompatA
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                if (progressDialog != null && progressDialog.isShowing()) {
-                    progressDialog.dismiss();
-                    progressDialog = null;
+                try {
+                    if (progressDialog != null && progressDialog.isShowing()) {
+                        progressDialog.dismiss();
+                        progressDialog = null;
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
                 }
             }
         });
