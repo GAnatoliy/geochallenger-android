@@ -9,12 +9,25 @@ import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
 
-public class MainActivity extends AppCompatActivity {
+import com.dev.geochallenger.presenters.MainPresenter;
+import com.dev.geochallenger.views.IMainView;
+import com.dev.geochallenger.views.interfaces.ABaseActivityView;
+
+public class MainActivity extends ABaseActivityView<MainPresenter> implements IMainView{
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
+    protected MainPresenter createPresenter() {
+        return new MainPresenter(this);
+    }
+
+    @Override
+    protected int getLayoutId() {
+        return R.layout.activity_main;
+    }
+
+    @Override
+    protected void onViewCreated(Bundle savedInstanceState) {
+        super.onViewCreated(savedInstanceState);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
@@ -26,6 +39,17 @@ public class MainActivity extends AppCompatActivity {
                         .setAction("Action", null).show();
             }
         });
+    }
+
+    @Override
+    public String getErrorTitle(Exception exception) {
+        //TODO
+        return null;
+    }
+
+    @Override
+    public void initMap() {
+        //TODO
     }
 
     @Override
