@@ -9,6 +9,8 @@ import com.dev.geochallenger.models.interfaces.OnDataLoaded;
 
 import java.util.List;
 
+import okhttp3.OkHttpClient;
+import okhttp3.logging.HttpLoggingInterceptor;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -28,8 +30,13 @@ public class RetrofitModel implements IModel {
     private volatile static GeoApi service;
 
     private RetrofitModel() {
+        HttpLoggingInterceptor interceptor = new HttpLoggingInterceptor();
+        interceptor.setLevel(HttpLoggingInterceptor.Level.HEADERS);
+        OkHttpClient client = new OkHttpClient.Builder().addInterceptor(interceptor).build();
+
         Retrofit retrofit = new Retrofit.Builder()
                 .baseUrl(API_PATH)
+                .client(client)
                 .addConverterFactory(GsonConverterFactory.create())
                 .build();
 
