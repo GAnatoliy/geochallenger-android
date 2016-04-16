@@ -3,17 +3,23 @@ package com.dev.geochallenger;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
-import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 
 import com.dev.geochallenger.presenters.MainPresenter;
 import com.dev.geochallenger.views.IMainView;
 import com.dev.geochallenger.views.interfaces.ABaseActivityView;
+import com.google.android.gms.common.GooglePlayServicesNotAvailableException;
+import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.MapView;
+import com.google.android.gms.maps.MapsInitializer;
 
-public class MainActivity extends ABaseActivityView<MainPresenter> implements IMainView{
+public class MainActivity extends ABaseActivityView<MainPresenter> implements IMainView {
+
+    private MapView mapView;
+    private GoogleMap map;
 
     @Override
     protected MainPresenter createPresenter() {
@@ -39,6 +45,36 @@ public class MainActivity extends ABaseActivityView<MainPresenter> implements IM
                         .setAction("Action", null).show();
             }
         });
+
+        // Gets the MapView from the XML layout and creates it
+        mapView = (MapView) findViewById(R.id.mvFeed);
+        mapView.onCreate(savedInstanceState);
+
+        // Gets to GoogleMap from the MapView and does initialization stuff
+        map = mapView.getMap();
+        map.getUiSettings().setMyLocationButtonEnabled(false);
+        map.setMyLocationEnabled(true);
+
+        // Needs to call MapsInitializer before doing any CameraUpdateFactory calls
+        MapsInitializer.initialize(this);
+    }
+
+    @Override
+    public void onResume() {
+        mapView.onResume();
+        super.onResume();
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        mapView.onDestroy();
+    }
+
+    @Override
+    public void onLowMemory() {
+        super.onLowMemory();
+        mapView.onLowMemory();
     }
 
     @Override
@@ -49,7 +85,6 @@ public class MainActivity extends ABaseActivityView<MainPresenter> implements IM
 
     @Override
     public void initMap() {
-        //TODO
     }
 
     @Override
