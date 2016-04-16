@@ -96,7 +96,6 @@ public class MainActivity extends ABaseActivityView<MainPresenter> implements IM
                 getAccount();
             }
         });
-
     }
 
     public void getAccount() {
@@ -147,16 +146,13 @@ public class MainActivity extends ABaseActivityView<MainPresenter> implements IM
         });
 
         searchView.setAdapter(mSearchAdapter);
-
     }
-
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
         if (requestCode == REQUEST_CODE_PICK_ACCOUNT) {
-            // Receiving a result from the AccountPicker
             if (resultCode == RESULT_OK) {
                 final String mEmail = data.getStringExtra(AccountManager.KEY_ACCOUNT_NAME);
                 new Thread(new Runnable() {
@@ -165,16 +161,20 @@ public class MainActivity extends ABaseActivityView<MainPresenter> implements IM
                         String token = "";
                         try {
                             token = GoogleAuthUtil.getToken(MainActivity.this, mEmail, SCOPE);
+                            tokenObtained(token);
                         } catch (IOException e) {
                             e.printStackTrace();
                         } catch (GoogleAuthException e) {
                             e.printStackTrace();
                         }
-                        Log.d(TAG, "handleSignInResult. token: " + token);
                     }
                 }).start();
             }
         }
+    }
+
+    public void tokenObtained(String token) {
+        Log.d(TAG, "handleSignInResult. token: " + token);
     }
 
     @Override
