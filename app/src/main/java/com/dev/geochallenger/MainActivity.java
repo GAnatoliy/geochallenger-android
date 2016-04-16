@@ -8,6 +8,8 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.TextView;
+import android.widget.Toast;
 
 import com.dev.geochallenger.models.RetrofitModel;
 import com.dev.geochallenger.models.entities.Poi;
@@ -20,7 +22,12 @@ import com.google.android.gms.maps.MapsInitializer;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.lapism.searchview.adapter.SearchAdapter;
+import com.lapism.searchview.adapter.SearchItem;
+import com.lapism.searchview.view.SearchCodes;
+import com.lapism.searchview.view.SearchView;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class MainActivity extends ABaseActivityView<MainPresenter> implements IMainView {
@@ -28,6 +35,8 @@ public class MainActivity extends ABaseActivityView<MainPresenter> implements IM
     private static final String TAG = MainActivity.class.getSimpleName();
     private MapView mapView;
     private GoogleMap map;
+    private SearchView searchView;
+    private List<SearchItem> mSuggestionsList;
 
     @Override
     protected MainPresenter createPresenter() {
@@ -66,6 +75,29 @@ public class MainActivity extends ABaseActivityView<MainPresenter> implements IM
 
         // Needs to call MapsInitializer before doing any CameraUpdateFactory calls
         MapsInitializer.initialize(this);
+
+        searchView = (SearchView) findViewById(R.id.search_view);
+        searchView.setVersion(SearchCodes.VERSION_TOOLBAR);
+        searchView.setStyle(SearchCodes.STYLE_TOOLBAR_CLASSIC);
+        searchView.setTheme(SearchCodes.THEME_LIGHT);
+        searchView.setHint("Search");
+        searchView.setVoice(false);
+
+        mSuggestionsList = new ArrayList<>();
+
+        List<SearchItem> mResultsList = new ArrayList<>();
+        SearchAdapter mSearchAdapter = new SearchAdapter(this, mResultsList, mSuggestionsList, SearchCodes.THEME_LIGHT);
+        mSearchAdapter.setOnItemClickListener(new SearchAdapter.OnItemClickListener() {
+            @Override
+            public void onItemClick(View view, int position) {
+                TextView textView = (TextView) view.findViewById(R.id.textView_item_text);
+                CharSequence text = textView.getText();
+//                mHistoryDatabase.addItem(new SearchItem(text));
+                Toast.makeText(getApplicationContext(), text + ", position: " + position, Toast.LENGTH_SHORT).show();
+            }
+        });
+
+        searchView.setAdapter(mSearchAdapter);
     }
 
     @Override
@@ -94,12 +126,20 @@ public class MainActivity extends ABaseActivityView<MainPresenter> implements IM
 
     @Override
     public void initMap(List<Poi> pois) {
+        mSuggestionsList.clear();
+
         for (Poi poi : pois) {
-            Marker marker = map.addMarker(new MarkerOptions()
+            final MarkerOptions snippet = new MarkerOptions()
                     .position(new LatLng(37.7750, 122.4183))
                     .title(poi.getTitle())
-                    .snippet("Population: 776733"));
+                    .snippet("Population: 776733");
+            map.addMarker(snippet);
+
+//            mSuggestionsList.addAll(mHistoryDatabase.getAllItems());
+            mSuggestionsList.add(new SearchItem(poi.getTitle()));
         }
+
+        searchView.show(true);
     }
 
     @Override
