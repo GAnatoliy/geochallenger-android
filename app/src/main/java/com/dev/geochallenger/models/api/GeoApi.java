@@ -20,7 +20,7 @@ public interface GeoApi {
     @Headers({
             "Accept: application/json",
             "Content-Type: application/json"})
-    @GET("poi/")
+    @GET("api/pois")
     Call<List<Poi>> listPois();
 
     @Headers({
