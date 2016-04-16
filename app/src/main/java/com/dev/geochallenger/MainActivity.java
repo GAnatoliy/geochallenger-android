@@ -4,26 +4,35 @@ import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 
+import com.dev.geochallenger.models.RetrofitModel;
+import com.dev.geochallenger.models.entities.Poi;
 import com.dev.geochallenger.presenters.MainPresenter;
 import com.dev.geochallenger.views.IMainView;
 import com.dev.geochallenger.views.interfaces.ABaseActivityView;
-import com.google.android.gms.common.GooglePlayServicesNotAvailableException;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapView;
 import com.google.android.gms.maps.MapsInitializer;
+import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Marker;
+import com.google.android.gms.maps.model.MarkerOptions;
+
+import java.util.List;
 
 public class MainActivity extends ABaseActivityView<MainPresenter> implements IMainView {
 
+    private static final String TAG = MainActivity.class.getSimpleName();
     private MapView mapView;
     private GoogleMap map;
 
     @Override
     protected MainPresenter createPresenter() {
-        return new MainPresenter(this);
+        RetrofitModel retrofitModel = new RetrofitModel();
+        return new MainPresenter(this, retrofitModel);
     }
 
     @Override
@@ -84,7 +93,13 @@ public class MainActivity extends ABaseActivityView<MainPresenter> implements IM
     }
 
     @Override
-    public void initMap() {
+    public void initMap(List<Poi> pois) {
+        for (Poi poi : pois) {
+            Marker marker = map.addMarker(new MarkerOptions()
+                    .position(new LatLng(37.7750, 122.4183))
+                    .title(poi.getTitle())
+                    .snippet("Population: 776733"));
+        }
     }
 
     @Override

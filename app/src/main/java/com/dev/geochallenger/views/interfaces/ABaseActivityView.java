@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 
 import com.dev.geochallenger.presenters.interfaces.IPresenter;
 
@@ -25,6 +26,7 @@ public abstract class ABaseActivityView<T extends IPresenter> extends AppCompatA
         presenter = createPresenter();
         presenter.init();
     }
+
     /**
      * just for the case if we need to get something from intent
      *
@@ -59,9 +61,11 @@ public abstract class ABaseActivityView<T extends IPresenter> extends AppCompatA
             }
         });
     }
+
     @Override
     public void showErrorMessage(final String title, final String body) {
         //TODO
+        Log.d("TAG", "showErrorMessage: " + body);
     }
 
     protected void startActivityWithTransition(Intent intent) {
