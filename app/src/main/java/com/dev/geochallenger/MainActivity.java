@@ -22,6 +22,7 @@ import com.google.android.gms.maps.MapsInitializer;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.gson.Gson;
 import com.lapism.searchview.adapter.SearchAdapter;
 import com.lapism.searchview.adapter.SearchItem;
 import com.lapism.searchview.view.SearchCodes;
@@ -52,8 +53,6 @@ public class MainActivity extends ABaseActivityView<MainPresenter> implements IM
     @Override
     protected void onViewCreated(Bundle savedInstanceState) {
         super.onViewCreated(savedInstanceState);
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
 
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
@@ -82,6 +81,12 @@ public class MainActivity extends ABaseActivityView<MainPresenter> implements IM
         searchView.setTheme(SearchCodes.THEME_LIGHT);
         searchView.setHint("Search");
         searchView.setVoice(false);
+        searchView.setOnSearchMenuListener(new SearchView.SearchMenuListener() {
+            @Override
+            public void onMenuClick() {
+                Toast.makeText(getApplicationContext(), "menu", Toast.LENGTH_SHORT).show();
+            }
+        });
 
         mSuggestionsList = new ArrayList<>();
 
@@ -127,19 +132,18 @@ public class MainActivity extends ABaseActivityView<MainPresenter> implements IM
     @Override
     public void initMap(List<Poi> pois) {
         mSuggestionsList.clear();
-
-        for (Poi poi : pois) {
-            final MarkerOptions snippet = new MarkerOptions()
-                    .position(new LatLng(37.7750, 122.4183))
-                    .title(poi.getTitle())
-                    .snippet("Population: 776733");
-            map.addMarker(snippet);
+        if (pois != null) {
+            for (Poi poi : pois) {
+                final MarkerOptions snippet = new MarkerOptions()
+                        .position(new LatLng(poi.getLatitude(), poi.getLongitude()))
+                        .title(poi.getTitle())
+                        .snippet(poi.getAddress());
+                map.addMarker(snippet);
 
 //            mSuggestionsList.addAll(mHistoryDatabase.getAllItems());
-            mSuggestionsList.add(new SearchItem(poi.getTitle()));
+                mSuggestionsList.add(new SearchItem(poi.getTitle()));
+            }
         }
-
-        searchView.show(true);
     }
 
     @Override

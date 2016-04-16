@@ -7,6 +7,9 @@ public class Poi {
 
     private int poiId;
     private String title;
+    private String address;
+    private float latitude;
+    private float longitude;
 
     public int getPoiId() {
         return poiId;
@@ -22,5 +25,29 @@ public class Poi {
 
     public void setTitle(String title) {
         this.title = title;
+    }
+
+    public String getAddress() {
+        return address;
+    }
+
+    public void setAddress(String address) {
+        this.address = address;
+    }
+
+    public float getLatitude() {
+        return latitude;
+    }
+
+    public void setLatitude(float latitude) {
+        this.latitude = latitude;
+    }
+
+    public float getLongitude() {
+        return longitude;
+    }
+
+    public void setLongitude(float longitude) {
+        this.longitude = longitude;
     }
 }
