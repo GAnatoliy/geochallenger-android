@@ -1,6 +1,7 @@
 package com.dev.geochallenger.models.api;
 
 import com.dev.geochallenger.models.entities.Poi;
+import com.dev.geochallenger.models.entities.directions.GoogleDirectionsEntity;
 
 import java.util.List;
 
@@ -9,6 +10,7 @@ import retrofit2.http.GET;
 import retrofit2.http.Headers;
 import retrofit2.http.POST;
 import retrofit2.http.Path;
+import retrofit2.http.Query;
 
 /**
  * Created by a_dibrivnyj on 4/16/16.
@@ -32,4 +34,14 @@ public interface GeoApi {
             "Content-Type: application/json"})
     @POST("poi/{id}")
     void createPoi();
+
+    @Headers({
+            "Accept: application/json",
+            "Content-Type: application/json"})
+    @GET("https://maps.googleapis.com/maps/api/directions/json")
+    Call<GoogleDirectionsEntity> calculateRoute(@Query("origin") String origin,
+                        @Query("destination") String destination,
+                        @Query("waypoints") String waypoints,
+                        @Query("key") String key);
+
 }
