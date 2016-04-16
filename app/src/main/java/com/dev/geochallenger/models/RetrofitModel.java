@@ -2,6 +2,7 @@ package com.dev.geochallenger.models;
 
 import com.dev.geochallenger.models.api.GeoApi;
 import com.dev.geochallenger.models.entities.Poi;
+import com.dev.geochallenger.models.entities.directions.GoogleDirectionsEntity;
 import com.dev.geochallenger.models.interfaces.IModel;
 import com.dev.geochallenger.models.interfaces.OnDataLoaded;
 
@@ -19,18 +20,26 @@ import retrofit2.converter.gson.GsonConverterFactory;
 
 public class RetrofitModel implements IModel {
 
+    private static RetrofitModel instance;
+
     private static final String API_PATH = "http://testing-geochallenger-api.azurewebsites.net/";
 
-    private GeoApi service;
+    private volatile static GeoApi service;
 
-    @Override
-    public void init() {
+    private RetrofitModel() {
         Retrofit retrofit = new Retrofit.Builder()
                 .baseUrl(API_PATH)
                 .addConverterFactory(GsonConverterFactory.create())
                 .build();
 
         service = retrofit.create(GeoApi.class);
+    }
+
+    public RetrofitModel getInstance() {
+        if (instance == null) {
+            instance = new RetrofitModel();
+        }
+        return instance;
     }
 
     @Override
@@ -65,5 +74,19 @@ public class RetrofitModel implements IModel {
         });
     }
 
+    @Override
+    public void calculateRoute(String origin, String destination, String waypoints, String key, final OnDataLoaded<GoogleDirectionsEntity> dataLoaded) {
+        final Call<GoogleDirectionsEntity> poiCall = service.calculateRoute(origin, destination, waypoints, key);
+        poiCall.enqueue(new Callback<GoogleDirectionsEntity>() {
+            @Override
+            public void onResponse(Call<GoogleDirectionsEntity> call, Response<GoogleDirectionsEntity> response) {
+                dataLoaded.onSuccess(response.body());
+            }
 
+            @Override
+            public void onFailure(Call<GoogleDirectionsEntity> call, Throwable t) {
+                dataLoaded.onError(t);
+            }
+        });
+    }
 }

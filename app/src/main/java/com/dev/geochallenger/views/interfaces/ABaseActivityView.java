@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 
+import com.dev.geochallenger.R;
 import com.dev.geochallenger.presenters.interfaces.IPresenter;
 
 public abstract class ABaseActivityView<T extends IPresenter> extends AppCompatActivity implements IView {
@@ -59,6 +60,12 @@ public abstract class ABaseActivityView<T extends IPresenter> extends AppCompatA
             }
         });
     }
+
+    @Override
+    public String getErrorTitle(Exception exception) {
+        return getString(R.string.app_name);
+    }
+
     @Override
     public void showErrorMessage(final String title, final String body) {
         //TODO
