@@ -1,10 +1,13 @@
 package com.dev.geochallenger.presenters;
 
+import android.location.Address;
+
 import com.dev.geochallenger.models.entities.Poi;
 import com.dev.geochallenger.models.entities.cities.PlacesEntity;
 import com.dev.geochallenger.models.entities.cities.detailed.Access_points;
 import com.dev.geochallenger.models.entities.cities.detailed.Location;
 import com.dev.geochallenger.models.entities.cities.detailed.PlaceDetailedEntity;
+import com.dev.geochallenger.models.interfaces.IGeocoder;
 import com.dev.geochallenger.models.interfaces.IModel;
 import com.dev.geochallenger.models.interfaces.OnDataLoaded;
 import com.dev.geochallenger.presenters.interfaces.IPresenter;
@@ -17,17 +20,20 @@ import java.util.List;
  * Created by Yuriy Diachenko on 16.04.2016.
  */
 public class MainPresenter extends IPresenter<IMainView> {
-    private IModel iModel;
+    private IModel model;
+    private IGeocoder geocoder;
+    private boolean isStopped;
 
-    public MainPresenter(IMainView view, IModel iModel) {
+    public MainPresenter(IMainView view, IModel iModel, IGeocoder geocoder) {
         super(view);
-        this.iModel = iModel;
+        this.model = iModel;
+        this.geocoder = geocoder;
     }
 
     @Override
     public void init() {
 
-        iModel.getPoiList(new OnDataLoaded<List<Poi>>() {
+        model.getPoiList(new OnDataLoaded<List<Poi>>() {
             @Override
             public void onSuccess(List<Poi> pois) {
                 view.initMap(pois);
@@ -41,7 +47,7 @@ public class MainPresenter extends IPresenter<IMainView> {
     }
 
     public void findPlaces(String newText, String key) {
-        iModel.getPlaces(newText, key, new OnDataLoaded<PlacesEntity>() {
+        model.getPlaces(newText, key, new OnDataLoaded<PlacesEntity>() {
             @Override
             public void onSuccess(PlacesEntity placesEntity) {
                 view.populateAutocompeteList(placesEntity);
@@ -55,7 +61,7 @@ public class MainPresenter extends IPresenter<IMainView> {
     }
 
     public void getDetailedPlaceInfo(String placeId, String key) {
-        iModel.getPlace(placeId, key, new OnDataLoaded<PlaceDetailedEntity>() {
+        model.getPlace(placeId, key, new OnDataLoaded<PlaceDetailedEntity>() {
             @Override
             public void onSuccess(PlaceDetailedEntity entity) {
                 final Access_points access_points = entity.getResult().getGeometry().getAccess_points()[0];
@@ -71,4 +77,29 @@ public class MainPresenter extends IPresenter<IMainView> {
     }
 
 
+    public void onMapLongClick(LatLng latLng) {
+        view.setCustomMarker(latLng);
+        view.showPlaceDetails();
+        geocoder.getAddress(latLng, new IGeocoder.IGeocoderListener() {
+            @Override
+            public void onAddressFetched(Address address) {
+                if (!isStopped) {
+                    view.updatePlaceDetailsWithAddress(address);
+                }
+            }
+
+            @Override
+            public void onError(Exception e) {
+                //ignore
+            }
+        });
+    }
+
+    public void onStop() {
+        isStopped = true;
+    }
+
+    public void onStart() {
+        isStopped = false;
+    }
 }

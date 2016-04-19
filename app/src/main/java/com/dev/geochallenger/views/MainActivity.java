@@ -2,8 +2,12 @@ package com.dev.geochallenger.views;
 
 import android.accounts.AccountManager;
 import android.content.Intent;
+import android.location.Address;
+import android.location.Location;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.annotation.NonNull;
+import android.support.design.widget.BottomSheetBehavior;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.util.Log;
@@ -16,6 +20,7 @@ import android.widget.Toast;
 
 import com.dev.geochallenger.R;
 import com.dev.geochallenger.models.RetrofitModel;
+import com.dev.geochallenger.models.api.Geocoder;
 import com.dev.geochallenger.models.entities.Poi;
 import com.dev.geochallenger.models.entities.cities.PlacesEntity;
 import com.dev.geochallenger.models.entities.cities.Predictions;
@@ -32,6 +37,7 @@ import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapView;
 import com.google.android.gms.maps.MapsInitializer;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.lapism.searchview.adapter.SearchAdapter;
 import com.lapism.searchview.adapter.SearchItem;
@@ -53,10 +59,14 @@ public class MainActivity extends ABaseActivityView<MainPresenter> implements IM
     private List<SearchItem> mSuggestionsList;
     private String SCOPE = "oauth2:https://www.googleapis.com/auth/userinfo.profile";
     private PlacesEntity placesEntity;
+    private BottomSheetBehavior<View> bottomSheetBehavior;
+    private Marker customMarker;
+    private TextView tvSelectedPlaceCity;
+    private TextView tvSelectedPlace;
 
     @Override
     protected MainPresenter createPresenter() {
-        return new MainPresenter(this, RetrofitModel.getInstance());
+        return new MainPresenter(this, RetrofitModel.getInstance(), new Geocoder(this));
     }
 
     @Override
@@ -76,15 +86,48 @@ public class MainActivity extends ABaseActivityView<MainPresenter> implements IM
             }
         });
 
+        bottomSheetBehavior = BottomSheetBehavior.from(findViewById(R.id.nsvMainActivity));
+        tvSelectedPlaceCity = (TextView)findViewById(R.id.tvMainPlaceDetailsCity);
+        tvSelectedPlace = (TextView)findViewById(R.id.tvMainPlaceDetails);
+
         // Gets the MapView from the XML layout and creates it
         mapView = (MapView) findViewById(R.id.mvFeed);
         mapView.onCreate(savedInstanceState);
 
         // Gets to GoogleMap from the MapView and does initialization stuff
         map = mapView.getMap();
-        map.getUiSettings().setMyLocationButtonEnabled(false);
+        map.getUiSettings().setMyLocationButtonEnabled(true);
         map.setMyLocationEnabled(true);
+        map.getUiSettings().setZoomControlsEnabled(true);
+        map.getUiSettings().setAllGesturesEnabled(true);
+        map.setOnMyLocationButtonClickListener(new GoogleMap.OnMyLocationButtonClickListener() {
+            @Override
+            public boolean onMyLocationButtonClick() {
+                Location location = map.getMyLocation();
+                if (location != null) {
+                    map.animateCamera(CameraUpdateFactory.newLatLngZoom(
+                            new LatLng(location.getLatitude(), location.getLongitude()), 13));
+                }
 
+                return true;
+            }
+        });
+        map.setOnMyLocationChangeListener(new GoogleMap.OnMyLocationChangeListener() {
+            @Override
+            public void onMyLocationChange(Location location) {
+                map.animateCamera(CameraUpdateFactory.newLatLngZoom(
+                        new LatLng(location.getLatitude(), location.getLongitude()), 13));
+                //show location only on start
+                map.setOnMyLocationChangeListener(null);
+            }
+        });
+
+        map.setOnMapLongClickListener(new GoogleMap.OnMapLongClickListener() {
+            @Override
+            public void onMapLongClick(LatLng latLng) {
+                presenter.onMapLongClick(latLng);
+            }
+        });
         // Needs to call MapsInitializer before doing any CameraUpdateFactory calls
         MapsInitializer.initialize(this);
 
@@ -198,6 +241,18 @@ public class MainActivity extends ABaseActivityView<MainPresenter> implements IM
     }
 
     @Override
+    protected void onStop() {
+        super.onStop();
+        presenter.onStop();
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        presenter.onStart();
+    }
+
+    @Override
     public String getErrorTitle(Exception exception) {
         //TODO
         return null;
@@ -230,6 +285,34 @@ public class MainActivity extends ABaseActivityView<MainPresenter> implements IM
     @Override
     public void setMapLocation(LatLng latLng) {
         map.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, 14.0f));
+    }
+
+    @Override
+    public void setCustomMarker(LatLng latLng) {
+        if (customMarker != null) {
+            customMarker.remove();
+        }
+        final MarkerOptions snippet = new MarkerOptions()
+                .position(latLng);
+        customMarker = map.addMarker(snippet);
+    }
+
+    @Override
+    public void showPlaceDetails() {
+        new Handler().postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                bottomSheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED);
+            }
+        }, 100);
+    }
+
+    @Override
+    public void updatePlaceDetailsWithAddress(Address address) {
+        int maxAddressLineIndex = address.getMaxAddressLineIndex();
+
+        tvSelectedPlaceCity.setText(maxAddressLineIndex >= 0 ? address.getAddressLine(0) : "");
+        tvSelectedPlace.setText(maxAddressLineIndex >= 1 ? address.getAddressLine(1) : "");
     }
 
     @Override

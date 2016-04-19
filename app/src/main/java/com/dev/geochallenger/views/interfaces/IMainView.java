@@ -1,5 +1,7 @@
 package com.dev.geochallenger.views.interfaces;
 
+import android.location.Address;
+
 import com.dev.geochallenger.models.entities.Poi;
 import com.dev.geochallenger.models.entities.cities.PlacesEntity;
 import com.google.android.gms.maps.model.LatLng;
@@ -16,4 +18,10 @@ public interface IMainView extends IView {
     void populateAutocompeteList(PlacesEntity placesEntity);
 
     void setMapLocation(LatLng latLng);
+
+    void setCustomMarker(LatLng latLng);
+
+    void showPlaceDetails();
+
+    void updatePlaceDetailsWithAddress(Address address);
 }
