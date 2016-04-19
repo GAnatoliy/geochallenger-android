@@ -1,10 +1,13 @@
 package com.dev.geochallenger.views;
 
 import android.graphics.Color;
+import android.location.Address;
+import android.location.Location;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
 
 import com.dev.geochallenger.R;
+import com.dev.geochallenger.models.ExtraConstants;
 import com.dev.geochallenger.models.RetrofitModel;
 import com.dev.geochallenger.presenters.CreateRoutePresenter;
 import com.dev.geochallenger.views.interfaces.ABaseActivityView;
@@ -29,15 +32,24 @@ public class CreateRouteActivity extends ABaseActivityView<CreateRoutePresenter>
     private MapView mapView;
     private GoogleMap map;
     private Polyline currentRoute;
+    private Location myLocation;
+    private LatLng selectedLocation;
+    private Address selectedAddress;
 
     @Override
     protected CreateRoutePresenter createPresenter() {
-        return new CreateRoutePresenter(this, RetrofitModel.getInstance());
+        return new CreateRoutePresenter(this, RetrofitModel.getInstance(), selectedLocation, selectedAddress, myLocation);
     }
 
     @Override
     protected void onViewCreated(Bundle savedInstanceState) {
         super.onViewCreated(savedInstanceState);
+
+
+        myLocation = (Location) getIntent().getParcelableExtra(ExtraConstants.MY_LOCATION);
+        selectedLocation = (LatLng) getIntent().getParcelableExtra(ExtraConstants.SELECTED_LOCATION);
+        selectedAddress = (Address)getIntent().getParcelableExtra(ExtraConstants.SELECTED_ADDRESS);
+
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
@@ -80,7 +92,6 @@ public class CreateRouteActivity extends ABaseActivityView<CreateRoutePresenter>
 
     @Override
     public void initMap() {
-        presenter.getPathForCities("kirovohrad", "kiev");
 
         MarkerOptions markerOptions = new MarkerOptions();
         markerOptions.position(new LatLng(49.0935026, 33.299107));

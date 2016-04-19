@@ -7,9 +7,9 @@ import android.location.Location;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.design.widget.BottomSheetBehavior;
 import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -19,6 +19,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.dev.geochallenger.R;
+import com.dev.geochallenger.models.ExtraConstants;
 import com.dev.geochallenger.models.RetrofitModel;
 import com.dev.geochallenger.models.api.Geocoder;
 import com.dev.geochallenger.models.entities.Poi;
@@ -82,7 +83,7 @@ public class MainActivity extends ABaseActivityView<MainPresenter> implements IM
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                startActivity(new Intent(MainActivity.this, CreateRouteActivity.class));
+                presenter.createRouteClicked();
             }
         });
 
@@ -115,6 +116,7 @@ public class MainActivity extends ABaseActivityView<MainPresenter> implements IM
         map.setOnMyLocationChangeListener(new GoogleMap.OnMyLocationChangeListener() {
             @Override
             public void onMyLocationChange(Location location) {
+                presenter.setMyLocation(location);
                 map.animateCamera(CameraUpdateFactory.newLatLngZoom(
                         new LatLng(location.getLatitude(), location.getLongitude()), 13));
                 //show location only on start
@@ -316,20 +318,24 @@ public class MainActivity extends ABaseActivityView<MainPresenter> implements IM
     }
 
     @Override
+    public void showCreateRouteScreen(LatLng selectedPlaceLocation, @Nullable Address selectedPlaceAddress, @Nullable Location myLocation) {
+        Intent intent = new Intent(MainActivity.this, CreateRouteActivity.class);
+        intent.putExtra(ExtraConstants.SELECTED_LOCATION, selectedPlaceLocation);
+        intent.putExtra(ExtraConstants.SELECTED_ADDRESS, selectedPlaceAddress);
+        intent.putExtra(ExtraConstants.MY_LOCATION, myLocation);
+        startActivity(intent);
+    }
+
+    @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.menu_main, menu);
         return true;
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
 
-        //noinspection SimplifiableIfStatement
         if (id == R.id.action_settings) {
             return true;
         }

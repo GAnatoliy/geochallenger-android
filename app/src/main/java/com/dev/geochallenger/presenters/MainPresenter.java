@@ -23,6 +23,9 @@ public class MainPresenter extends IPresenter<IMainView> {
     private IModel model;
     private IGeocoder geocoder;
     private boolean isStopped;
+    private LatLng selectedPlaceLocation;
+    private Address selectedPlaceAddress;
+    private android.location.Location myLocation;
 
     public MainPresenter(IMainView view, IModel iModel, IGeocoder geocoder) {
         super(view);
@@ -78,11 +81,14 @@ public class MainPresenter extends IPresenter<IMainView> {
 
 
     public void onMapLongClick(LatLng latLng) {
+        selectedPlaceLocation = latLng;
         view.setCustomMarker(latLng);
         view.showPlaceDetails();
         geocoder.getAddress(latLng, new IGeocoder.IGeocoderListener() {
+
             @Override
             public void onAddressFetched(Address address) {
+                selectedPlaceAddress = address;
                 if (!isStopped) {
                     view.updatePlaceDetailsWithAddress(address);
                 }
@@ -101,5 +107,13 @@ public class MainPresenter extends IPresenter<IMainView> {
 
     public void onStart() {
         isStopped = false;
+    }
+
+    public void createRouteClicked() {
+        view.showCreateRouteScreen(selectedPlaceLocation, selectedPlaceAddress, myLocation);
+    }
+
+    public void setMyLocation(android.location.Location myLocation) {
+        this.myLocation = myLocation;
     }
 }

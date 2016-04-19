@@ -1,7 +1,7 @@
 package com.dev.geochallenger.presenters;
 
-import android.view.View;
-import android.widget.Toast;
+import android.location.Address;
+import android.location.Location;
 
 import com.dev.geochallenger.models.entities.directions.GoogleDirectionsEntity;
 import com.dev.geochallenger.models.interfaces.IModel;
@@ -11,7 +11,6 @@ import com.dev.geochallenger.presenters.interfaces.IPresenter;
 import com.dev.geochallenger.views.interfaces.ICreateRouteView;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
-import com.google.android.gms.maps.model.Polyline;
 import com.google.android.gms.maps.model.PolylineOptions;
 
 import java.util.ArrayList;
@@ -27,15 +26,26 @@ public class CreateRoutePresenter extends IPresenter<ICreateRouteView> {
     private List<LatLng> waypoints = new ArrayList<>();
     private String source;
     private String destination;
+    private Location myLocation;
+    private LatLng selectedLocation;
+    private Address selectedAddress;
 
-    public CreateRoutePresenter(ICreateRouteView view, IModel restClient) {
+    public CreateRoutePresenter(ICreateRouteView view, IModel restClient, LatLng selectedLocation, Address selectedAddress, Location myLocation) {
         super(view);
         this.restClient = restClient;
+        this.selectedLocation = selectedLocation;
+        this.selectedAddress = selectedAddress;
+        this.myLocation = myLocation;
     }
 
     @Override
     public void init() {
         view.initMap();
+        if (selectedLocation != null && myLocation != null) {
+
+            getPathForCities(myLocation.getLatitude() + "," + myLocation.getLongitude(), selectedLocation.latitude + "," + selectedLocation.longitude);
+        }
+
     }
 
     public void getPathForCities(String source, String destination) {

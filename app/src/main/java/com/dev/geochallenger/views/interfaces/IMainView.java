@@ -1,6 +1,8 @@
 package com.dev.geochallenger.views.interfaces;
 
 import android.location.Address;
+import android.location.Location;
+import android.support.annotation.Nullable;
 
 import com.dev.geochallenger.models.entities.Poi;
 import com.dev.geochallenger.models.entities.cities.PlacesEntity;
@@ -24,4 +26,6 @@ public interface IMainView extends IView {
     void showPlaceDetails();
 
     void updatePlaceDetailsWithAddress(Address address);
+
+    void showCreateRouteScreen(LatLng selectedPlaceLocation, @Nullable Address selectedPlaceAddress, @Nullable Location myLocation);
 }
