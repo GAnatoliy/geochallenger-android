@@ -3,9 +3,11 @@ package com.dev.geochallenger.presenters;
 import android.location.Address;
 import android.location.Location;
 
-import com.dev.geochallenger.models.entities.cities.PlacesEntity;
 import com.dev.geochallenger.models.entities.Poi;
+import com.dev.geochallenger.models.entities.cities.PlacesEntity;
 import com.dev.geochallenger.models.entities.directions.GoogleDirectionsEntity;
+import com.dev.geochallenger.models.entities.directions.Leg;
+import com.dev.geochallenger.models.entities.directions.Route;
 import com.dev.geochallenger.models.interfaces.IModel;
 import com.dev.geochallenger.models.interfaces.OnDataLoaded;
 import com.dev.geochallenger.models.parsers.DirectionsJSONParser;
@@ -47,7 +49,23 @@ public class CreateRoutePresenter extends IPresenter<ICreateRouteView> {
 
             getPathForCities(myLocation.getLatitude() + "," + myLocation.getLongitude(), selectedLocation.latitude + "," + selectedLocation.longitude);
         }
+        if (myLocation != null) {
+            view.setOrigin("My location");
+        }
+        if (selectedAddress != null && selectedAddress.getMaxAddressLineIndex() >=0) {
+            String address = "";
+            int maxAddressLineIndex = selectedAddress.getMaxAddressLineIndex();
 
+            address += maxAddressLineIndex >= 0 ? selectedAddress.getAddressLine(0) : "";
+            if (!address.equals("")) {
+                address += maxAddressLineIndex >= 1 ? ", " + selectedAddress.getAddressLine(1) : "";
+            } else {
+                address += maxAddressLineIndex >= 1 ? selectedAddress.getAddressLine(1) : "";
+            }
+            view.setDestination(address);
+        } else if (selectedLocation != null) {
+            view.setDestination(String.format("%.4f,%.4f", selectedLocation.latitude, selectedLocation.longitude));
+        }
     }
 
     public void getPathForCities(String source, String destination) {
@@ -108,8 +126,20 @@ public class CreateRoutePresenter extends IPresenter<ICreateRouteView> {
                     ArrayList<LatLng> points = null;
                     PolylineOptions lineOptions = new PolylineOptions();
                     MarkerOptions markerOptions = new MarkerOptions();
-                    String distance = "";
+                    double distance = 0;
                     String duration = "";
+
+                    List<Route> routeList = entity.getRoutes();
+                    if (routeList != null) {
+                        for (int i = 0; i < routeList.size(); i++) {
+                            List<Leg> legList = routeList.get(i).getLegs();
+                            if (legList != null) {
+                                for (Leg leg : legList) {
+                                    distance += leg.getDistance().getValue();
+                                }
+                            }
+                        }
+                    }
 
                     // Traversing through all the routes
                     for (int i = 0; i < routes.size(); i++) {
@@ -121,15 +151,6 @@ public class CreateRoutePresenter extends IPresenter<ICreateRouteView> {
                         // Fetching all the points in i-th route
                         for (int j = 0; j < path.size(); j++) {
                             HashMap<String, String> point = path.get(j);
-
-                            if (j == 0) {    // Get distance from the list
-                                distance = (String) point.get("distance");
-                                continue;
-                            } else if (j == 1) { // Get duration from the list
-                                duration = (String) point.get("duration");
-                                continue;
-                            }
-
                             double lat = Double.parseDouble(point.get("lat"));
                             double lng = Double.parseDouble(point.get("lng"));
                             LatLng position = new LatLng(lat, lng);
@@ -141,8 +162,7 @@ public class CreateRoutePresenter extends IPresenter<ICreateRouteView> {
                         lineOptions.addAll(points);
                     }
 
-                    // Drawing polyline in the Google Map for the i-th route
-                    view.drawRouteInUiThread(lineOptions);
+                    view.drawRouteInUiThread(lineOptions, distance * 0.001);
                 } catch (Exception e) {
                     e.printStackTrace();
                     view.hideProgressInUiThread();
@@ -166,10 +186,8 @@ public class CreateRoutePresenter extends IPresenter<ICreateRouteView> {
         });
     }
 
-    public interface IPathCallback {
-        void onPathCalculated();
+    public void createRoute() {
 
-        void onError(Exception e);
     }
 
     public void findPlaces(String newText, String key, final boolean from) {
@@ -184,5 +202,11 @@ public class CreateRoutePresenter extends IPresenter<ICreateRouteView> {
                 view.showErrorMessage("Error", t.getMessage());
             }
         });
+    }
+
+    public interface IPathCallback {
+        void onPathCalculated();
+
+        void onError(Exception e);
     }
 }
