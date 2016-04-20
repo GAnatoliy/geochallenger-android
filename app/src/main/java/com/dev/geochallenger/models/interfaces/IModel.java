@@ -1,8 +1,6 @@
 package com.dev.geochallenger.models.interfaces;
 
 
-import android.location.Location;
-
 import com.dev.geochallenger.models.entities.Poi;
 import com.dev.geochallenger.models.entities.cities.PlacesEntity;
 import com.dev.geochallenger.models.entities.cities.detailed.PlaceDetailedEntity;
@@ -10,11 +8,13 @@ import com.dev.geochallenger.models.entities.directions.GoogleDirectionsEntity;
 
 import java.util.List;
 
-import retrofit2.http.Query;
-
 
 public interface IModel {
     void getPoiList(OnDataLoaded<List<Poi>> dataLoaded);
+
+    void getPoiList(String query, Double topLeftLatitude, Double topLeftLongitude, Double bottomRightLatitude, Double bottomRightLongitude, OnDataLoaded<List<Poi>> callback);
+
+    void getPoiList(String query, OnDataLoaded<List<Poi>> callback);
 
     void getPoiList(Double topLeftLatitude, Double topLeftLongitude, Double bottomRightLatitude, Double bottomRightLongitude, OnDataLoaded<List<Poi>> callback);
 
@@ -25,6 +25,4 @@ public interface IModel {
     void getPlaces(String input, String key, final OnDataLoaded<PlacesEntity> dataLoaded);
 
     void getPlace(String placeid, String key, final OnDataLoaded<PlaceDetailedEntity> dataLoaded);
-
-    void querySearch(String query, String key, OnDataLoaded<PlaceDetailedEntity> error);
 }

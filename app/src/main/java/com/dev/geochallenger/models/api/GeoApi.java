@@ -65,4 +65,9 @@ public interface GeoApi {
     Call<PlaceDetailedEntity> getPlaceDetailed(@Query("placeid") String placeid,
                                                @Query("key") String key);
 
+    @Headers({
+            "Accept: application/json",
+            "Content-Type: application/json"})
+    @GET("api/pois")
+    Call<List<Poi>> listPois(@Query("query") String query);
 }

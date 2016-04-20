@@ -18,6 +18,8 @@ import com.google.android.gms.maps.model.LatLng;
 
 import java.util.List;
 
+import retrofit2.http.Query;
+
 /**
  * Created by Yuriy Diachenko on 16.04.2016.
  */
@@ -37,7 +39,6 @@ public class MainPresenter extends IPresenter<IMainView> {
 
     @Override
     public void init() {
-
         model.getPoiList(new OnDataLoaded<List<Poi>>() {
             @Override
             public void onSuccess(List<Poi> pois) {
@@ -117,11 +118,25 @@ public class MainPresenter extends IPresenter<IMainView> {
         this.myLocation = myLocation;
     }
 
-    public void queryText(String query, String key) {
-        model.querySearch(query, key, new OnDataLoaded<PlaceDetailedEntity>() {
+    public void queryText(String query, Double topLeftLatitude, Double topLeftLongitude, Double bottomRightLatitude, Double bottomRightLongitude) {
+        model.getPoiList(query, topLeftLatitude, topLeftLongitude, bottomRightLatitude, bottomRightLongitude, new OnDataLoaded<List<Poi>>() {
             @Override
-            public void onSuccess(PlaceDetailedEntity entity) {
-                view.setMapLocation(entity);
+            public void onSuccess(List<Poi> pois) {
+                view.initMap(pois);
+            }
+
+            @Override
+            public void onError(Throwable t) {
+                view.showErrorMessage("Error", t.getMessage());
+            }
+        });
+    }
+
+    public void queryText(String query) {
+        model.getPoiList(query, new OnDataLoaded<List<Poi>>() {
+            @Override
+            public void onSuccess(List<Poi> pois) {
+                view.initMap(pois);
             }
 
             @Override

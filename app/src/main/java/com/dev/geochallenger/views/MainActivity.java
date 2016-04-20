@@ -68,6 +68,7 @@ public class MainActivity extends ABaseActivityView<MainPresenter> implements IM
     private TextView tvSelectedPlaceCity;
     private TextView tvSelectedPlace;
     private SearchControler searchControler;
+    private PlaceDetailedEntity selectedLatLng;
 
     @Override
     protected MainPresenter createPresenter() {
@@ -174,8 +175,17 @@ public class MainActivity extends ABaseActivityView<MainPresenter> implements IM
         searchControler.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String query) {
-                presenter.queryText(query, getString(R.string.google_directions_key));
 
+                if (selectedLatLng != null) {
+                    final Viewport viewport = selectedLatLng.getResult().getGeometry().getViewport();
+                    Double topLeftLatitude = Double.parseDouble(viewport.getNortheast().getLat());
+                    Double topLeftLongitude = Double.parseDouble(viewport.getSouthwest().getLng());
+                    Double bottomRightLatitude = Double.parseDouble(viewport.getSouthwest().getLat());
+                    Double bottomRightLongitude = Double.parseDouble(viewport.getNortheast().getLng());
+                    presenter.queryText(query, topLeftLatitude, topLeftLongitude, bottomRightLatitude, bottomRightLongitude);
+                } else {
+                    presenter.queryText(query);
+                }
                 return true;
             }
 
@@ -188,8 +198,9 @@ public class MainActivity extends ABaseActivityView<MainPresenter> implements IM
         searchControler.setOnItemClickListener(new SearchAdapter.OnItemClickListener() {
             @Override
             public void onItemClick(View view, int position) {
-                final Predictions predictions = placesEntity.getPredictions()[position];
-                final String place_id = predictions.getPlace_id();
+
+                Predictions selectedPredictions = placesEntity.getPredictions()[position];
+                final String place_id = selectedPredictions.getPlace_id();
                 presenter.getDetailedPlaceInfo(place_id, getString(R.string.google_directions_key));
                 searchControler.hide();
 
@@ -197,7 +208,7 @@ public class MainActivity extends ABaseActivityView<MainPresenter> implements IM
                 final View searchLocationlayout = LayoutInflater.from(MainActivity.this).inflate(R.layout.search_location_layout, null);
 
                 final TextView textView = (TextView) searchLocationlayout.findViewById(R.id.textView);
-                textView.setText(predictions.getDescription().split(", ")[0]);
+                textView.setText(selectedPredictions.getDescription().split(", ")[0]);
                 textView.setTextColor(Color.WHITE);
                 textView.setBackgroundColor(Color.parseColor("#332354"));
 
@@ -276,7 +287,8 @@ public class MainActivity extends ABaseActivityView<MainPresenter> implements IM
 
     @Override
     public void initMap(List<Poi> pois) {
-
+        searchView.hide(true);
+        map.clear();
         if (pois != null) {
             for (Poi poi : pois) {
                 final MarkerOptions snippet = new MarkerOptions()
@@ -300,6 +312,7 @@ public class MainActivity extends ABaseActivityView<MainPresenter> implements IM
 
     @Override
     public void setMapLocation(PlaceDetailedEntity latLng) {
+        this.selectedLatLng = latLng;
         final Viewport viewport = latLng.getResult().getGeometry().getViewport();
         final LatLng southwest = new LatLng(Double.parseDouble(viewport.getSouthwest().getLat()), (Double.parseDouble(viewport.getSouthwest().getLng())));
         final LatLng northeast = new LatLng(Double.parseDouble(viewport.getNortheast().getLat()), (Double.parseDouble(viewport.getNortheast().getLng())));
