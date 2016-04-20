@@ -4,6 +4,7 @@ import android.graphics.Color;
 import android.location.Address;
 import android.location.Location;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.v7.widget.Toolbar;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -14,6 +15,8 @@ import com.dev.geochallenger.models.ExtraConstants;
 import com.dev.geochallenger.models.RetrofitModel;
 import com.dev.geochallenger.models.entities.cities.PlacesEntity;
 import com.dev.geochallenger.models.entities.cities.Predictions;
+import com.dev.geochallenger.models.entities.Poi;
+import com.dev.geochallenger.models.interfaces.OnDataLoaded;
 import com.dev.geochallenger.presenters.CreateRoutePresenter;
 import com.dev.geochallenger.views.adapters.CreateRouteSearchAdapter;
 import com.dev.geochallenger.views.interfaces.ABaseActivityView;
@@ -44,6 +47,7 @@ public class CreateRouteActivity extends ABaseActivityView<CreateRoutePresenter>
     private LatLng selectedLocation;
     private Address selectedAddress;
     private CreateRouteSearchAdapter autoCompleteFromAdapter;
+    private List<Marker> markers = new ArrayList<>();
     private CreateRouteSearchAdapter autoCompleteToAdapter;
 
     @Override
@@ -152,27 +156,6 @@ public class CreateRouteActivity extends ABaseActivityView<CreateRoutePresenter>
 
     @Override
     public void initMap() {
-
-        MarkerOptions markerOptions = new MarkerOptions();
-        markerOptions.position(new LatLng(49.0935026, 33.299107));
-        markerOptions.icon(BitmapDescriptorFactory.defaultMarker());
-        map.addMarker(markerOptions);
-
-        MarkerOptions markerOptions2 = new MarkerOptions();
-        markerOptions2.position(new LatLng(50.2679361, 28.6386982));
-        markerOptions2.icon(BitmapDescriptorFactory.defaultMarker());
-        map.addMarker(markerOptions2);
-
-        MarkerOptions markerOptions3 = new MarkerOptions();
-        markerOptions3.position(new LatLng(49.2118017, 31.8512216));
-        markerOptions3.icon(BitmapDescriptorFactory.defaultMarker());
-        map.addMarker(markerOptions3);
-
-        MarkerOptions markerOptions4 = new MarkerOptions();
-        markerOptions4.position(new LatLng(50.0162109, 32.9536455));
-        markerOptions4.icon(BitmapDescriptorFactory.defaultMarker());
-        map.addMarker(markerOptions4);
-
         map.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
             @Override
             public boolean onMarkerClick(Marker marker) {
@@ -209,7 +192,14 @@ public class CreateRouteActivity extends ABaseActivityView<CreateRoutePresenter>
                 lineOptions.color(getRouteColor());
                 currentRoute = map.addPolyline(lineOptions);
                 moveToBounds(lineOptions.getPoints());
-                hideProgress();
+
+                new Handler().postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        LatLngBounds latLngBounds = map.getProjection().getVisibleRegion().latLngBounds;
+                        presenter.getPoisByViewPort(latLngBounds.northeast.latitude, latLngBounds.southwest.longitude, latLngBounds.southwest.latitude, latLngBounds.northeast.longitude);
+                    }
+                }, 2000);
             }
         });
     }
@@ -235,7 +225,7 @@ public class CreateRouteActivity extends ABaseActivityView<CreateRoutePresenter>
             }
         });
     }
-
+    
     @Override
     public void populateAutocompeteList(boolean from, PlacesEntity placesEntity) {
         final List<Predictions> predictionses = Arrays.asList(placesEntity.getPredictions());
@@ -245,6 +235,26 @@ public class CreateRouteActivity extends ABaseActivityView<CreateRoutePresenter>
         } else {
             autoCompleteToAdapter.setNewPredictions(predictionses);
             autoCompleteToAdapter.notifyDataSetChanged();
+        }
+    }
+
+    @Override
+    public void showPois(List<Poi> pois) {
+        removeOldMarkers();
+        if (pois != null) {
+            for (Poi poi : pois) {
+                final MarkerOptions snippet = new MarkerOptions()
+                        .position(new LatLng(poi.getLatitude(), poi.getLongitude()))
+                        .title(poi.getTitle())
+                        .snippet(poi.getAddress());
+                markers.add(map.addMarker(snippet));
+            }
+        }
+    }
+
+    private void removeOldMarkers() {
+        for(int i = 0; i < markers.size(); i++) {
+            markers.get(i).remove();
         }
     }
 }

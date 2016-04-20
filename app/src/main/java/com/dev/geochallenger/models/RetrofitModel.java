@@ -53,7 +53,7 @@ public class RetrofitModel implements IModel {
 
     @Override
     public void getPoiList(final OnDataLoaded<List<Poi>> dataLoaded) {
-        final Call<List<Poi>> listCall = service.listPois("");
+        final Call<List<Poi>> listCall = service.listPois("", null, null, null, null);
         listCall.enqueue(new Callback<List<Poi>>() {
             @Override
             public void onResponse(Call<List<Poi>> call, Response<List<Poi>> response) {
@@ -63,6 +63,22 @@ public class RetrofitModel implements IModel {
             @Override
             public void onFailure(Call<List<Poi>> call, Throwable t) {
                 dataLoaded.onError(t);
+            }
+        });
+    }
+
+    @Override
+    public void getPoiList(Double topLeftLatitude, Double topLeftLongitude, Double bottomRightLatitude, Double bottomRightLongitude, final OnDataLoaded<List<Poi>> callback) {
+        final Call<List<Poi>> listCall = service.listPois(null, topLeftLatitude, topLeftLongitude, bottomRightLatitude, bottomRightLongitude);
+        listCall.enqueue(new Callback<List<Poi>>() {
+            @Override
+            public void onResponse(Call<List<Poi>> call, Response<List<Poi>> response) {
+                callback.onSuccess(response.body());
+            }
+
+            @Override
+            public void onFailure(Call<List<Poi>> call, Throwable t) {
+                callback.onError(t);
             }
         });
     }

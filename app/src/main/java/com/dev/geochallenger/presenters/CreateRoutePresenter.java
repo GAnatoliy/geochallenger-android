@@ -4,6 +4,7 @@ import android.location.Address;
 import android.location.Location;
 
 import com.dev.geochallenger.models.entities.cities.PlacesEntity;
+import com.dev.geochallenger.models.entities.Poi;
 import com.dev.geochallenger.models.entities.directions.GoogleDirectionsEntity;
 import com.dev.geochallenger.models.interfaces.IModel;
 import com.dev.geochallenger.models.interfaces.OnDataLoaded;
@@ -148,6 +149,21 @@ public class CreateRoutePresenter extends IPresenter<ICreateRouteView> {
                 }
             }
         }).start();
+    }
+
+    public void getPoisByViewPort(Double topLeftLatitude, Double topLeftLongitude, Double bottomRightLatitude, Double bottomRightLongitude){
+        restClient.getPoiList(topLeftLatitude, topLeftLongitude, bottomRightLatitude, bottomRightLongitude, new OnDataLoaded<List<Poi>>() {
+            @Override
+            public void onSuccess(List<Poi> pois) {
+                view.showPois(pois);
+                view.hideProgress();
+            }
+
+            @Override
+            public void onError(Throwable t) {
+                view.hideProgress();
+            }
+        });
     }
 
     public interface IPathCallback {

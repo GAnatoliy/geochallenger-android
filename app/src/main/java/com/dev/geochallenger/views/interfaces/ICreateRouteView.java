@@ -1,7 +1,10 @@
 package com.dev.geochallenger.views.interfaces;
 
 import com.dev.geochallenger.models.entities.cities.PlacesEntity;
+import com.dev.geochallenger.models.entities.Poi;
 import com.google.android.gms.maps.model.PolylineOptions;
+
+import java.util.List;
 
 /**
  * Created by Yuriy Diachenko on 16.04.2016.
@@ -21,4 +24,6 @@ public interface ICreateRouteView extends IView {
     void hideProgressInUiThread();
 
     void populateAutocompeteList(boolean from, PlacesEntity placesEntity);
+    
+    void showPois(List<Poi> pois);
 }
