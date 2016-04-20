@@ -26,6 +26,7 @@ import com.dev.geochallenger.models.entities.Poi;
 import com.dev.geochallenger.models.entities.cities.PlacesEntity;
 import com.dev.geochallenger.models.entities.cities.Predictions;
 import com.dev.geochallenger.presenters.MainPresenter;
+import com.dev.geochallenger.views.controlers.SearchControler;
 import com.dev.geochallenger.views.interfaces.ABaseActivityView;
 import com.dev.geochallenger.views.interfaces.IMainView;
 import com.google.android.gms.auth.GoogleAuthException;
@@ -52,18 +53,17 @@ import java.util.List;
 public class MainActivity extends ABaseActivityView<MainPresenter> implements IMainView, GoogleApiClient.OnConnectionFailedListener {
 
     private static final String TAG = MainActivity.class.getSimpleName();
-    private static final int RC_SIGN_IN = 1;
     private static final int REQUEST_CODE_PICK_ACCOUNT = 1000;
     private MapView mapView;
     private GoogleMap map;
     private SearchView searchView;
-    private List<SearchItem> mSuggestionsList;
     private String SCOPE = "oauth2:https://www.googleapis.com/auth/userinfo.profile";
     private PlacesEntity placesEntity;
     private BottomSheetBehavior<View> bottomSheetBehavior;
     private Marker customMarker;
     private TextView tvSelectedPlaceCity;
     private TextView tvSelectedPlace;
+    private SearchControler searchControler;
 
     @Override
     protected MainPresenter createPresenter() {
@@ -139,7 +139,7 @@ public class MainActivity extends ABaseActivityView<MainPresenter> implements IM
                         bottomSheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED);
                     }
                 }
-                return false;
+                return true;
             }
         });
 
@@ -166,18 +166,8 @@ public class MainActivity extends ABaseActivityView<MainPresenter> implements IM
 
     public void initSearchView() {
         searchView = (SearchView) findViewById(R.id.search_view);
-        searchView.setVersion(SearchCodes.VERSION_TOOLBAR);
-        searchView.setStyle(SearchCodes.STYLE_TOOLBAR_CLASSIC);
-        searchView.setTheme(SearchCodes.THEME_LIGHT);
-        searchView.setHint("Search");
-        searchView.setVoice(false);
-        searchView.setOnSearchMenuListener(new SearchView.SearchMenuListener() {
-            @Override
-            public void onMenuClick() {
-                Toast.makeText(getApplicationContext(), "menu", Toast.LENGTH_SHORT).show();
-            }
-        });
-        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+        searchControler = new SearchControler(getApplicationContext(), searchView);
+        searchControler.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String query) {
                 return false;
@@ -189,23 +179,16 @@ public class MainActivity extends ABaseActivityView<MainPresenter> implements IM
                 return true;
             }
         });
-
-        mSuggestionsList = new ArrayList<>();
-
-        List<SearchItem> mResultsList = new ArrayList<>();
-        SearchAdapter mSearchAdapter = new SearchAdapter(this, mResultsList, mSuggestionsList, SearchCodes.THEME_LIGHT);
-        mSearchAdapter.setOnItemClickListener(new SearchAdapter.OnItemClickListener() {
+        searchControler.setOnItemClickListener(new SearchAdapter.OnItemClickListener() {
             @Override
             public void onItemClick(View view, int position) {
-                TextView textView = (TextView) view.findViewById(R.id.textView_item_text);
                 final Predictions predictions = placesEntity.getPredictions()[position];
                 final String place_id = predictions.getPlace_id();
                 presenter.getDetailedPlaceInfo(place_id, getString(R.string.google_directions_key));
 
             }
         });
-
-        searchView.setAdapter(mSearchAdapter);
+        searchControler.init();
     }
 
     @Override
@@ -290,9 +273,9 @@ public class MainActivity extends ABaseActivityView<MainPresenter> implements IM
     @Override
     public void populateAutocompeteList(PlacesEntity placesEntity) {
         this.placesEntity = placesEntity;
-        mSuggestionsList.clear();
+        searchControler.clearSuggestionList();
         for (Predictions predictions : placesEntity.getPredictions()) {
-            mSuggestionsList.add(new SearchItem(predictions.getDescription()));
+            searchControler.addItomToSuggestionList(new SearchItem(predictions.getDescription()));
         }
 
     }

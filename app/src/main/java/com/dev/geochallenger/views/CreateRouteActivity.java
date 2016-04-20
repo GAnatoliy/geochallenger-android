@@ -4,7 +4,12 @@ import android.graphics.Color;
 import android.location.Address;
 import android.location.Location;
 import android.os.Bundle;
+import android.support.v7.widget.ListViewCompat;
 import android.support.v7.widget.Toolbar;
+import android.text.Editable;
+import android.text.TextWatcher;
+import android.widget.ArrayAdapter;
+import android.widget.AutoCompleteTextView;
 
 import com.dev.geochallenger.R;
 import com.dev.geochallenger.models.ExtraConstants;
@@ -24,6 +29,8 @@ import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.Polyline;
 import com.google.android.gms.maps.model.PolylineOptions;
+import com.lapism.searchview.view.SearchCodes;
+import com.lapism.searchview.view.SearchView;
 
 import java.util.List;
 
@@ -45,10 +52,9 @@ public class CreateRouteActivity extends ABaseActivityView<CreateRoutePresenter>
     protected void onViewCreated(Bundle savedInstanceState) {
         super.onViewCreated(savedInstanceState);
 
-
         myLocation = (Location) getIntent().getParcelableExtra(ExtraConstants.MY_LOCATION);
         selectedLocation = (LatLng) getIntent().getParcelableExtra(ExtraConstants.SELECTED_LOCATION);
-        selectedAddress = (Address)getIntent().getParcelableExtra(ExtraConstants.SELECTED_ADDRESS);
+        selectedAddress = (Address) getIntent().getParcelableExtra(ExtraConstants.SELECTED_ADDRESS);
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -64,6 +70,32 @@ public class CreateRouteActivity extends ABaseActivityView<CreateRoutePresenter>
 
         // Needs to call MapsInitializer before doing any CameraUpdateFactory calls
         MapsInitializer.initialize(this);
+
+        setSearchFrom();
+    }
+
+    public void setSearchFrom() {
+        AutoCompleteTextView autoCompleteTextViewFrom = (AutoCompleteTextView) findViewById(R.id.svPathFrom);
+        final String[] mContacts = {"Мурзик", "Рыжик", "Барсик", "Борис",
+                "Бегемот", "Мурка"};
+        autoCompleteTextViewFrom.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+
+            }
+        });
+        autoCompleteTextViewFrom.setAdapter(new ArrayAdapter(this,
+                android.R.layout.simple_dropdown_item_1line, mContacts));
 
     }
 
@@ -104,12 +136,12 @@ public class CreateRouteActivity extends ABaseActivityView<CreateRoutePresenter>
         map.addMarker(markerOptions2);
 
         MarkerOptions markerOptions3 = new MarkerOptions();
-        markerOptions3.position(new LatLng(49.2118017,31.8512216));
+        markerOptions3.position(new LatLng(49.2118017, 31.8512216));
         markerOptions3.icon(BitmapDescriptorFactory.defaultMarker());
         map.addMarker(markerOptions3);
 
         MarkerOptions markerOptions4 = new MarkerOptions();
-        markerOptions4.position(new LatLng(50.0162109,32.9536455));
+        markerOptions4.position(new LatLng(50.0162109, 32.9536455));
         markerOptions4.icon(BitmapDescriptorFactory.defaultMarker());
         map.addMarker(markerOptions4);
 
@@ -154,10 +186,10 @@ public class CreateRouteActivity extends ABaseActivityView<CreateRoutePresenter>
         });
     }
 
-    private void moveToBounds(List<LatLng> points){
+    private void moveToBounds(List<LatLng> points) {
 
         LatLngBounds.Builder builder = new LatLngBounds.Builder();
-        for(int i = 0; i < points.size();i++){
+        for (int i = 0; i < points.size(); i++) {
             builder.include(points.get(i));
         }
         LatLngBounds bounds = builder.build();
