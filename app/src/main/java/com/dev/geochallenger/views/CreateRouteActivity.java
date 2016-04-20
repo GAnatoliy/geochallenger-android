@@ -4,17 +4,18 @@ import android.graphics.Color;
 import android.location.Address;
 import android.location.Location;
 import android.os.Bundle;
-import android.support.v7.widget.ListViewCompat;
 import android.support.v7.widget.Toolbar;
 import android.text.Editable;
 import android.text.TextWatcher;
-import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 
 import com.dev.geochallenger.R;
 import com.dev.geochallenger.models.ExtraConstants;
 import com.dev.geochallenger.models.RetrofitModel;
+import com.dev.geochallenger.models.entities.cities.PlacesEntity;
+import com.dev.geochallenger.models.entities.cities.Predictions;
 import com.dev.geochallenger.presenters.CreateRoutePresenter;
+import com.dev.geochallenger.views.adapters.CreateRouteSearchAdapter;
 import com.dev.geochallenger.views.interfaces.ABaseActivityView;
 import com.dev.geochallenger.views.interfaces.ICreateRouteView;
 import com.google.android.gms.maps.CameraUpdate;
@@ -29,9 +30,9 @@ import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.Polyline;
 import com.google.android.gms.maps.model.PolylineOptions;
-import com.lapism.searchview.view.SearchCodes;
-import com.lapism.searchview.view.SearchView;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 public class CreateRouteActivity extends ABaseActivityView<CreateRoutePresenter> implements ICreateRouteView {
@@ -42,6 +43,8 @@ public class CreateRouteActivity extends ABaseActivityView<CreateRoutePresenter>
     private Location myLocation;
     private LatLng selectedLocation;
     private Address selectedAddress;
+    private CreateRouteSearchAdapter autoCompleteFromAdapter;
+    private CreateRouteSearchAdapter autoCompleteToAdapter;
 
     @Override
     protected CreateRoutePresenter createPresenter() {
@@ -76,27 +79,52 @@ public class CreateRouteActivity extends ABaseActivityView<CreateRoutePresenter>
 
     public void setSearchFrom() {
         AutoCompleteTextView autoCompleteTextViewFrom = (AutoCompleteTextView) findViewById(R.id.svPathFrom);
-        final String[] mContacts = {"Мурзик", "Рыжик", "Барсик", "Борис",
-                "Бегемот", "Мурка"};
+
         autoCompleteTextViewFrom.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-
             }
 
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
-
+                final String newText = String.valueOf(s);
+                if (newText.length() > 2) {
+                    presenter.findPlaces(newText, getString(R.string.google_directions_key), true);
+                }
             }
 
             @Override
             public void afterTextChanged(Editable s) {
-
             }
         });
-        autoCompleteTextViewFrom.setAdapter(new ArrayAdapter(this,
-                android.R.layout.simple_dropdown_item_1line, mContacts));
 
+        autoCompleteFromAdapter = new CreateRouteSearchAdapter(this, android.R.layout.simple_dropdown_item_1line,
+                new ArrayList<Predictions>());
+        autoCompleteTextViewFrom.setAdapter(autoCompleteFromAdapter);
+
+        AutoCompleteTextView autoCompleteTextViewTo = (AutoCompleteTextView) findViewById(R.id.svPathTo);
+
+        autoCompleteTextViewTo.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                final String newText = String.valueOf(s);
+                if (newText.length() > 2) {
+                    presenter.findPlaces(newText, getString(R.string.google_directions_key), false);
+                }
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+            }
+        });
+
+        autoCompleteToAdapter = new CreateRouteSearchAdapter(this, android.R.layout.simple_dropdown_item_1line,
+                new ArrayList<Predictions>());
+        autoCompleteTextViewTo.setAdapter(autoCompleteToAdapter);
     }
 
     @Override
@@ -206,5 +234,17 @@ public class CreateRouteActivity extends ABaseActivityView<CreateRoutePresenter>
                 hideProgress();
             }
         });
+    }
+
+    @Override
+    public void populateAutocompeteList(boolean from, PlacesEntity placesEntity) {
+        final List<Predictions> predictionses = Arrays.asList(placesEntity.getPredictions());
+        if (from) {
+            autoCompleteFromAdapter.setNewPredictions(predictionses);
+            autoCompleteFromAdapter.notifyDataSetChanged();
+        } else {
+            autoCompleteToAdapter.setNewPredictions(predictionses);
+            autoCompleteToAdapter.notifyDataSetChanged();
+        }
     }
 }

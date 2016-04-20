@@ -3,6 +3,7 @@ package com.dev.geochallenger.presenters;
 import android.location.Address;
 import android.location.Location;
 
+import com.dev.geochallenger.models.entities.cities.PlacesEntity;
 import com.dev.geochallenger.models.entities.directions.GoogleDirectionsEntity;
 import com.dev.geochallenger.models.interfaces.IModel;
 import com.dev.geochallenger.models.interfaces.OnDataLoaded;
@@ -83,7 +84,7 @@ public class CreateRoutePresenter extends IPresenter<ICreateRouteView> {
             convertedString.append("|");
         }
 
-        return convertedString.length() > 0 ? convertedString.substring(0, convertedString.length() - 1): null;
+        return convertedString.length() > 0 ? convertedString.substring(0, convertedString.length() - 1) : null;
     }
 
     public void toggleWaypoints(LatLng point) {
@@ -151,6 +152,21 @@ public class CreateRoutePresenter extends IPresenter<ICreateRouteView> {
 
     public interface IPathCallback {
         void onPathCalculated();
+
         void onError(Exception e);
+    }
+
+    public void findPlaces(String newText, String key, final boolean from) {
+        restClient.getPlaces(newText, key, new OnDataLoaded<PlacesEntity>() {
+            @Override
+            public void onSuccess(PlacesEntity placesEntity) {
+                view.populateAutocompeteList(from, placesEntity);
+            }
+
+            @Override
+            public void onError(Throwable t) {
+                view.showErrorMessage("Error", t.getMessage());
+            }
+        });
     }
 }
