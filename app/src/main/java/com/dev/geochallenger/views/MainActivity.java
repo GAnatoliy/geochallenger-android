@@ -2,6 +2,7 @@ package com.dev.geochallenger.views;
 
 import android.accounts.AccountManager;
 import android.content.Intent;
+import android.graphics.Color;
 import android.location.Address;
 import android.location.Location;
 import android.os.Bundle;
@@ -11,12 +12,13 @@ import android.support.annotation.Nullable;
 import android.support.design.widget.BottomSheetBehavior;
 import android.support.design.widget.FloatingActionButton;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
+import android.widget.LinearLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.dev.geochallenger.R;
 import com.dev.geochallenger.models.ExtraConstants;
@@ -25,6 +27,8 @@ import com.dev.geochallenger.models.api.Geocoder;
 import com.dev.geochallenger.models.entities.Poi;
 import com.dev.geochallenger.models.entities.cities.PlacesEntity;
 import com.dev.geochallenger.models.entities.cities.Predictions;
+import com.dev.geochallenger.models.entities.cities.detailed.PlaceDetailedEntity;
+import com.dev.geochallenger.models.entities.cities.detailed.Viewport;
 import com.dev.geochallenger.presenters.MainPresenter;
 import com.dev.geochallenger.views.controlers.SearchControler;
 import com.dev.geochallenger.views.interfaces.ABaseActivityView;
@@ -39,16 +43,16 @@ import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapView;
 import com.google.android.gms.maps.MapsInitializer;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.lapism.searchview.adapter.SearchAdapter;
 import com.lapism.searchview.adapter.SearchItem;
-import com.lapism.searchview.view.SearchCodes;
 import com.lapism.searchview.view.SearchView;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 
 public class MainActivity extends ABaseActivityView<MainPresenter> implements IMainView, GoogleApiClient.OnConnectionFailedListener {
 
@@ -170,7 +174,9 @@ public class MainActivity extends ABaseActivityView<MainPresenter> implements IM
         searchControler.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String query) {
-                return false;
+                presenter.queryText(query, getString(R.string.google_directions_key));
+
+                return true;
             }
 
             @Override
@@ -185,7 +191,19 @@ public class MainActivity extends ABaseActivityView<MainPresenter> implements IM
                 final Predictions predictions = placesEntity.getPredictions()[position];
                 final String place_id = predictions.getPlace_id();
                 presenter.getDetailedPlaceInfo(place_id, getString(R.string.google_directions_key));
+                searchControler.hide();
 
+
+                final View searchLocationlayout = LayoutInflater.from(MainActivity.this).inflate(R.layout.search_location_layout, null);
+
+                final TextView textView = (TextView) searchLocationlayout.findViewById(R.id.textView);
+                textView.setText(predictions.getDescription().split(", ")[0]);
+                textView.setTextColor(Color.WHITE);
+                textView.setBackgroundColor(Color.parseColor("#332354"));
+
+                final LinearLayout linearLayout = (LinearLayout) findViewById(R.id.llLocationContainer);
+                linearLayout.removeAllViews();
+                linearLayout.addView(textView);
             }
         });
         searchControler.init();
@@ -281,8 +299,12 @@ public class MainActivity extends ABaseActivityView<MainPresenter> implements IM
     }
 
     @Override
-    public void setMapLocation(LatLng latLng) {
-        map.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, 14.0f));
+    public void setMapLocation(PlaceDetailedEntity latLng) {
+        final Viewport viewport = latLng.getResult().getGeometry().getViewport();
+        final LatLng southwest = new LatLng(Double.parseDouble(viewport.getSouthwest().getLat()), (Double.parseDouble(viewport.getSouthwest().getLng())));
+        final LatLng northeast = new LatLng(Double.parseDouble(viewport.getNortheast().getLat()), (Double.parseDouble(viewport.getNortheast().getLng())));
+        final LatLngBounds latLngBounds = new LatLngBounds(southwest, northeast);
+        map.animateCamera(CameraUpdateFactory.newLatLngBounds(latLngBounds, 0));
     }
 
     @Override

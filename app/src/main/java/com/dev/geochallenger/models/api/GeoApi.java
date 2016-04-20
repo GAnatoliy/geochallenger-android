@@ -60,4 +60,5 @@ public interface GeoApi {
     @GET("https://maps.googleapis.com/maps/api/place/details/json")
     Call<PlaceDetailedEntity> getPlaceDetailed(@Query("placeid") String placeid,
                                                @Query("key") String key);
+
 }

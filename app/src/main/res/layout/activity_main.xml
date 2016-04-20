@@ -23,6 +23,14 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="10dp" />
 
+        <LinearLayout
+            android:id="@+id/llLocationContainer"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/search_view"
+            android:orientation="horizontal"
+            android:paddingLeft="10dp" />
+
         <Button
             android:id="@+id/sign_in_button"
             android:layout_width="wrap_content"
@@ -50,8 +58,8 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:padding="8dp"
-                android:textSize="18sp"
-                android:text="@string/unknown" />
+                android:text="@string/unknown"
+                android:textSize="18sp" />
 
             <TextView
                 android:id="@+id/tvMainPlaceDetails"

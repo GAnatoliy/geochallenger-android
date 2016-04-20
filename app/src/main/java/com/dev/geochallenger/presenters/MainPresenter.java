@@ -5,8 +5,10 @@ import android.location.Address;
 import com.dev.geochallenger.models.entities.Poi;
 import com.dev.geochallenger.models.entities.cities.PlacesEntity;
 import com.dev.geochallenger.models.entities.cities.detailed.Access_points;
+import com.dev.geochallenger.models.entities.cities.detailed.Geometry;
 import com.dev.geochallenger.models.entities.cities.detailed.Location;
 import com.dev.geochallenger.models.entities.cities.detailed.PlaceDetailedEntity;
+import com.dev.geochallenger.models.entities.cities.detailed.Result;
 import com.dev.geochallenger.models.interfaces.IGeocoder;
 import com.dev.geochallenger.models.interfaces.IModel;
 import com.dev.geochallenger.models.interfaces.OnDataLoaded;
@@ -67,9 +69,7 @@ public class MainPresenter extends IPresenter<IMainView> {
         model.getPlace(placeId, key, new OnDataLoaded<PlaceDetailedEntity>() {
             @Override
             public void onSuccess(PlaceDetailedEntity entity) {
-                final Access_points access_points = entity.getResult().getGeometry().getAccess_points()[0];
-                final Location location = access_points.getLocation();
-                view.setMapLocation(new LatLng(Double.valueOf(location.getLat()), Double.valueOf(location.getLng())));
+                view.setMapLocation(entity);
             }
 
             @Override
@@ -115,5 +115,19 @@ public class MainPresenter extends IPresenter<IMainView> {
 
     public void setMyLocation(android.location.Location myLocation) {
         this.myLocation = myLocation;
+    }
+
+    public void queryText(String query, String key) {
+        model.querySearch(query, key, new OnDataLoaded<PlaceDetailedEntity>() {
+            @Override
+            public void onSuccess(PlaceDetailedEntity entity) {
+                view.setMapLocation(entity);
+            }
+
+            @Override
+            public void onError(Throwable t) {
+                view.showErrorMessage("Error", t.getMessage());
+            }
+        });
     }
 }

@@ -1,12 +1,8 @@
 package com.dev.geochallenger.views.controlers;
 
 import android.content.Context;
-import android.view.View;
-import android.widget.TextView;
 import android.widget.Toast;
 
-import com.dev.geochallenger.R;
-import com.dev.geochallenger.models.entities.cities.Predictions;
 import com.lapism.searchview.adapter.SearchAdapter;
 import com.lapism.searchview.adapter.SearchItem;
 import com.lapism.searchview.view.SearchCodes;
@@ -68,4 +64,9 @@ public class SearchControler {
     public void addItomToSuggestionList(SearchItem searchItem) {
         mSuggestionsList.add(searchItem);
     }
+
+    public void hide() {
+        searchView.hide(true);
+    }
+
 }

@@ -131,5 +131,10 @@ public class RetrofitModel implements IModel {
         });
     }
 
+    @Override
+    public void querySearch(String query, String key, OnDataLoaded<PlaceDetailedEntity> error) {
+
+    }
+
 
 }

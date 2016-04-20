@@ -19,4 +19,6 @@ public interface IModel {
     void getPlaces(String input, String key, final OnDataLoaded<PlacesEntity> dataLoaded);
 
     void getPlace(String placeid, String key, final OnDataLoaded<PlaceDetailedEntity> dataLoaded);
+
+    void querySearch(String query, String key, OnDataLoaded<PlaceDetailedEntity> error);
 }
