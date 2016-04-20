@@ -1,14 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <com.google.android.gms.maps.MapView
-        android:id="@+id/mvCreatePath"
-        android:layout_width="fill_parent"
-        android:layout_height="fill_parent" />
-
     <RelativeLayout
+        android:id="@+id/rlCreateRoutesSearch"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="#110132"
@@ -65,4 +62,46 @@
         </LinearLayout>
 
     </RelativeLayout>
+
+    <com.google.android.gms.maps.MapView
+        android:id="@+id/mvCreatePath"
+        android:layout_below="@+id/rlCreateRoutesSearch"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent" />
+
+
+    <FrameLayout
+        android:id="@+id/flCreateRouteBanner"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:clipToPadding="true"
+        android:layout_alignParentBottom="true"
+        android:visibility="gone">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="28dp"
+            android:background="#ffffff"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/tvCreateRouteDistance"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:padding="16dp"
+                android:textSize="20sp"
+                android:text="@string/unknown"
+                android:textColor="@color/font_color"/>
+        </LinearLayout>
+
+        <android.support.design.widget.FloatingActionButton
+            android:id="@+id/fabCreateRoute"
+            android:layout_width="56dp"
+            android:layout_height="56dp"
+            android:layout_gravity="top|end"
+            android:layout_marginRight="@dimen/fab_margin"
+            android:src="@android:drawable/ic_dialog_email" />
+    </FrameLayout>
+
 </RelativeLayout>

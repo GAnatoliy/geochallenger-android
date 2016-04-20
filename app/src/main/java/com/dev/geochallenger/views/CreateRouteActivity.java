@@ -5,18 +5,21 @@ import android.location.Address;
 import android.location.Location;
 import android.os.Bundle;
 import android.os.Handler;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v7.widget.Toolbar;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.view.View;
+import android.view.ViewGroup;
 import android.widget.AutoCompleteTextView;
+import android.widget.TextView;
 
 import com.dev.geochallenger.R;
 import com.dev.geochallenger.models.ExtraConstants;
 import com.dev.geochallenger.models.RetrofitModel;
+import com.dev.geochallenger.models.entities.Poi;
 import com.dev.geochallenger.models.entities.cities.PlacesEntity;
 import com.dev.geochallenger.models.entities.cities.Predictions;
-import com.dev.geochallenger.models.entities.Poi;
-import com.dev.geochallenger.models.interfaces.OnDataLoaded;
 import com.dev.geochallenger.presenters.CreateRoutePresenter;
 import com.dev.geochallenger.views.adapters.CreateRouteSearchAdapter;
 import com.dev.geochallenger.views.interfaces.ABaseActivityView;
@@ -26,7 +29,6 @@ import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapView;
 import com.google.android.gms.maps.MapsInitializer;
-import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.Marker;
@@ -49,6 +51,11 @@ public class CreateRouteActivity extends ABaseActivityView<CreateRoutePresenter>
     private CreateRouteSearchAdapter autoCompleteFromAdapter;
     private List<Marker> markers = new ArrayList<>();
     private CreateRouteSearchAdapter autoCompleteToAdapter;
+    private TextView tvDistance;
+    private FloatingActionButton fabCreateRoute;
+    private ViewGroup distanceBanner;
+    private AutoCompleteTextView autoCompleteTextViewFrom;
+    private AutoCompleteTextView autoCompleteTextViewTo;
 
     @Override
     protected CreateRoutePresenter createPresenter() {
@@ -66,6 +73,17 @@ public class CreateRouteActivity extends ABaseActivityView<CreateRoutePresenter>
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
+        tvDistance = (TextView)findViewById(R.id.tvCreateRouteDistance);
+        fabCreateRoute = (FloatingActionButton)findViewById(R.id.fabCreateRoute);
+        distanceBanner = (ViewGroup)findViewById(R.id.flCreateRouteBanner);
+
+        fabCreateRoute.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                presenter.createRoute();
+            }
+        });
+
         // Gets the MapView from the XML layout and creates it
         mapView = (MapView) findViewById(R.id.mvCreatePath);
         mapView.onCreate(savedInstanceState);
@@ -82,7 +100,7 @@ public class CreateRouteActivity extends ABaseActivityView<CreateRoutePresenter>
     }
 
     public void setSearchFrom() {
-        AutoCompleteTextView autoCompleteTextViewFrom = (AutoCompleteTextView) findViewById(R.id.svPathFrom);
+        autoCompleteTextViewFrom = (AutoCompleteTextView) findViewById(R.id.svPathFrom);
 
         autoCompleteTextViewFrom.addTextChangedListener(new TextWatcher() {
             @Override
@@ -106,7 +124,7 @@ public class CreateRouteActivity extends ABaseActivityView<CreateRoutePresenter>
                 new ArrayList<Predictions>());
         autoCompleteTextViewFrom.setAdapter(autoCompleteFromAdapter);
 
-        AutoCompleteTextView autoCompleteTextViewTo = (AutoCompleteTextView) findViewById(R.id.svPathTo);
+        autoCompleteTextViewTo = (AutoCompleteTextView) findViewById(R.id.svPathTo);
 
         autoCompleteTextViewTo.addTextChangedListener(new TextWatcher() {
             @Override
@@ -181,7 +199,7 @@ public class CreateRouteActivity extends ABaseActivityView<CreateRoutePresenter>
     }
 
     @Override
-    public void drawRouteInUiThread(final PolylineOptions lineOptions) {
+    public void drawRouteInUiThread(final PolylineOptions lineOptions, final double distance) {
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
@@ -200,6 +218,9 @@ public class CreateRouteActivity extends ABaseActivityView<CreateRoutePresenter>
                         presenter.getPoisByViewPort(latLngBounds.northeast.latitude, latLngBounds.southwest.longitude, latLngBounds.southwest.latitude, latLngBounds.northeast.longitude);
                     }
                 }, 2000);
+
+                tvDistance.setText(String.format("%.2f KM", distance));
+                distanceBanner.setVisibility(View.VISIBLE);
             }
         });
     }
@@ -250,6 +271,16 @@ public class CreateRouteActivity extends ABaseActivityView<CreateRoutePresenter>
                 markers.add(map.addMarker(snippet));
             }
         }
+    }
+
+    @Override
+    public void setOrigin(String origin) {
+        autoCompleteTextViewFrom.setText(origin);
+    }
+
+    @Override
+    public void setDestination(String destination) {
+        autoCompleteTextViewTo.setText(destination);
     }
 
     private void removeOldMarkers() {
