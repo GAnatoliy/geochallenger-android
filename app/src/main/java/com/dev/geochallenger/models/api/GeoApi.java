@@ -23,7 +23,11 @@ public interface GeoApi {
             "Accept: application/json",
             "Content-Type: application/json"})
     @GET("api/pois")
-    Call<List<Poi>> listPois(@Query("query") String query);
+    Call<List<Poi>> listPois(@Query("query") String query,
+                             @Query("topLeftLatitude") Double topLeftLatitude,
+                             @Query("topLeftLongitude") Double topLeftLongitude,
+                             @Query("bottomRightLatitude") Double bottomRightLatitude,
+                             @Query("bottomRightLongitude") Double bottomRightLongitude);
 
     @Headers({
             "Accept: application/json",
