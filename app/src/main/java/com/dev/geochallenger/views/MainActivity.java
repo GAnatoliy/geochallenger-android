@@ -88,8 +88,8 @@ public class MainActivity extends ABaseActivityView<MainPresenter> implements IM
         });
 
         bottomSheetBehavior = BottomSheetBehavior.from(findViewById(R.id.nsvMainActivity));
-        tvSelectedPlaceCity = (TextView)findViewById(R.id.tvMainPlaceDetailsCity);
-        tvSelectedPlace = (TextView)findViewById(R.id.tvMainPlaceDetails);
+        tvSelectedPlaceCity = (TextView) findViewById(R.id.tvMainPlaceDetailsCity);
+        tvSelectedPlace = (TextView) findViewById(R.id.tvMainPlaceDetails);
 
         // Gets the MapView from the XML layout and creates it
         mapView = (MapView) findViewById(R.id.mvFeed);
@@ -130,6 +130,19 @@ public class MainActivity extends ABaseActivityView<MainPresenter> implements IM
                 presenter.onMapLongClick(latLng);
             }
         });
+
+        map.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
+            @Override
+            public boolean onMarkerClick(Marker marker) {
+                if (marker.equals(customMarker)) {
+                    if (bottomSheetBehavior.getState() == BottomSheetBehavior.STATE_COLLAPSED) {
+                        bottomSheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED);
+                    }
+                }
+                return false;
+            }
+        });
+
         // Needs to call MapsInitializer before doing any CameraUpdateFactory calls
         MapsInitializer.initialize(this);
 
