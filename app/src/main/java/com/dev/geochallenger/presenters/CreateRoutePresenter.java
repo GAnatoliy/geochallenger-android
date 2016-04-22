@@ -30,9 +30,11 @@ public class CreateRoutePresenter extends IPresenter<ICreateRouteView> {
     private List<LatLng> waypoints = new ArrayList<>();
     private String source;
     private String destination;
+    private double routeDistance;
     private Location myLocation;
     private LatLng selectedLocation;
     private Address selectedAddress;
+    private String routePath;
 
     public CreateRoutePresenter(ICreateRouteView view, IModel restClient, LatLng selectedLocation, Address selectedAddress, Location myLocation) {
         super(view);
@@ -52,7 +54,7 @@ public class CreateRoutePresenter extends IPresenter<ICreateRouteView> {
         if (myLocation != null) {
             view.setOrigin("My location");
         }
-        if (selectedAddress != null && selectedAddress.getMaxAddressLineIndex() >=0) {
+        if (selectedAddress != null && selectedAddress.getMaxAddressLineIndex() >= 0) {
             String address = "";
             int maxAddressLineIndex = selectedAddress.getMaxAddressLineIndex();
 
@@ -121,6 +123,17 @@ public class CreateRoutePresenter extends IPresenter<ICreateRouteView> {
             @Override
             public void run() {
                 try {
+
+                    List<Route> entityRoutes = entity.getRoutes();
+
+
+                    /** Traversing all routes */
+                    if (entityRoutes != null) {
+                        for (int i = 0; i < entityRoutes.size(); i++) {
+                            routePath += entityRoutes.get(i).getOverviewPolyline().getPoints();
+                        }
+                    }
+
                     List<List<HashMap<String, String>>> routes = new DirectionsJSONParser().parse(entity);
 
                     ArrayList<LatLng> points = null;
@@ -162,6 +175,7 @@ public class CreateRoutePresenter extends IPresenter<ICreateRouteView> {
                         lineOptions.addAll(points);
                     }
 
+                    routeDistance = distance;
                     view.drawRouteInUiThread(lineOptions, distance * 0.001);
                 } catch (Exception e) {
                     e.printStackTrace();
@@ -171,7 +185,7 @@ public class CreateRoutePresenter extends IPresenter<ICreateRouteView> {
         }).start();
     }
 
-    public void getPoisByViewPort(Double topLeftLatitude, Double topLeftLongitude, Double bottomRightLatitude, Double bottomRightLongitude){
+    public void getPoisByViewPort(Double topLeftLatitude, Double topLeftLongitude, Double bottomRightLatitude, Double bottomRightLongitude) {
         restClient.getPoiList(topLeftLatitude, topLeftLongitude, bottomRightLatitude, bottomRightLongitude, new OnDataLoaded<List<Poi>>() {
             @Override
             public void onSuccess(List<Poi> pois) {
@@ -186,8 +200,15 @@ public class CreateRoutePresenter extends IPresenter<ICreateRouteView> {
         });
     }
 
-    public void createRoute() {
-
+    public void createRoute(String name) {
+        com.dev.geochallenger.models.Route route = new com.dev.geochallenger.models.Route();
+        route.setDistanceInMeters(routeDistance);
+        route.setEndPointLatitude(selectedLocation.latitude);
+        route.setEndPointLongitude(selectedLocation.longitude);
+        route.setStartPointLatitude(myLocation.getLatitude());
+        route.setStartPointLongitude(myLocation.getLongitude());
+        route.setName(name);
+        route.setRoutePath(routePath);
     }
 
     public void findPlaces(String newText, String key, final boolean from) {
