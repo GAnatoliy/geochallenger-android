@@ -11,13 +11,9 @@ public class Poi {
     private float latitude;
     private float longitude;
 
-    public int getPoiId() {
-        return id;
-    }
-
-    public void setPoiId(int poiId) {
-        this.id = poiId;
-    }
+    private String contentPreview;
+    private String createdAtUtc;
+    private int ownerId;
 
     public String getTitle() {
         return title;
@@ -49,5 +45,37 @@ public class Poi {
 
     public void setLongitude(float longitude) {
         this.longitude = longitude;
+    }
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
+
+    public String getContentPreview() {
+        return contentPreview;
+    }
+
+    public void setContentPreview(String contentPreview) {
+        this.contentPreview = contentPreview;
+    }
+
+    public String getCreatedAtUtc() {
+        return createdAtUtc;
+    }
+
+    public void setCreatedAtUtc(String createdAtUtc) {
+        this.createdAtUtc = createdAtUtc;
+    }
+
+    public int getOwnerId() {
+        return ownerId;
+    }
+
+    public void setOwnerId(int ownerId) {
+        this.ownerId = ownerId;
     }
 }

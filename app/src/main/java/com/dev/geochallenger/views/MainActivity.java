@@ -10,13 +10,17 @@ import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.BottomSheetBehavior;
+import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.FloatingActionButton;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
+import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
@@ -30,6 +34,7 @@ import com.dev.geochallenger.models.entities.cities.Predictions;
 import com.dev.geochallenger.models.entities.cities.detailed.PlaceDetailedEntity;
 import com.dev.geochallenger.models.entities.cities.detailed.Viewport;
 import com.dev.geochallenger.presenters.MainPresenter;
+import com.dev.geochallenger.views.adapters.RecyclerRelatedPhotosAdapter;
 import com.dev.geochallenger.views.controlers.SearchControler;
 import com.dev.geochallenger.views.interfaces.ABaseActivityView;
 import com.dev.geochallenger.views.interfaces.IMainView;
@@ -51,7 +56,9 @@ import com.lapism.searchview.adapter.SearchItem;
 import com.lapism.searchview.view.SearchView;
 
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Random;
 
 public class MainActivity extends ABaseActivityView<MainPresenter> implements IMainView, GoogleApiClient.OnConnectionFailedListener {
@@ -69,6 +76,8 @@ public class MainActivity extends ABaseActivityView<MainPresenter> implements IM
     private TextView tvSelectedPlace;
     private SearchControler searchControler;
     private PlaceDetailedEntity selectedLatLng;
+    private Map<Marker, Poi> markers = new HashMap<>();
+    private BottomSheetBehavior<View> bottomLargeSheetBehavior;
 
     @Override
     protected MainPresenter createPresenter() {
@@ -93,6 +102,7 @@ public class MainActivity extends ABaseActivityView<MainPresenter> implements IM
         });
 
         bottomSheetBehavior = BottomSheetBehavior.from(findViewById(R.id.nsvMainActivity));
+        bottomLargeSheetBehavior = BottomSheetBehavior.from(findViewById(R.id.nsvLargeMainActivity));
         tvSelectedPlaceCity = (TextView) findViewById(R.id.tvMainPlaceDetailsCity);
         tvSelectedPlace = (TextView) findViewById(R.id.tvMainPlaceDetails);
 
@@ -114,7 +124,6 @@ public class MainActivity extends ABaseActivityView<MainPresenter> implements IM
                     map.animateCamera(CameraUpdateFactory.newLatLngZoom(
                             new LatLng(location.getLatitude(), location.getLongitude()), 13));
                 }
-
                 return true;
             }
         });
@@ -140,8 +149,18 @@ public class MainActivity extends ABaseActivityView<MainPresenter> implements IM
             @Override
             public boolean onMarkerClick(Marker marker) {
                 if (marker.equals(customMarker)) {
-                    if (bottomSheetBehavior.getState() == BottomSheetBehavior.STATE_COLLAPSED) {
+                    bottomLargeSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
+                    final int state = bottomSheetBehavior.getState();
+                    if (state == BottomSheetBehavior.STATE_COLLAPSED ||
+                            state == BottomSheetBehavior.STATE_SETTLING) {
                         bottomSheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED);
+                    }
+                } else {
+                    bottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
+                    final int state = bottomLargeSheetBehavior.getState();
+                    if (state == BottomSheetBehavior.STATE_COLLAPSED || state == BottomSheetBehavior.STATE_SETTLING) {
+                        bottomLargeSheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED);
+                        setDetailedPoiInfo(markers.get(marker));
                     }
                 }
                 return true;
@@ -160,6 +179,21 @@ public class MainActivity extends ABaseActivityView<MainPresenter> implements IM
                 getAccount();
             }
         });
+    }
+
+    public void setDetailedPoiInfo(Poi poi) {
+        TextView tvMainPlaceDetailsTitle = (TextView) findViewById(R.id.tvMainPlaceDetailsTitle);
+        TextView tvMainPlaceDetailsAddress = (TextView) findViewById(R.id.tvMainPlaceDetailsAddress);
+        TextView detailedText = (TextView) findViewById(R.id.detailedText);
+        RecyclerView relatedPhotosRecyclerView = (RecyclerView) findViewById(R.id.relatedPhotosRecyclerView);
+
+        tvMainPlaceDetailsTitle.setText(poi.getTitle());
+        tvMainPlaceDetailsAddress.setText(poi.getAddress());
+        detailedText.setText(poi.getContentPreview());
+
+        RecyclerRelatedPhotosAdapter recyclerRelatedPhotosAdapter = new RecyclerRelatedPhotosAdapter(MainActivity.this);
+        relatedPhotosRecyclerView.setLayoutManager(new LinearLayoutManager(MainActivity.this/*, LinearLayoutManager.HORIZONTAL, false*/));
+        relatedPhotosRecyclerView.setAdapter(recyclerRelatedPhotosAdapter);
     }
 
     public void getAccount() {
@@ -204,7 +238,6 @@ public class MainActivity extends ABaseActivityView<MainPresenter> implements IM
                 presenter.getDetailedPlaceInfo(place_id, getString(R.string.google_directions_key));
                 searchControler.hide();
 
-
                 final View searchLocationlayout = LayoutInflater.from(MainActivity.this).inflate(R.layout.search_location_layout, null);
 
                 final TextView textView = (TextView) searchLocationlayout.findViewById(R.id.textView);
@@ -234,9 +267,7 @@ public class MainActivity extends ABaseActivityView<MainPresenter> implements IM
                         try {
                             token = GoogleAuthUtil.getToken(MainActivity.this, mEmail, SCOPE);
                             tokenObtained(token);
-                        } catch (IOException e) {
-                            e.printStackTrace();
-                        } catch (GoogleAuthException e) {
+                        } catch (Exception e) {
                             e.printStackTrace();
                         }
                     }
@@ -287,6 +318,7 @@ public class MainActivity extends ABaseActivityView<MainPresenter> implements IM
 
     @Override
     public void initMap(List<Poi> pois) {
+        markers.clear();
         searchView.hide(true);
         map.clear();
         if (pois != null) {
@@ -295,7 +327,8 @@ public class MainActivity extends ABaseActivityView<MainPresenter> implements IM
                         .position(new LatLng(poi.getLatitude(), poi.getLongitude()))
                         .title(poi.getTitle())
                         .snippet(poi.getAddress());
-                map.addMarker(snippet);
+                final Marker marker = map.addMarker(snippet);
+                markers.put(marker, poi);
             }
         }
     }
@@ -335,10 +368,31 @@ public class MainActivity extends ABaseActivityView<MainPresenter> implements IM
         new Handler().postDelayed(new Runnable() {
             @Override
             public void run() {
+
+//                setBottomType(true);
+                bottomLargeSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
                 bottomSheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED);
             }
         }, 100);
     }
+
+//    public void setBottomType(boolean small) {
+//        if (small) {
+//            int height = getResources().getDimensionPixelSize(R.dimen.smallDetailedBottomSheetHeight);
+//            CoordinatorLayout.LayoutParams lp = new CoordinatorLayout.LayoutParams(bottomSheetBehaviorView.getWidth(), height);
+//            bottomSheetBehaviorView.setLayoutParams(lp);
+//
+//            smallBottomLayout.setVisibility(View.VISIBLE);
+//            detailedBottomLayout.setVisibility(View.GONE);
+//        } else {
+//            int height = getResources().getDimensionPixelSize(R.dimen.largeDetailedBottomSheetHeight);
+//            CoordinatorLayout.LayoutParams lp = new CoordinatorLayout.LayoutParams(bottomSheetBehaviorView.getWidth(), height);
+//            bottomSheetBehaviorView.setLayoutParams(lp);
+//
+//            smallBottomLayout.setVisibility(View.GONE);
+//            detailedBottomLayout.setVisibility(View.VISIBLE);
+//        }
+//    }
 
     @Override
     public void updatePlaceDetailsWithAddress(Address address) {
@@ -379,13 +433,21 @@ public class MainActivity extends ABaseActivityView<MainPresenter> implements IM
 
     }
 
-
     @Override
     public void onBackPressed() {
-        if (searchView != null && searchView.isSearchOpen()) {
-            searchView.hide(true);
-        } else {
-            super.onBackPressed();
+
+        if (bottomSheetBehavior.getState() == BottomSheetBehavior.STATE_EXPANDED) {
+            bottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
+            if (customMarker != null) {
+                customMarker.remove();
+            }
+            return;
         }
+
+////        if (searchView != null && searchView.isSearchOpen()) {
+//            searchView.hide(false);
+////        } else {
+        super.onBackPressed();
+//        }
     }
 }
