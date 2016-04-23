@@ -21,6 +21,7 @@ public class SearchControler {
     private ArrayList<SearchItem> mSuggestionsList;
     private SearchView.OnQueryTextListener textListener;
     private SearchAdapter.OnItemClickListener clickListener;
+    private SearchView.SearchMenuListener onMenuClickListener;
 
     public SearchControler(Context context, SearchView searchView) {
         this.context = context;
@@ -36,6 +37,9 @@ public class SearchControler {
         this.clickListener = clickListener;
     }
 
+    public void setOnMenuClickListener(SearchView.SearchMenuListener onMenuClickListener) {
+        this.onMenuClickListener = onMenuClickListener;
+    }
 
     public void init() {
         searchView.setVersion(SearchCodes.VERSION_TOOLBAR);
@@ -43,12 +47,7 @@ public class SearchControler {
         searchView.setTheme(SearchCodes.THEME_LIGHT);
         searchView.setHint("Search");
         searchView.setVoice(false);
-        searchView.setOnSearchMenuListener(new SearchView.SearchMenuListener() {
-            @Override
-            public void onMenuClick() {
-                Toast.makeText(context, "menu", Toast.LENGTH_SHORT).show();
-            }
-        });
+        searchView.setOnSearchMenuListener(onMenuClickListener);
         searchView.setOnQueryTextListener(textListener);
 
         List<SearchItem> mResultsList = new ArrayList<>();

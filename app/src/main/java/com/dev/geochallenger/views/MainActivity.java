@@ -11,15 +11,20 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.BottomSheetBehavior;
 import android.support.design.widget.FloatingActionButton;
+import android.support.design.widget.NavigationView;
+import android.support.v4.view.GravityCompat;
+import android.support.v4.widget.DrawerLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
@@ -75,6 +80,8 @@ public class MainActivity extends ABaseActivityView<MainPresenter> implements IM
     private Map<Marker, Poi> markers = new HashMap<>();
     private BottomSheetBehavior<View> bottomLargeSheetBehavior;
     private ViewGroup llGotoPoi;
+    private NavigationView navigationView;
+    private DrawerLayout drawerLayout;
 
     @Override
     protected MainPresenter createPresenter() {
@@ -177,10 +184,13 @@ public class MainActivity extends ABaseActivityView<MainPresenter> implements IM
 
         initSearchView();
 
-        Button signInButton = (Button) findViewById(R.id.sign_in_button);
-        signInButton.setOnClickListener(new View.OnClickListener() {
+        drawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
+        navigationView = (NavigationView) findViewById(R.id.navigation_view);
+        ImageView userAvatar = (ImageView) navigationView.getHeaderView(0).findViewById(R.id.imageViewAvatar);
+        userAvatar.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                drawerLayout.closeDrawer(Gravity.LEFT);
                 getAccount();
             }
         });
@@ -253,6 +263,12 @@ public class MainActivity extends ABaseActivityView<MainPresenter> implements IM
                 final LinearLayout linearLayout = (LinearLayout) findViewById(R.id.llLocationContainer);
                 linearLayout.removeAllViews();
                 linearLayout.addView(textView);
+            }
+        });
+        searchControler.setOnMenuClickListener(new SearchView.SearchMenuListener() {
+            @Override
+            public void onMenuClick() {
+                drawerLayout.openDrawer(GravityCompat.START);
             }
         });
         searchControler.init();
@@ -446,6 +462,11 @@ public class MainActivity extends ABaseActivityView<MainPresenter> implements IM
             if (customMarker != null) {
                 customMarker.remove();
             }
+            return;
+        }
+
+        if (navigationView.isShown()) {
+            drawerLayout.closeDrawer(Gravity.LEFT);
             return;
         }
 
