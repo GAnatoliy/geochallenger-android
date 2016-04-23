@@ -16,6 +16,7 @@ import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.AutoCompleteTextView;
 import android.widget.EditText;
 import android.widget.LinearLayout;
@@ -170,6 +171,16 @@ public class CreateRouteActivity extends ABaseActivityView<CreateRoutePresenter>
         autoCompleteFromAdapter = new CreateRouteSearchAdapter(this, android.R.layout.simple_dropdown_item_1line,
                 new ArrayList<Predictions>());
         autoCompleteTextViewFrom.setAdapter(autoCompleteFromAdapter);
+        autoCompleteTextViewFrom.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                CreateRouteSearchAdapter adapter = (CreateRouteSearchAdapter) parent.getAdapter();
+                Predictions selectedPredictions = adapter.getItem(position);
+                final String place_id = selectedPredictions.getPlace_id();
+                presenter.getDetailedPlaceInfo(place_id, getString(R.string.google_directions_key), true);
+
+            }
+        });
 
         autoCompleteTextViewTo = (AutoCompleteTextView) findViewById(R.id.svPathTo);
 
@@ -194,6 +205,16 @@ public class CreateRouteActivity extends ABaseActivityView<CreateRoutePresenter>
         autoCompleteToAdapter = new CreateRouteSearchAdapter(this, android.R.layout.simple_dropdown_item_1line,
                 new ArrayList<Predictions>());
         autoCompleteTextViewTo.setAdapter(autoCompleteToAdapter);
+        autoCompleteTextViewTo.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                CreateRouteSearchAdapter adapter = (CreateRouteSearchAdapter) parent.getAdapter();
+                Predictions selectedPredictions = adapter.getItem(position);
+                final String place_id = selectedPredictions.getPlace_id();
+                presenter.getDetailedPlaceInfo(place_id, getString(R.string.google_directions_key), false);
+
+            }
+        });
     }
 
     @Override

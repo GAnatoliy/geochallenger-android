@@ -9,22 +9,22 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="#110132"
-        android:paddingTop="10dp"
         android:paddingBottom="10dp"
-        android:paddingRight="8dp">
+        android:paddingRight="8dp"
+        android:paddingTop="10dp">
 
         <ImageView
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
-            android:src="@drawable/line_small"
-            android:layout_marginTop="15dp"
-            android:layout_marginBottom="15dp"
-            android:paddingLeft="8.5dp"
-            android:paddingRight="9dp"
-            android:layout_alignTop="@+id/iv_create_route_from_icon"
             android:layout_alignBottom="@+id/iv_create_route_dest_icon"
             android:layout_alignLeft="@+id/iv_create_route_from_icon"
-            android:layout_alignRight="@+id/iv_create_route_from_icon"/>
+            android:layout_alignRight="@+id/iv_create_route_from_icon"
+            android:layout_alignTop="@+id/iv_create_route_from_icon"
+            android:layout_marginBottom="15dp"
+            android:layout_marginTop="15dp"
+            android:paddingLeft="8.5dp"
+            android:paddingRight="9dp"
+            android:src="@drawable/line_small" />
 
         <ImageView
             android:id="@+id/iv_create_route_back"
@@ -32,26 +32,27 @@
             android:layout_height="wrap_content"
             android:layout_centerVertical="true"
             android:adjustViewBounds="true"
-            android:src="@drawable/back"
-            android:paddingLeft="15dp"/>
+            android:paddingLeft="15dp"
+            android:src="@drawable/back" />
 
 
         <LinearLayout
             android:id="@+id/llFromContainer"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_alignLeft="@+id/iv_create_route_from_icon"
+            android:layout_marginLeft="15dp"
             android:layout_toRightOf="@+id/iv_create_route_back"
             android:background="#332354"
             android:paddingLeft="10dp"
-            android:paddingRight="10dp"
-            android:layout_alignLeft="@+id/iv_create_route_from_icon"
-            android:layout_marginLeft="15dp">
+            android:paddingRight="10dp">
 
             <TextView
-                android:layout_width="40dp"
+                android:layout_width="42dp"
                 android:layout_height="match_parent"
                 android:gravity="center_vertical"
                 android:text="From: "
+                android:textAllCaps="true"
                 android:textColor="#9282b3" />
 
             <AutoCompleteTextView
@@ -60,36 +61,38 @@
                 android:layout_height="wrap_content"
                 android:background="#332354"
                 android:minHeight="30dp"
-                android:textColor="@android:color/white"
-                android:singleLine="true"/>
+                android:singleLine="true"
+                android:textAllCaps="true"
+                android:textColor="@android:color/white" />
         </LinearLayout>
 
         <ImageView
+            android:id="@+id/iv_create_route_from_icon"
             android:layout_width="20dp"
             android:layout_height="20dp"
-            android:id="@+id/iv_create_route_from_icon"
-            android:src="@drawable/my_pos_small"
-            android:layout_toRightOf="@+id/iv_create_route_back"
+            android:layout_alignBottom="@+id/llFromContainer"
             android:layout_alignTop="@+id/llFromContainer"
-            android:layout_alignBottom="@+id/llFromContainer"/>
+            android:layout_toRightOf="@+id/iv_create_route_back"
+            android:src="@drawable/my_pos_small" />
 
         <LinearLayout
             android:id="@+id/llToContainer"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_below="@id/llFromContainer"
-            android:layout_marginTop="20dp"
             android:layout_alignLeft="@+id/iv_create_route_dest_icon"
+            android:layout_below="@id/llFromContainer"
             android:layout_marginLeft="15dp"
+            android:layout_marginTop="20dp"
             android:background="#332354"
             android:paddingLeft="10dp"
             android:paddingRight="10dp">
 
             <TextView
-                android:layout_width="40dp"
+                android:layout_width="42dp"
                 android:layout_height="match_parent"
                 android:gravity="center_vertical"
                 android:text="To: "
+                android:textAllCaps="true"
                 android:textColor="#9282b3" />
 
             <AutoCompleteTextView
@@ -98,18 +101,19 @@
                 android:layout_height="wrap_content"
                 android:background="#332354"
                 android:minHeight="30dp"
-                android:textColor="@android:color/white"
-                android:singleLine="true"/>
+                android:singleLine="true"
+                android:textAllCaps="true"
+                android:textColor="@android:color/white" />
         </LinearLayout>
 
         <ImageView
+            android:id="@+id/iv_create_route_dest_icon"
             android:layout_width="20dp"
             android:layout_height="20dp"
-            android:id="@+id/iv_create_route_dest_icon"
-            android:src="@drawable/dest_small"
-            android:layout_toRightOf="@+id/iv_create_route_back"
+            android:layout_alignBottom="@+id/llToContainer"
             android:layout_alignTop="@+id/llToContainer"
-            android:layout_alignBottom="@+id/llToContainer"/>
+            android:layout_toRightOf="@+id/iv_create_route_back"
+            android:src="@drawable/dest_small" />
 
     </RelativeLayout>
 
@@ -133,16 +137,17 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="28dp"
             android:background="#ffffff"
-            android:padding="16dp"
-            android:orientation="vertical">
+            android:orientation="vertical"
+            android:padding="16dp">
 
             <TextView
                 android:id="@+id/tvCreateRouteItemsCount"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                tools:text="@string/unknown"
                 android:textColor="@color/font_color"
-                android:textSize="24sp" />
+                android:textSize="22sp"
+                android:textStyle="bold"
+                tools:text="@string/unknown" />
 
             <TextView
                 android:id="@+id/tvCreateRouteDistance"

@@ -7,6 +7,7 @@ import android.support.annotation.Nullable;
 import com.dev.geochallenger.models.entities.DefaultResponse;
 import com.dev.geochallenger.models.entities.Poi;
 import com.dev.geochallenger.models.entities.cities.PlacesEntity;
+import com.dev.geochallenger.models.entities.cities.detailed.PlaceDetailedEntity;
 import com.dev.geochallenger.models.entities.directions.GoogleDirectionsEntity;
 import com.dev.geochallenger.models.entities.directions.Leg;
 import com.dev.geochallenger.models.entities.directions.Route;
@@ -291,6 +292,35 @@ public class CreateRoutePresenter extends IPresenter<ICreateRouteView> {
 
             @Override
             public void onError(Throwable t, ResponseBody responseBody) {
+                view.showErrorMessage("Error", t.getMessage());
+            }
+        });
+    }
+
+    public void getDetailedPlaceInfo(String placeId, String key, final boolean isOrigin) {
+        view.showProgress();
+        restClient.getPlace(placeId, key, new OnDataLoaded<PlaceDetailedEntity>() {
+            @Override
+            public void onSuccess(PlaceDetailedEntity entity) {
+                view.hideProgress();
+                if (entity != null) {
+                    if (isOrigin) {
+                        myLocation = new Location("");
+                        myLocation.setLatitude(Double.parseDouble(entity.getResult().getGeometry().getLocation().getLat()));
+                        myLocation.setLongitude(Double.parseDouble(entity.getResult().getGeometry().getLocation().getLng()));
+                    } else {
+                        selectedLocation = new LatLng(Double.parseDouble(entity.getResult().getGeometry().getLocation().getLat()),
+                                Double.parseDouble(entity.getResult().getGeometry().getLocation().getLng()));
+                    }
+                }
+                if (myLocation != null && selectedLocation != null) {
+                    getPathForCities(myLocation.getLatitude() + "," + myLocation.getLongitude(), selectedLocation.latitude + "," + selectedLocation.longitude);
+                }
+            }
+
+            @Override
+            public void onError(Throwable t, ResponseBody responseBody) {
+                view.hideProgress();
                 view.showErrorMessage("Error", t.getMessage());
             }
         });
