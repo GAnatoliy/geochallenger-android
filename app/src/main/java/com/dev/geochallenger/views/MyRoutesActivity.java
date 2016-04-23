@@ -1,8 +1,13 @@
 package com.dev.geochallenger.views;
 
+import android.content.res.Resources;
+import android.graphics.Color;
 import android.os.Bundle;
+import android.support.v7.app.ActionBar;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.view.MenuItem;
+import android.widget.TextView;
 
 import com.dev.geochallenger.R;
 import com.dev.geochallenger.models.RetrofitModel;
@@ -35,10 +40,24 @@ public class MyRoutesActivity extends ABaseActivityView<MyRoutesPresenter> imple
     protected void onViewCreated(Bundle savedInstanceState) {
         super.onViewCreated(savedInstanceState);
 
+
+        final ActionBar supportActionBar = getSupportActionBar();
+        supportActionBar.setDisplayHomeAsUpEnabled(true);
+
         myRoutesRecyclerView = (RecyclerView) findViewById(R.id.myRouteRecyclerView);
         final LinearLayoutManager layout = new LinearLayoutManager(MyRoutesActivity.this);
         myRoutesRecyclerView.setLayoutManager(layout);
 
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case android.R.id.home:
+                onBackPressed();
+                break;
+        }
+        return true;
     }
 
     @Override

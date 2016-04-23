@@ -45,7 +45,7 @@
 
         <activity
             android:name=".views.MyRoutesActivity"
-            android:label="@string/title_activity_create_path"
+            android:label="MY ROUTES"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme.ActionBar" />
 

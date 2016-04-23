@@ -37,7 +37,7 @@ public class MyRoutesRecyclerAdapter extends RecyclerView.Adapter<MyRoutesRecycl
     @Override
     public void onBindViewHolder(final RouteViewHolder holder, final int position) {
         RouteResponse route = routes.get(position);
-        holder.tvDistance.setText(String.valueOf(route.getDistanceInMeters() * 0.001));
+        holder.tvDistance.setText(String.valueOf((int) (route.getDistanceInMeters() * 0.001)));
         holder.tvPois.setText(String.valueOf(route.getPois().size()));
         holder.itemView.setTag(position);
         holder.tvOrigin.setText("Origin");
