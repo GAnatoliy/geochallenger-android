@@ -2,6 +2,7 @@ package com.dev.geochallenger.presenters;
 
 import android.location.Address;
 import android.support.annotation.Nullable;
+import android.support.design.widget.BottomSheetBehavior;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.MenuItem;
@@ -200,4 +201,29 @@ public class MainPresenter extends IPresenter<IMainView> {
     }
 
 
+    public void getPoiDetails(Poi poi) {
+        if (poi != null) {
+            view.showProgress();
+            model.getPoiDetails(String.valueOf(poi.getId()), new OnDataLoaded<Poi>() {
+                @Override
+                public void onSuccess(Poi poi) {
+                    view.hideProgress();
+                    view.setDetailedPoiInfo(poi);
+
+                }
+
+                @Override
+                public void onError(Throwable t, @Nullable ResponseBody error) {
+                    view.hideProgress();
+                    if (error != null) {
+                        try {
+                            view.showErrorMessage("Error", error.string());
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                }
+            });
+        }
+    }
 }

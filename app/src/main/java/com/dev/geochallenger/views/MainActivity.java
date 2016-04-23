@@ -188,8 +188,7 @@ public class MainActivity extends ABaseActivityView<MainPresenter> implements IM
                     bottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
                     final int state = bottomLargeSheetBehavior.getState();
                     if (state == BottomSheetBehavior.STATE_COLLAPSED || state == BottomSheetBehavior.STATE_SETTLING) {
-                        bottomLargeSheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED);
-                        setDetailedPoiInfo(markers.get(marker));
+                        presenter.getPoiDetails(markers.get(marker));
                         presenter.onLocationSelected(marker.getPosition(), true);
                     }
                 }
@@ -227,6 +226,15 @@ public class MainActivity extends ABaseActivityView<MainPresenter> implements IM
         });
 
         updateNavigationDrawerInfo();
+
+        RecyclerView relatedPhotosRecyclerView = (RecyclerView) findViewById(R.id.relatedPhotosRecycler);
+        final LinearLayoutManager layout = new LinearLayoutManager(MainActivity.this);
+        layout.setOrientation(LinearLayoutManager.HORIZONTAL);
+        relatedPhotosRecyclerView.setLayoutManager(layout);
+
+        RecyclerRelatedPhotosAdapter recyclerRelatedPhotosAdapter = new RecyclerRelatedPhotosAdapter(MainActivity.this);
+        relatedPhotosRecyclerView.setAdapter(recyclerRelatedPhotosAdapter);
+
     }
 
     public void updateNavigationDrawerInfo() {
@@ -263,12 +271,7 @@ public class MainActivity extends ABaseActivityView<MainPresenter> implements IM
         tvMainPlaceDetailsAddress.setText(poi.getAddress());
         detailedText.setText(poi.getContentPreview());
 
-        RecyclerView relatedPhotosRecyclerView = (RecyclerView) findViewById(R.id.relatedPhotosRecycler);
-        final LinearLayoutManager layout = new LinearLayoutManager(MainActivity.this, LinearLayoutManager.HORIZONTAL, false);
-        relatedPhotosRecyclerView.setLayoutManager(layout);
-
-        RecyclerRelatedPhotosAdapter recyclerRelatedPhotosAdapter = new RecyclerRelatedPhotosAdapter(MainActivity.this);
-        relatedPhotosRecyclerView.setAdapter(recyclerRelatedPhotosAdapter);
+        bottomLargeSheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED);
     }
 
     public void getAccount() {
