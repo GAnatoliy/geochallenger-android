@@ -4,20 +4,13 @@
     <group android:checkableBehavior="single">
 
         <item
-            android:id="@+id/drawer_favourite"
-            android:icon="@drawable/directions"
-            android:title="test" />
-
-        <item
             android:id="@+id/drawer_settings"
             android:icon="@drawable/directions"
-            android:title="test" />
+            android:title="MY ROUTES" />
 
         <item
             android:id="@+id/drawerLogOut"
-            android:checked="true"
-            android:icon="@drawable/directions"
-            android:title="Log out" />
+            android:title="LOG OUT" />
 
     </group>
 </menu>

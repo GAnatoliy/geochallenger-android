@@ -17,14 +17,12 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
-import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -41,7 +39,6 @@ import com.dev.geochallenger.models.entities.cities.detailed.Viewport;
 import com.dev.geochallenger.models.entities.login.LoginResponce;
 import com.dev.geochallenger.models.entities.login.UserResponce;
 import com.dev.geochallenger.models.repositories.TokenRepository;
-import com.dev.geochallenger.models.repositories.interfaces.ITokenRepository;
 import com.dev.geochallenger.presenters.MainPresenter;
 import com.dev.geochallenger.views.adapters.RecyclerRelatedPhotosAdapter;
 import com.dev.geochallenger.views.controlers.SearchControler;
@@ -71,6 +68,10 @@ public class MainActivity extends ABaseActivityView<MainPresenter> implements IM
 
     private static final String TAG = MainActivity.class.getSimpleName();
     private static final int REQUEST_CODE_PICK_ACCOUNT = 1000;
+
+    private static final int MENU_MY_ROUTES_INDEX = 0;
+    private static final int MENU_LOG_OUT_INDEX = 1;
+
     private MapView mapView;
     private GoogleMap map;
     private SearchView searchView;
@@ -201,10 +202,21 @@ public class MainActivity extends ABaseActivityView<MainPresenter> implements IM
                 }
             }
         });
+
+        final MenuItem myRoutesButton = navigationView.getMenu().getItem(MENU_MY_ROUTES_INDEX);
+        myRoutesButton.setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
+            @Override
+            public boolean onMenuItemClick(MenuItem item) {
+                drawerLayout.closeDrawer(Gravity.LEFT);
+                Intent intent = new Intent(MainActivity.this, MyRoutesActivity.class);
+                startActivity(intent);
+                return true;
+            }
+        });
     }
 
     public void updateNavigationDrawerInfo() {
-        final MenuItem logOutButton = navigationView.getMenu().getItem(2);
+        final MenuItem logOutButton = navigationView.getMenu().getItem(MENU_LOG_OUT_INDEX);
 
         final View nameContainer = navigationView.getHeaderView(0).findViewById(R.id.nameContainer);
 

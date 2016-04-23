@@ -43,6 +43,13 @@
             android:label="@string/title_activity_create_path"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme.NoActionBar" />
+
+        <activity
+            android:name=".views.MyRoutesActivity"
+            android:label="@string/title_activity_create_path"
+            android:screenOrientation="portrait"
+            android:theme="@style/AppTheme.NoActionBar" />
+
     </application>
 
 </manifest>
