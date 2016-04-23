@@ -6,6 +6,8 @@ import com.dev.geochallenger.models.entities.Poi;
 import com.dev.geochallenger.models.entities.cities.PlacesEntity;
 import com.dev.geochallenger.models.entities.cities.detailed.PlaceDetailedEntity;
 import com.dev.geochallenger.models.entities.directions.GoogleDirectionsEntity;
+import com.dev.geochallenger.models.entities.routes.Route;
+import com.dev.geochallenger.models.entities.routes.RouteResponse;
 import com.dev.geochallenger.models.interfaces.IModel;
 import com.dev.geochallenger.models.interfaces.OnDataLoaded;
 
@@ -228,6 +230,66 @@ public class RetrofitModel implements IModel {
 
             @Override
             public void onFailure(Call<DefaultResponse> call, Throwable t) {
+                callback.onError(t, null);
+            }
+        });
+    }
+
+    @Override
+    public void updateRoute(int routeId, Route route, String token, final OnDataLoaded<DefaultResponse> callback) {
+        final Call<DefaultResponse> response = service.updateRoute(routeId, "Bearer " + token, route);
+        response.enqueue(new Callback<DefaultResponse>() {
+            @Override
+            public void onResponse(Call<DefaultResponse> call, Response<DefaultResponse> response) {
+                if (response.isSuccessful()) {
+                    callback.onSuccess(response.body());
+                } else {
+                    callback.onError(new Throwable("error"), response.errorBody());
+                }
+            }
+
+            @Override
+            public void onFailure(Call<DefaultResponse> call, Throwable t) {
+                callback.onError(t, null);
+            }
+        });
+    }
+
+    @Override
+    public void deleteRoute(int routeId, String token, final OnDataLoaded<DefaultResponse> callback) {
+        final Call<DefaultResponse> response = service.deleteRoute(routeId, "Bearer " + token);
+        response.enqueue(new Callback<DefaultResponse>() {
+            @Override
+            public void onResponse(Call<DefaultResponse> call, Response<DefaultResponse> response) {
+                if (response.isSuccessful()) {
+                    callback.onSuccess(response.body());
+                } else {
+                    callback.onError(new Throwable("error"), response.errorBody());
+                }
+            }
+
+            @Override
+            public void onFailure(Call<DefaultResponse> call, Throwable t) {
+                callback.onError(t, null);
+            }
+        });
+    }
+
+    @Override
+    public void getRoutesList(String token, final OnDataLoaded<List<RouteResponse>> callback) {
+        final Call<List<RouteResponse>> response = service.getRoutesList("Bearer " + token);
+        response.enqueue(new Callback<List<RouteResponse>>() {
+            @Override
+            public void onResponse(Call<List<RouteResponse>> call, Response<List<RouteResponse>> response) {
+                if (response.isSuccessful()) {
+                    callback.onSuccess(response.body());
+                } else {
+                    callback.onError(new Throwable("error"), response.errorBody());
+                }
+            }
+
+            @Override
+            public void onFailure(Call<List<RouteResponse>> call, Throwable t) {
                 callback.onError(t, null);
             }
         });

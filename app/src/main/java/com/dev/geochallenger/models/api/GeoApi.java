@@ -1,20 +1,23 @@
 package com.dev.geochallenger.models.api;
 
-import com.dev.geochallenger.models.Route;
+import com.dev.geochallenger.models.entities.routes.Route;
 import com.dev.geochallenger.models.entities.DefaultResponse;
 import com.dev.geochallenger.models.entities.Poi;
 import com.dev.geochallenger.models.entities.cities.PlacesEntity;
 import com.dev.geochallenger.models.entities.cities.detailed.PlaceDetailedEntity;
 import com.dev.geochallenger.models.entities.directions.GoogleDirectionsEntity;
+import com.dev.geochallenger.models.entities.routes.RouteResponse;
 
 import java.util.List;
 
 import retrofit2.Call;
 import retrofit2.http.Body;
+import retrofit2.http.DELETE;
 import retrofit2.http.GET;
 import retrofit2.http.Header;
 import retrofit2.http.Headers;
 import retrofit2.http.POST;
+import retrofit2.http.PUT;
 import retrofit2.http.Path;
 import retrofit2.http.Query;
 
@@ -75,12 +78,29 @@ public interface GeoApi {
     @GET("api/pois")
     Call<List<Poi>> listPois(@Query("query") String query);
 
-    @Headers({
-            "Accept: application/json",
-            "Content-Type: application/json"})
     @POST("api/routes")
     Call<DefaultResponse> createRoute(@Header("WWW-Authenticate") String bearerToken,
                                       @Body Route route);
 
+    @Headers({
+            "Accept: application/json",
+            "Content-Type: application/json"})
+    @PUT("api/routes/{routeId}")
+    Call<DefaultResponse> updateRoute(@Path("routeId") int routeId,
+                                      @Header("WWW-Authenticate") String bearerToken,
+                                      @Body Route route);
+
+    @Headers({
+            "Accept: application/json",
+            "Content-Type: application/json"})
+    @DELETE("api/routes/{routeId}")
+    Call<DefaultResponse> deleteRoute(@Path("routeId") int routeId,
+                                      @Header("WWW-Authenticate") String bearerToken);
+
+    @Headers({
+            "Accept: application/json",
+            "Content-Type: application/json"})
+    @GET("api/routes")
+    Call<List<RouteResponse>> getRoutesList(@Header("WWW-Authenticate") String bearerToken);
 
 }
