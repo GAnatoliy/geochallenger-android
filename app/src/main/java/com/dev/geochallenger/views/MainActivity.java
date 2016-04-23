@@ -2,6 +2,8 @@ package com.dev.geochallenger.views;
 
 import android.accounts.AccountManager;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.location.Address;
 import android.location.Location;
@@ -52,6 +54,7 @@ import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapView;
 import com.google.android.gms.maps.MapsInitializer;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.Marker;
@@ -392,7 +395,10 @@ public class MainActivity extends ABaseActivityView<MainPresenter> implements IM
                 final MarkerOptions snippet = new MarkerOptions()
                         .position(new LatLng(poi.getLatitude(), poi.getLongitude()))
                         .title(poi.getTitle())
-                        .snippet(poi.getAddress());
+                        .snippet(poi.getAddress())
+                        .icon(BitmapDescriptorFactory.fromBitmap(resizeMapIcons(R.drawable.poi,
+                                getResources().getDimensionPixelSize(R.dimen.marker_width),
+                                getResources().getDimensionPixelSize(R.dimen.marker_height))));
                 final Marker marker = map.addMarker(snippet);
                 markers.put(marker, poi);
             }
@@ -528,4 +534,11 @@ public class MainActivity extends ABaseActivityView<MainPresenter> implements IM
         super.onBackPressed();
 //        }
     }
+
+    public Bitmap resizeMapIcons(int drawableId, int width, int height){
+        Bitmap imageBitmap = BitmapFactory.decodeResource(getResources(),drawableId);
+        Bitmap resizedBitmap = Bitmap.createScaledBitmap(imageBitmap, width, height, false);
+        return resizedBitmap;
+    }
+
 }

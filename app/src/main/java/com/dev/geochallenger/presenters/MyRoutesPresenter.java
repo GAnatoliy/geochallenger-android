@@ -9,6 +9,7 @@ import com.dev.geochallenger.models.repositories.interfaces.ITokenRepository;
 import com.dev.geochallenger.presenters.interfaces.IPresenter;
 import com.dev.geochallenger.views.interfaces.IMyRoutesView;
 
+import java.io.IOException;
 import java.util.List;
 
 import okhttp3.ResponseBody;
@@ -29,15 +30,24 @@ public class MyRoutesPresenter extends IPresenter<IMyRoutesView> {
 
     @Override
     public void init() {
+        view.showProgress();
         model.getRoutesList(iTokenRepository.getToken(), new OnDataLoaded<List<RouteResponse>>() {
             @Override
             public void onSuccess(List<RouteResponse> routeResponses) {
+                view.hideProgress();
                 view.updateRoutesList(routeResponses);
             }
 
             @Override
             public void onError(Throwable t, @Nullable ResponseBody error) {
-
+                if (error != null) {
+                    try {
+                        view.showErrorMessage("Error", error.string());
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                }
+                view.hideProgress();
             }
         });
     }

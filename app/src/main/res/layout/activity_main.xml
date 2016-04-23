@@ -78,7 +78,7 @@
                 android:layout_height="56dp"
                 android:layout_gravity="top|end"
                 android:layout_marginRight="@dimen/fab_margin"
-                android:src="@android:drawable/ic_dialog_email" />
+                android:src="@drawable/rocket" />
         </FrameLayout>
 
 
@@ -100,7 +100,7 @@
                 android:layout_height="56dp"
                 android:layout_gravity="top|end"
                 android:layout_marginRight="@dimen/fab_margin"
-                android:src="@android:drawable/ic_dialog_email" />
+                android:src="@drawable/key" />
         </FrameLayout>
     </android.support.design.widget.CoordinatorLayout>
 

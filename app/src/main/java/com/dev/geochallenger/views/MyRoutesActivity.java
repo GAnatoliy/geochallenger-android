@@ -35,7 +35,7 @@ public class MyRoutesActivity extends ABaseActivityView<MyRoutesPresenter> imple
     protected void onViewCreated(Bundle savedInstanceState) {
         super.onViewCreated(savedInstanceState);
 
-        myRoutesRecyclerView = (RecyclerView) findViewById(R.id.relatedPhotosRecycler);
+        myRoutesRecyclerView = (RecyclerView) findViewById(R.id.myRouteRecyclerView);
         final LinearLayoutManager layout = new LinearLayoutManager(MyRoutesActivity.this);
         myRoutesRecyclerView.setLayoutManager(layout);
 
