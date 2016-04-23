@@ -1,13 +1,16 @@
 package com.dev.geochallenger.presenters;
 
 import android.location.Address;
+import android.support.annotation.Nullable;
 
 import com.dev.geochallenger.models.entities.Poi;
 import com.dev.geochallenger.models.entities.cities.PlacesEntity;
 import com.dev.geochallenger.models.entities.cities.detailed.PlaceDetailedEntity;
+import com.dev.geochallenger.models.entities.login.LoginResponce;
 import com.dev.geochallenger.models.interfaces.IGeocoder;
 import com.dev.geochallenger.models.interfaces.IModel;
 import com.dev.geochallenger.models.interfaces.OnDataLoaded;
+import com.dev.geochallenger.models.repositories.TokenRepository;
 import com.dev.geochallenger.presenters.interfaces.IPresenter;
 import com.dev.geochallenger.views.interfaces.IMainView;
 import com.google.android.gms.maps.model.LatLng;
@@ -142,6 +145,20 @@ public class MainPresenter extends IPresenter<IMainView> {
             @Override
             public void onError(Throwable t, ResponseBody responseBody) {
                 view.showErrorMessage("Error", t.getMessage());
+            }
+        });
+    }
+
+    public void login(String email, String token) {
+        model.login(email, token, new OnDataLoaded<LoginResponce>() {
+            @Override
+            public void onSuccess(LoginResponce loginResponce) {
+                view.updateUserAccound(  loginResponce);
+            }
+
+            @Override
+            public void onError(Throwable t, @Nullable ResponseBody error) {
+
             }
         });
     }

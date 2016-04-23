@@ -37,6 +37,8 @@ import com.dev.geochallenger.models.entities.cities.PlacesEntity;
 import com.dev.geochallenger.models.entities.cities.Predictions;
 import com.dev.geochallenger.models.entities.cities.detailed.PlaceDetailedEntity;
 import com.dev.geochallenger.models.entities.cities.detailed.Viewport;
+import com.dev.geochallenger.models.entities.login.LoginResponce;
+import com.dev.geochallenger.models.repositories.TokenRepository;
 import com.dev.geochallenger.presenters.MainPresenter;
 import com.dev.geochallenger.views.adapters.RecyclerRelatedPhotosAdapter;
 import com.dev.geochallenger.views.controlers.SearchControler;
@@ -287,7 +289,7 @@ public class MainActivity extends ABaseActivityView<MainPresenter> implements IM
                         String token = "";
                         try {
                             token = GoogleAuthUtil.getToken(MainActivity.this, mEmail, SCOPE);
-                            tokenObtained(token);
+                            presenter.login(mEmail, token);
                         } catch (Exception e) {
                             e.printStackTrace();
                         }
@@ -295,10 +297,6 @@ public class MainActivity extends ABaseActivityView<MainPresenter> implements IM
                 }).start();
             }
         }
-    }
-
-    public void tokenObtained(String token) {
-        Log.d(TAG, "handleSignInResult. token: " + token);
     }
 
     @Override
@@ -430,6 +428,13 @@ public class MainActivity extends ABaseActivityView<MainPresenter> implements IM
         intent.putExtra(ExtraConstants.SELECTED_ADDRESS, selectedPlaceAddress);
         intent.putExtra(ExtraConstants.MY_LOCATION, myLocation);
         startActivity(intent);
+    }
+
+    @Override
+    public void updateUserAccound(LoginResponce loginResponce) {
+        TokenRepository tokenRepository = new TokenRepository(getApplication());
+        tokenRepository.setToken(loginResponce.getAccess_token());
+
     }
 
     @Override

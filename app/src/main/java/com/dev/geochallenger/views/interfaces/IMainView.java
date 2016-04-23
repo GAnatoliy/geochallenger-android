@@ -7,6 +7,7 @@ import android.support.annotation.Nullable;
 import com.dev.geochallenger.models.entities.Poi;
 import com.dev.geochallenger.models.entities.cities.PlacesEntity;
 import com.dev.geochallenger.models.entities.cities.detailed.PlaceDetailedEntity;
+import com.dev.geochallenger.models.entities.login.LoginResponce;
 import com.google.android.gms.maps.model.LatLng;
 
 import java.util.List;
@@ -29,4 +30,7 @@ public interface IMainView extends IView {
     void updatePlaceDetailsWithAddress(Address address);
 
     void showCreateRouteScreen(LatLng selectedPlaceLocation, @Nullable Address selectedPlaceAddress, @Nullable Location myLocation);
+
+    void updateUserAccound(LoginResponce loginResponce);
 }
+

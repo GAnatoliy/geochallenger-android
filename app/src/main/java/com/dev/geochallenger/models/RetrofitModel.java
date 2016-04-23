@@ -6,6 +6,7 @@ import com.dev.geochallenger.models.entities.Poi;
 import com.dev.geochallenger.models.entities.cities.PlacesEntity;
 import com.dev.geochallenger.models.entities.cities.detailed.PlaceDetailedEntity;
 import com.dev.geochallenger.models.entities.directions.GoogleDirectionsEntity;
+import com.dev.geochallenger.models.entities.login.LoginResponce;
 import com.dev.geochallenger.models.entities.routes.Route;
 import com.dev.geochallenger.models.entities.routes.RouteResponse;
 import com.dev.geochallenger.models.interfaces.IModel;
@@ -290,6 +291,26 @@ public class RetrofitModel implements IModel {
 
             @Override
             public void onFailure(Call<List<RouteResponse>> call, Throwable t) {
+                callback.onError(t, null);
+            }
+        });
+    }
+
+    @Override
+    public void login(String uid, String token, final OnDataLoaded<LoginResponce> callback) {
+        final Call<LoginResponce> response = service.login(uid, token);
+        response.enqueue(new Callback<LoginResponce>() {
+            @Override
+            public void onResponse(Call<LoginResponce> call, Response<LoginResponce> response) {
+                if (response.isSuccessful()) {
+                    callback.onSuccess(response.body());
+                } else {
+                    callback.onError(new Throwable("error"), response.errorBody());
+                }
+            }
+
+            @Override
+            public void onFailure(Call<LoginResponce> call, Throwable t) {
                 callback.onError(t, null);
             }
         });

@@ -1,5 +1,6 @@
 package com.dev.geochallenger.models.api;
 
+import com.dev.geochallenger.models.entities.login.LoginResponce;
 import com.dev.geochallenger.models.entities.routes.Route;
 import com.dev.geochallenger.models.entities.DefaultResponse;
 import com.dev.geochallenger.models.entities.Poi;
@@ -102,5 +103,11 @@ public interface GeoApi {
             "Content-Type: application/json"})
     @GET("api/routes")
     Call<List<RouteResponse>> getRoutesList(@Header("WWW-Authenticate") String bearerToken);
+
+    @Headers({
+            "Accept: application/json",
+            "Content-Type: application/x-www-form-urlencoded"})
+    @GET("/token?grant_type=password&username={uid}&password={token}")
+    Call<LoginResponce> login(@Path("uid") String uid, @Path("token") String token);
 
 }
