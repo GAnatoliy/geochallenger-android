@@ -9,9 +9,6 @@ import android.view.ViewGroup;
 import com.dev.geochallenger.R;
 import com.dev.geochallenger.views.adapters.holders.RelatedPhotoHolder;
 
-/**
- * Created by a_dibrivnyj on 4/22/16.
- */
 public class RecyclerRelatedPhotosAdapter extends RecyclerView.Adapter<RelatedPhotoHolder> {
 
     private Context context;

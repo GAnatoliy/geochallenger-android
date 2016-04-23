@@ -190,14 +190,14 @@ public class MainActivity extends ABaseActivityView<MainPresenter> implements IM
         TextView tvMainPlaceDetailsTitle = (TextView) findViewById(R.id.tvMainPlaceDetailsTitle);
         TextView tvMainPlaceDetailsAddress = (TextView) findViewById(R.id.tvMainPlaceDetailsAddress);
         TextView detailedText = (TextView) findViewById(R.id.detailedText);
-        RecyclerView relatedPhotosRecyclerView = (RecyclerView) findViewById(R.id.relatedPhotosRecyclerView);
+        RecyclerView relatedPhotosRecyclerView = (RecyclerView) findViewById(R.id.relatedPhotosRecycler);
 
         tvMainPlaceDetailsTitle.setText(poi.getTitle());
         tvMainPlaceDetailsAddress.setText(poi.getAddress());
         detailedText.setText(poi.getContentPreview());
 
         RecyclerRelatedPhotosAdapter recyclerRelatedPhotosAdapter = new RecyclerRelatedPhotosAdapter(MainActivity.this);
-        relatedPhotosRecyclerView.setLayoutManager(new LinearLayoutManager(MainActivity.this/*, LinearLayoutManager.HORIZONTAL, false*/));
+        relatedPhotosRecyclerView.setLayoutManager(new LinearLayoutManager(MainActivity.this, LinearLayoutManager.HORIZONTAL, false));
         relatedPhotosRecyclerView.setAdapter(recyclerRelatedPhotosAdapter);
     }
 
