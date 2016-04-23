@@ -19,7 +19,11 @@ import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.text.Spannable;
+import android.text.SpannableString;
 import android.text.TextUtils;
+import android.text.style.ClickableSpan;
+import android.text.style.ForegroundColorSpan;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -228,13 +232,11 @@ public class MainActivity extends ABaseActivityView<MainPresenter> implements IM
         updateNavigationDrawerInfo();
 
         RecyclerView relatedPhotosRecyclerView = (RecyclerView) findViewById(R.id.relatedPhotosRecycler);
-        final LinearLayoutManager layout = new LinearLayoutManager(MainActivity.this);
-        layout.setOrientation(LinearLayoutManager.HORIZONTAL);
+        final LinearLayoutManager layout = new LinearLayoutManager(MainActivity.this, LinearLayoutManager.HORIZONTAL, false);
         relatedPhotosRecyclerView.setLayoutManager(layout);
 
         RecyclerRelatedPhotosAdapter recyclerRelatedPhotosAdapter = new RecyclerRelatedPhotosAdapter(MainActivity.this);
         relatedPhotosRecyclerView.setAdapter(recyclerRelatedPhotosAdapter);
-
     }
 
     public void updateNavigationDrawerInfo() {
@@ -262,14 +264,36 @@ public class MainActivity extends ABaseActivityView<MainPresenter> implements IM
         }
     }
 
-    public void setDetailedPoiInfo(Poi poi) {
+    public void setDetailedPoiInfo(final Poi poi) {
         TextView tvMainPlaceDetailsTitle = (TextView) findViewById(R.id.tvMainPlaceDetailsTitle);
         TextView tvMainPlaceDetailsAddress = (TextView) findViewById(R.id.tvMainPlaceDetailsAddress);
-        TextView detailedText = (TextView) findViewById(R.id.detailedText);
+        final TextView detailedText = (TextView) findViewById(R.id.detailedText);
 
         tvMainPlaceDetailsTitle.setText(poi.getTitle());
         tvMainPlaceDetailsAddress.setText(poi.getAddress());
-        detailedText.setText(poi.getContentPreview());
+
+        final Spannable wordtoSpan = new SpannableString(poi.getContentPreview());
+        wordtoSpan.setSpan(new ForegroundColorSpan(Color.BLACK), 0, poi.getContentPreview().length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+        detailedText.setText(wordtoSpan);
+
+        String readMore = " SHOW MORE";
+        Spannable readMoreSpan = new SpannableString(readMore);
+        readMoreSpan.setSpan(new ForegroundColorSpan(Color.BLUE), 0, readMore.length(), Spannable.SPAN_EXCLUSIVE_INCLUSIVE);
+//        readMoreSpan.setSpan(new ClickableSpan() {
+//            @Override
+//            public void onClick(View widget) {
+//                Log.d("asdasd", "asdsa");
+//            }
+//        }, 0, readMore.length(), Spannable.SPAN_EXCLUSIVE_INCLUSIVE);
+        detailedText.append(readMoreSpan);
+
+        detailedText.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                detailedText.setText(poi.getContent());
+            }
+        });
+
 
         bottomLargeSheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED);
     }

@@ -1,12 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/detailedView"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@android:color/white"
+    android:clickable="true"
     android:orientation="vertical">
 
     <LinearLayout
+        android:id="@+id/titleContainer"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="#332354"
@@ -31,8 +33,10 @@
     </LinearLayout>
 
     <LinearLayout
+        android:id="@+id/buttonsContainer"
         android:layout_width="match_parent"
         android:layout_height="80dp"
+        android:layout_below="@+id/titleContainer"
         android:orientation="horizontal"
         android:padding="10dp">
 
@@ -48,7 +52,7 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_horizontal"
                 android:layout_weight="1"
-                android:src="@drawable/cup" />
+                android:src="@drawable/cursor" />
 
             <TextView
                 android:layout_width="match_parent"
@@ -71,7 +75,7 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_horizontal"
                 android:layout_weight="1"
-                android:src="@drawable/cup" />
+                android:src="@drawable/flag_black" />
 
             <TextView
                 android:layout_width="match_parent"
@@ -94,7 +98,7 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_horizontal"
                 android:layout_weight="1"
-                android:src="@drawable/cup" />
+                android:src="@drawable/pencil_black" />
 
             <TextView
                 android:layout_width="match_parent"
@@ -109,22 +113,25 @@
     <TextView
         android:id="@+id/detailedText"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="match_parent"
+        android:layout_above="@+id/relatedPhotoContainer"
+        android:layout_below="@+id/buttonsContainer"
+        android:ellipsize="end"
         android:padding="10dp"
-        android:text="Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat."
         android:textColor="@android:color/black"
-        android:textSize="16dp" />
-
+        android:textSize="14dp" />
 
     <LinearLayout
+        android:id="@+id/relatedPhotoContainer"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical">
+        android:layout_alignParentBottom="true"
+        android:orientation="vertical"
+        android:padding="10dp">
 
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:padding="10dp"
             android:text="RELATED PHOTOS"
             android:textColor="@android:color/black"
             android:textSize="16dp"
@@ -133,9 +140,10 @@
         <android.support.v7.widget.RecyclerView
             android:id="@+id/relatedPhotosRecycler"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"/>
+            android:layout_height="100dp" />
+
 
     </LinearLayout>
 
 
-</LinearLayout>
+</RelativeLayout>

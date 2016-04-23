@@ -17,6 +17,8 @@ public class Poi {
     private String createdAtUtc;
     private int ownerId;
 
+    private String content;
+
     @Expose
     private boolean isWaypoint;
 
@@ -87,8 +89,8 @@ public class Poi {
     @Override
     public boolean equals(Object o) {
         if (o instanceof Poi) {
-            if (((Poi)o).longitude == this.longitude
-                    && ((Poi)o).latitude == this.latitude) {
+            if (((Poi) o).longitude == this.longitude
+                    && ((Poi) o).latitude == this.latitude) {
                 return true;
             }
         }
@@ -103,4 +105,13 @@ public class Poi {
     public void setWaypoint(boolean waypoint) {
         isWaypoint = waypoint;
     }
+
+    public String getContent() {
+        return content;
+    }
+
+    public void setContent(String content) {
+        this.content = content;
+    }
 }
+

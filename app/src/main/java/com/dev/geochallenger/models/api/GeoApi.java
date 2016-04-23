@@ -44,7 +44,7 @@ public interface GeoApi {
     @Headers({
             "Accept: application/json",
             "Content-Type: application/json"})
-    @GET("poi/{id}")
+    @GET("api/pois/{id}")
     Call<Poi> listPoiById(@Path("id") String _id);
 
     @Headers({
