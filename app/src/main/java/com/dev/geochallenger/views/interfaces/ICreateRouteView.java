@@ -34,4 +34,6 @@ public interface ICreateRouteView extends IView {
     void showMyRoutes();
 
     void setSelectedPoisCount(int size);
+
+    void setDetailedPoiInfo(Poi poi);
 }

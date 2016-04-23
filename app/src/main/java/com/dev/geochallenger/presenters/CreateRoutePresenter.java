@@ -410,6 +410,40 @@ public class CreateRoutePresenter extends IPresenter<ICreateRouteView> {
         });
     }
 
+    public void getPoiDetails(LatLng position) {
+        Poi poi = new Poi();
+        poi.setLatitude((float) position.latitude);
+        poi.setLongitude((float) position.longitude);
+        int indexOf = poisNearMe.indexOf(poi);
+        if (indexOf > 0) {
+            Poi selectedPoi = poisNearMe.get(indexOf);
+            if (selectedPoi != null) {
+                view.showProgress();
+                restClient.getPoiDetails(String.valueOf(selectedPoi.getId()), new OnDataLoaded<Poi>() {
+                    @Override
+                    public void onSuccess(Poi poi) {
+                        view.hideProgress();
+                        view.setDetailedPoiInfo(poi);
+
+                    }
+
+                    @Override
+                    public void onError(Throwable t, @Nullable ResponseBody error) {
+                        view.hideProgress();
+                        if (error != null) {
+                            try {
+                                view.showErrorMessage("Error", error.string());
+                            } catch (IOException e) {
+                                e.printStackTrace();
+                            }
+                        }
+                    }
+                });
+            }
+
+        }
+    }
+
     public interface IPathCallback {
         void onPathCalculated();
 

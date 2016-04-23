@@ -1,170 +1,199 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
+    android:layout_height="match_parent"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <RelativeLayout
-        android:id="@+id/rlCreateRoutesSearch"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:background="#110132"
-        android:paddingBottom="10dp"
-        android:paddingRight="8dp"
-        android:paddingTop="10dp">
+        android:layout_height="match_parent">
 
-        <ImageView
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:layout_alignBottom="@+id/iv_create_route_dest_icon"
-            android:layout_alignLeft="@+id/iv_create_route_from_icon"
-            android:layout_alignRight="@+id/iv_create_route_from_icon"
-            android:layout_alignTop="@+id/iv_create_route_from_icon"
-            android:layout_marginBottom="15dp"
-            android:layout_marginTop="15dp"
-            android:paddingLeft="8.5dp"
-            android:paddingRight="9dp"
-            android:src="@drawable/line_small" />
-
-        <ImageView
-            android:id="@+id/iv_create_route_back"
-            android:layout_width="45dp"
-            android:layout_height="wrap_content"
-            android:layout_centerVertical="true"
-            android:adjustViewBounds="true"
-            android:paddingLeft="15dp"
-            android:src="@drawable/back" />
-
-
-        <LinearLayout
-            android:id="@+id/llFromContainer"
+        <RelativeLayout
+            android:id="@+id/rlCreateRoutesSearch"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_alignLeft="@+id/iv_create_route_from_icon"
-            android:layout_marginLeft="15dp"
-            android:layout_toRightOf="@+id/iv_create_route_back"
-            android:background="#332354"
-            android:paddingLeft="10dp"
-            android:paddingRight="10dp">
+            android:background="#110132"
+            android:paddingBottom="10dp"
+            android:paddingRight="8dp"
+            android:paddingTop="10dp">
 
-            <TextView
-                android:layout_width="42dp"
+            <ImageView
+                android:layout_width="wrap_content"
                 android:layout_height="match_parent"
-                android:gravity="center_vertical"
-                android:text="From: "
-                android:textAllCaps="true"
-                android:textColor="#9282b3" />
+                android:layout_alignBottom="@+id/iv_create_route_dest_icon"
+                android:layout_alignLeft="@+id/iv_create_route_from_icon"
+                android:layout_alignRight="@+id/iv_create_route_from_icon"
+                android:layout_alignTop="@+id/iv_create_route_from_icon"
+                android:layout_marginBottom="15dp"
+                android:layout_marginTop="15dp"
+                android:paddingLeft="8.5dp"
+                android:paddingRight="9dp"
+                android:src="@drawable/line_small" />
 
-            <AutoCompleteTextView
-                android:id="@+id/svPathFrom"
+            <ImageView
+                android:id="@+id/iv_create_route_back"
+                android:layout_width="45dp"
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
+                android:adjustViewBounds="true"
+                android:paddingLeft="15dp"
+                android:src="@drawable/back" />
+
+
+            <LinearLayout
+                android:id="@+id/llFromContainer"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_alignLeft="@+id/iv_create_route_from_icon"
+                android:layout_marginLeft="15dp"
+                android:layout_toRightOf="@+id/iv_create_route_back"
                 android:background="#332354"
-                android:minHeight="30dp"
-                android:singleLine="true"
-                android:textAllCaps="true"
-                android:textColor="@android:color/white" />
-        </LinearLayout>
+                android:paddingLeft="10dp"
+                android:paddingRight="10dp">
 
-        <ImageView
-            android:id="@+id/iv_create_route_from_icon"
-            android:layout_width="20dp"
-            android:layout_height="20dp"
-            android:layout_alignBottom="@+id/llFromContainer"
-            android:layout_alignTop="@+id/llFromContainer"
-            android:layout_toRightOf="@+id/iv_create_route_back"
-            android:src="@drawable/my_pos_small" />
+                <TextView
+                    android:layout_width="42dp"
+                    android:layout_height="match_parent"
+                    android:gravity="center_vertical"
+                    android:text="From: "
+                    android:textAllCaps="true"
+                    android:textColor="#9282b3" />
 
-        <LinearLayout
-            android:id="@+id/llToContainer"
+                <AutoCompleteTextView
+                    android:id="@+id/svPathFrom"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="#332354"
+                    android:minHeight="30dp"
+                    android:singleLine="true"
+                    android:textAllCaps="true"
+                    android:textColor="@android:color/white" />
+            </LinearLayout>
+
+            <ImageView
+                android:id="@+id/iv_create_route_from_icon"
+                android:layout_width="20dp"
+                android:layout_height="20dp"
+                android:layout_alignBottom="@+id/llFromContainer"
+                android:layout_alignTop="@+id/llFromContainer"
+                android:layout_toRightOf="@+id/iv_create_route_back"
+                android:src="@drawable/my_pos_small" />
+
+            <LinearLayout
+                android:id="@+id/llToContainer"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_alignLeft="@+id/iv_create_route_dest_icon"
+                android:layout_below="@id/llFromContainer"
+                android:layout_marginLeft="15dp"
+                android:layout_marginTop="20dp"
+                android:background="#332354"
+                android:paddingLeft="10dp"
+                android:paddingRight="10dp">
+
+                <TextView
+                    android:layout_width="42dp"
+                    android:layout_height="match_parent"
+                    android:gravity="center_vertical"
+                    android:text="To: "
+                    android:textAllCaps="true"
+                    android:textColor="#9282b3" />
+
+                <AutoCompleteTextView
+                    android:id="@+id/svPathTo"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="#332354"
+                    android:minHeight="30dp"
+                    android:singleLine="true"
+                    android:textAllCaps="true"
+                    android:textColor="@android:color/white" />
+            </LinearLayout>
+
+            <ImageView
+                android:id="@+id/iv_create_route_dest_icon"
+                android:layout_width="20dp"
+                android:layout_height="20dp"
+                android:layout_alignBottom="@+id/llToContainer"
+                android:layout_alignTop="@+id/llToContainer"
+                android:layout_toRightOf="@+id/iv_create_route_back"
+                android:src="@drawable/dest_small" />
+
+        </RelativeLayout>
+
+        <com.google.android.gms.maps.MapView
+            android:id="@+id/mvCreatePath"
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            android:layout_below="@+id/rlCreateRoutesSearch" />
+
+
+        <FrameLayout
+            android:id="@+id/flCreateRouteBanner"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_alignLeft="@+id/iv_create_route_dest_icon"
-            android:layout_below="@id/llFromContainer"
-            android:layout_marginLeft="15dp"
-            android:layout_marginTop="20dp"
-            android:background="#332354"
-            android:paddingLeft="10dp"
-            android:paddingRight="10dp">
+            android:layout_alignParentBottom="true"
+            android:clipToPadding="true"
+            android:visibility="gone">
 
-            <TextView
-                android:layout_width="42dp"
-                android:layout_height="match_parent"
-                android:gravity="center_vertical"
-                android:text="To: "
-                android:textAllCaps="true"
-                android:textColor="#9282b3" />
-
-            <AutoCompleteTextView
-                android:id="@+id/svPathTo"
+            <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:background="#332354"
-                android:minHeight="30dp"
-                android:singleLine="true"
-                android:textAllCaps="true"
-                android:textColor="@android:color/white" />
-        </LinearLayout>
+                android:layout_marginTop="28dp"
+                android:background="#ffffff"
+                android:orientation="vertical"
+                android:padding="16dp">
 
-        <ImageView
-            android:id="@+id/iv_create_route_dest_icon"
-            android:layout_width="20dp"
-            android:layout_height="20dp"
-            android:layout_alignBottom="@+id/llToContainer"
-            android:layout_alignTop="@+id/llToContainer"
-            android:layout_toRightOf="@+id/iv_create_route_back"
-            android:src="@drawable/dest_small" />
+                <TextView
+                    android:id="@+id/tvCreateRouteItemsCount"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:textColor="@color/font_color"
+                    android:textSize="22sp"
+                    android:textStyle="bold"
+                    tools:text="@string/unknown" />
+
+                <TextView
+                    android:id="@+id/tvCreateRouteDistance"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/unknown"
+                    android:textColor="@color/font_color"
+                    android:textSize="16sp" />
+            </LinearLayout>
+
+            <android.support.design.widget.FloatingActionButton
+                android:id="@+id/fabCreateRoute"
+                android:layout_width="56dp"
+                android:layout_height="56dp"
+                android:layout_gravity="top|end"
+                android:layout_marginRight="@dimen/fab_margin"
+                android:src="@drawable/pin" />
+        </FrameLayout>
 
     </RelativeLayout>
 
-    <com.google.android.gms.maps.MapView
-        android:id="@+id/mvCreatePath"
-        android:layout_width="fill_parent"
-        android:layout_height="fill_parent"
-        android:layout_below="@+id/rlCreateRoutesSearch" />
-
-
     <FrameLayout
-        android:id="@+id/flCreateRouteBanner"
+        android:id="@+id/nsvPoiDetails"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
         android:clipToPadding="true"
-        android:visibility="gone">
+        app:layout_behavior="android.support.design.widget.BottomSheetBehavior">
 
-        <LinearLayout
+        <include
+            layout="@layout/detailed_poi_layout"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="28dp"
-            android:background="#ffffff"
-            android:orientation="vertical"
-            android:padding="16dp">
-
-            <TextView
-                android:id="@+id/tvCreateRouteItemsCount"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:textColor="@color/font_color"
-                android:textSize="22sp"
-                android:textStyle="bold"
-                tools:text="@string/unknown" />
-
-            <TextView
-                android:id="@+id/tvCreateRouteDistance"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="@string/unknown"
-                android:textColor="@color/font_color"
-                android:textSize="16sp" />
-        </LinearLayout>
+            android:layout_height="600dp"
+            android:layout_marginTop="28dp" />
 
         <android.support.design.widget.FloatingActionButton
-            android:id="@+id/fabCreateRoute"
             android:layout_width="56dp"
             android:layout_height="56dp"
             android:layout_gravity="top|end"
             android:layout_marginRight="@dimen/fab_margin"
-            android:src="@drawable/pin" />
+            android:src="@drawable/key_2" />
     </FrameLayout>
 
-</RelativeLayout>
+
+</android.support.design.widget.CoordinatorLayout>

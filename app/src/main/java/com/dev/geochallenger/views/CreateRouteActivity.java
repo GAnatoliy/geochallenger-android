@@ -1,6 +1,5 @@
 package com.dev.geochallenger.views;
 
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -9,18 +8,18 @@ import android.location.Address;
 import android.location.Location;
 import android.os.Bundle;
 import android.os.Handler;
+import android.support.design.widget.BottomSheetBehavior;
 import android.support.design.widget.FloatingActionButton;
-import android.support.v7.app.AlertDialog;
-import android.support.v7.widget.Toolbar;
 import android.text.Editable;
+import android.text.Spannable;
+import android.text.SpannableString;
 import android.text.TextUtils;
 import android.text.TextWatcher;
+import android.text.style.ForegroundColorSpan;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.AutoCompleteTextView;
-import android.widget.EditText;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.dev.geochallenger.R;
@@ -41,7 +40,6 @@ import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapView;
 import com.google.android.gms.maps.MapsInitializer;
-import com.google.android.gms.maps.model.BitmapDescriptor;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
@@ -50,8 +48,6 @@ import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.Polyline;
 import com.google.android.gms.maps.model.PolylineOptions;
 import com.google.gson.Gson;
-
-import org.w3c.dom.Text;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -77,6 +73,7 @@ public class CreateRouteActivity extends ABaseActivityView<CreateRoutePresenter>
     private Marker originMarker;
     private Marker destinationMarker;
     private RouteResponse routeResponse;
+    private BottomSheetBehavior<View> bottomLargeSheetBehavior;
 
     @Override
     protected CreateRoutePresenter createPresenter() {
@@ -100,6 +97,8 @@ public class CreateRouteActivity extends ABaseActivityView<CreateRoutePresenter>
         tvPoisCount = (TextView) findViewById(R.id.tvCreateRouteItemsCount);
         fabCreateRoute = (FloatingActionButton)findViewById(R.id.fabCreateRoute);
         distanceBanner = (ViewGroup)findViewById(R.id.flCreateRouteBanner);
+        bottomLargeSheetBehavior = BottomSheetBehavior.from(findViewById(R.id.nsvPoiDetails));
+
 
         fabCreateRoute.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -231,12 +230,51 @@ public class CreateRouteActivity extends ABaseActivityView<CreateRoutePresenter>
         map.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
             @Override
             public boolean onMarkerClick(Marker marker) {
-                int selectedPoisCount = presenter.toggleWaypoints(marker.getPosition());
-                setSelectedPoisCount(selectedPoisCount);
+                final int state = bottomLargeSheetBehavior.getState();
+                if (state == BottomSheetBehavior.STATE_COLLAPSED || state == BottomSheetBehavior.STATE_SETTLING) {
+/*
+                    int selectedPoisCount = presenter.toggleWaypoints(marker.getPosition());
+                    setSelectedPoisCount(selectedPoisCount);
+*/
+                    presenter.getPoiDetails(marker.getPosition());
+                }
+
                 return true;
             }
         });
     }
+
+    public void setDetailedPoiInfo(final Poi poi) {
+        TextView tvMainPlaceDetailsTitle = (TextView) findViewById(R.id.tvMainPlaceDetailsTitle);
+        TextView tvMainPlaceDetailsAddress = (TextView) findViewById(R.id.tvMainPlaceDetailsAddress);
+        final TextView detailedText = (TextView) findViewById(R.id.detailedText);
+
+        tvMainPlaceDetailsTitle.setText(poi.getTitle());
+        tvMainPlaceDetailsAddress.setText(poi.getAddress());
+
+        final Spannable wordtoSpan = new SpannableString(poi.getContentPreview());
+        wordtoSpan.setSpan(new ForegroundColorSpan(Color.BLACK), 0, poi.getContentPreview().length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+        detailedText.setText(wordtoSpan);
+
+        String readMore = " SHOW MORE";
+        Spannable readMoreSpan = new SpannableString(readMore);
+        readMoreSpan.setSpan(new ForegroundColorSpan(Color.BLUE), 0, readMore.length(), Spannable.SPAN_EXCLUSIVE_INCLUSIVE);
+        detailedText.append(readMoreSpan);
+
+        detailedText.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                detailedText.setText(poi.getContent());
+            }
+        });
+
+        bottomLargeSheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED);
+
+        View editButton = findViewById(R.id.editButton);
+        editButton.setVisibility(View.GONE);
+    }
+
+
     public void setSelectedPoisCount(int count) {
         tvPoisCount.setText(getString(R.string.create_route_pois_count, count));
     }
@@ -397,5 +435,14 @@ public class CreateRouteActivity extends ABaseActivityView<CreateRoutePresenter>
         for(int i = 0; i < markers.size(); i++) {
             markers.get(i).remove();
         }
+    }
+
+    @Override
+    public void onBackPressed() {
+        if (bottomLargeSheetBehavior.getState() == BottomSheetBehavior.STATE_EXPANDED) {
+            bottomLargeSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
+            return;
+        }
+        super.onBackPressed();
     }
 }
