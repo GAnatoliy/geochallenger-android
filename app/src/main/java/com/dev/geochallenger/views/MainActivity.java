@@ -196,7 +196,7 @@ public class MainActivity extends ABaseActivityView<MainPresenter> implements IM
         userAvatar.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (!TextUtils.isEmpty(new TokenRepository(MainActivity.this).getToken())) {
+                if (TextUtils.isEmpty(new TokenRepository(getApplicationContext()).getToken())) {
                     drawerLayout.closeDrawer(Gravity.LEFT);
                     getAccount();
                 }
@@ -213,6 +213,8 @@ public class MainActivity extends ABaseActivityView<MainPresenter> implements IM
                 return true;
             }
         });
+
+        updateNavigationDrawerInfo();
     }
 
     public void updateNavigationDrawerInfo() {
@@ -458,7 +460,7 @@ public class MainActivity extends ABaseActivityView<MainPresenter> implements IM
 
     @Override
     public void updateUserToken(LoginResponce loginResponce) {
-        TokenRepository tokenRepository = new TokenRepository(getApplication());
+        TokenRepository tokenRepository = new TokenRepository(getApplicationContext());
         tokenRepository.setToken(loginResponce.getAccess_token());
         presenter.getUser(loginResponce.getAccess_token());
     }
