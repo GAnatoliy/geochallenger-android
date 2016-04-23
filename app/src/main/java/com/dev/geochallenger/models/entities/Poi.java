@@ -5,7 +5,7 @@ package com.dev.geochallenger.models.entities;
  */
 public class Poi {
 
-    private int id;
+    private long id;
     private String title;
     private String address;
     private float latitude;
@@ -47,11 +47,11 @@ public class Poi {
         this.longitude = longitude;
     }
 
-    public int getId() {
+    public long getId() {
         return id;
     }
 
-    public void setId(int id) {
+    public void setId(long id) {
         this.id = id;
     }
 

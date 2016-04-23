@@ -4,4 +4,9 @@
     <string name="title_activity_maps">Map</string>
     <string name="title_activity_create_path">CreatePathActivity</string>
     <string name="unknown">Unknown</string>
+    <string name="dialog_create_route_message">Please enter route name</string>
+    <string name="dialog_create_route_title">Create route</string>
+    <string name="dialog_create_route_positive">Create</string>
+    <string name="dialog_create_route_negative">Cancel</string>
+    <string name="dialog_positive">Ok</string>
 </resources>

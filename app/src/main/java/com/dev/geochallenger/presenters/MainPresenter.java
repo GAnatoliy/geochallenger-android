@@ -4,11 +4,7 @@ import android.location.Address;
 
 import com.dev.geochallenger.models.entities.Poi;
 import com.dev.geochallenger.models.entities.cities.PlacesEntity;
-import com.dev.geochallenger.models.entities.cities.detailed.Access_points;
-import com.dev.geochallenger.models.entities.cities.detailed.Geometry;
-import com.dev.geochallenger.models.entities.cities.detailed.Location;
 import com.dev.geochallenger.models.entities.cities.detailed.PlaceDetailedEntity;
-import com.dev.geochallenger.models.entities.cities.detailed.Result;
 import com.dev.geochallenger.models.interfaces.IGeocoder;
 import com.dev.geochallenger.models.interfaces.IModel;
 import com.dev.geochallenger.models.interfaces.OnDataLoaded;
@@ -18,7 +14,7 @@ import com.google.android.gms.maps.model.LatLng;
 
 import java.util.List;
 
-import retrofit2.http.Query;
+import okhttp3.ResponseBody;
 
 /**
  * Created by Yuriy Diachenko on 16.04.2016.
@@ -46,7 +42,7 @@ public class MainPresenter extends IPresenter<IMainView> {
             }
 
             @Override
-            public void onError(Throwable t) {
+            public void onError(Throwable t, ResponseBody responseBody) {
                 view.showErrorMessage("Error", t.getMessage());
             }
         });
@@ -60,7 +56,7 @@ public class MainPresenter extends IPresenter<IMainView> {
             }
 
             @Override
-            public void onError(Throwable t) {
+            public void onError(Throwable t, ResponseBody responseBody) {
                 view.showErrorMessage("Error", t.getMessage());
             }
         });
@@ -74,7 +70,7 @@ public class MainPresenter extends IPresenter<IMainView> {
             }
 
             @Override
-            public void onError(Throwable t) {
+            public void onError(Throwable t, ResponseBody responseBody) {
                 view.showErrorMessage("Error", t.getMessage());
             }
         });
@@ -126,7 +122,7 @@ public class MainPresenter extends IPresenter<IMainView> {
             }
 
             @Override
-            public void onError(Throwable t) {
+            public void onError(Throwable t, ResponseBody responseBody) {
                 view.showErrorMessage("Error", t.getMessage());
             }
         });
@@ -140,7 +136,7 @@ public class MainPresenter extends IPresenter<IMainView> {
             }
 
             @Override
-            public void onError(Throwable t) {
+            public void onError(Throwable t, ResponseBody responseBody) {
                 view.showErrorMessage("Error", t.getMessage());
             }
         });

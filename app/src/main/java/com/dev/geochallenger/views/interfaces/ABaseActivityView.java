@@ -3,6 +3,7 @@ package com.dev.geochallenger.views.interfaces;
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
@@ -74,8 +75,12 @@ public abstract class ABaseActivityView<T extends IPresenter> extends AppCompatA
 
     @Override
     public void showErrorMessage(final String title, final String body) {
-        //TODO
         Log.d("TAG", "showErrorMessage: " + body);
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle(title);
+        builder.setMessage(body);
+        builder.setNeutralButton(R.string.dialog_positive, null);
+        builder.show();
     }
 
     protected void startActivityWithTransition(Intent intent) {

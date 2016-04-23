@@ -1,17 +1,22 @@
 package com.dev.geochallenger.views;
 
+import android.content.DialogInterface;
 import android.graphics.Color;
 import android.location.Address;
 import android.location.Location;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.design.widget.FloatingActionButton;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.Toolbar;
 import android.text.Editable;
+import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AutoCompleteTextView;
+import android.widget.EditText;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.dev.geochallenger.R;
@@ -20,6 +25,7 @@ import com.dev.geochallenger.models.RetrofitModel;
 import com.dev.geochallenger.models.entities.Poi;
 import com.dev.geochallenger.models.entities.cities.PlacesEntity;
 import com.dev.geochallenger.models.entities.cities.Predictions;
+import com.dev.geochallenger.models.repositories.TokenRepository;
 import com.dev.geochallenger.presenters.CreateRoutePresenter;
 import com.dev.geochallenger.views.adapters.CreateRouteSearchAdapter;
 import com.dev.geochallenger.views.interfaces.ABaseActivityView;
@@ -59,7 +65,7 @@ public class CreateRouteActivity extends ABaseActivityView<CreateRoutePresenter>
 
     @Override
     protected CreateRoutePresenter createPresenter() {
-        return new CreateRoutePresenter(this, RetrofitModel.getInstance(), selectedLocation, selectedAddress, myLocation);
+        return new CreateRoutePresenter(this, RetrofitModel.getInstance(), selectedLocation, selectedAddress, myLocation, new TokenRepository(getApplicationContext()));
     }
 
     @Override
@@ -80,7 +86,7 @@ public class CreateRouteActivity extends ABaseActivityView<CreateRoutePresenter>
         fabCreateRoute.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                presenter.createRoute();
+                showCreateRouteDialog();
             }
         });
 
@@ -97,6 +103,34 @@ public class CreateRouteActivity extends ABaseActivityView<CreateRoutePresenter>
         MapsInitializer.initialize(this);
 
         setSearchFrom();
+    }
+
+    private void showCreateRouteDialog() {
+
+        final EditText input = new EditText(this);
+        LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(
+                LinearLayout.LayoutParams.MATCH_PARENT,
+                LinearLayout.LayoutParams.WRAP_CONTENT);
+        input.setLayoutParams(lp);
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle(R.string.dialog_create_route_title);
+        builder.setMessage(R.string.dialog_create_route_message);
+        builder.setView(input);
+        builder.setPositiveButton(R.string.dialog_create_route_positive, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                if (!TextUtils.isEmpty(input.getText())) {
+                    presenter.createRoute(input.getText().toString());
+                }
+            }
+        });
+        builder.setNegativeButton(R.string.dialog_create_route_negative, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.dismiss();
+            }
+        });
+        builder.show();
     }
 
     public void setSearchFrom() {

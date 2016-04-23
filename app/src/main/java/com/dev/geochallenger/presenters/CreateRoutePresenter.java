@@ -2,7 +2,9 @@ package com.dev.geochallenger.presenters;
 
 import android.location.Address;
 import android.location.Location;
+import android.support.annotation.Nullable;
 
+import com.dev.geochallenger.models.entities.DefaultResponse;
 import com.dev.geochallenger.models.entities.Poi;
 import com.dev.geochallenger.models.entities.cities.PlacesEntity;
 import com.dev.geochallenger.models.entities.directions.GoogleDirectionsEntity;
@@ -11,15 +13,20 @@ import com.dev.geochallenger.models.entities.directions.Route;
 import com.dev.geochallenger.models.interfaces.IModel;
 import com.dev.geochallenger.models.interfaces.OnDataLoaded;
 import com.dev.geochallenger.models.parsers.DirectionsJSONParser;
+import com.dev.geochallenger.models.repositories.interfaces.ITokenRepository;
 import com.dev.geochallenger.presenters.interfaces.IPresenter;
 import com.dev.geochallenger.views.interfaces.ICreateRouteView;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.PolylineOptions;
+import com.google.gson.Gson;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+
+import okhttp3.ResponseBody;
 
 /**
  * Created by Yuriy Diachenko on 16.04.2016.
@@ -32,16 +39,20 @@ public class CreateRoutePresenter extends IPresenter<ICreateRouteView> {
     private String destination;
     private double routeDistance;
     private Location myLocation;
+    private ITokenRepository tokenRepository;
     private LatLng selectedLocation;
     private Address selectedAddress;
     private String routePath;
+    private List<Poi> waypointPois;
 
-    public CreateRoutePresenter(ICreateRouteView view, IModel restClient, LatLng selectedLocation, Address selectedAddress, Location myLocation) {
+    public CreateRoutePresenter(ICreateRouteView view, IModel restClient, LatLng selectedLocation,
+                                Address selectedAddress, Location myLocation, ITokenRepository tokenRepository) {
         super(view);
         this.restClient = restClient;
         this.selectedLocation = selectedLocation;
         this.selectedAddress = selectedAddress;
         this.myLocation = myLocation;
+        this.tokenRepository = tokenRepository;
     }
 
     @Override
@@ -81,7 +92,7 @@ public class CreateRoutePresenter extends IPresenter<ICreateRouteView> {
             }
 
             @Override
-            public void onError(Throwable t) {
+            public void onError(Throwable t, ResponseBody responseBody) {
                 view.hideProgress();
                 view.showRouteCalculationErrorMessage();
             }
@@ -189,18 +200,21 @@ public class CreateRoutePresenter extends IPresenter<ICreateRouteView> {
         restClient.getPoiList(topLeftLatitude, topLeftLongitude, bottomRightLatitude, bottomRightLongitude, new OnDataLoaded<List<Poi>>() {
             @Override
             public void onSuccess(List<Poi> pois) {
+                waypointPois = pois;
                 view.showPois(pois);
                 view.hideProgress();
             }
 
             @Override
-            public void onError(Throwable t) {
+            public void onError(Throwable t, ResponseBody responseBody) {
                 view.hideProgress();
             }
         });
     }
 
     public void createRoute(String name) {
+        view.showProgress();
+
         com.dev.geochallenger.models.Route route = new com.dev.geochallenger.models.Route();
         route.setDistanceInMeters(routeDistance);
         route.setEndPointLatitude(selectedLocation.latitude);
@@ -209,6 +223,38 @@ public class CreateRoutePresenter extends IPresenter<ICreateRouteView> {
         route.setStartPointLongitude(myLocation.getLongitude());
         route.setName(name);
         route.setRoutePath(routePath);
+        route.setPoisIds(extractPoisIds());
+
+        restClient.createRoute(route, tokenRepository.getToken(), new OnDataLoaded<DefaultResponse>() {
+            @Override
+            public void onSuccess(DefaultResponse defaultResponse) {
+                view.hideProgress();
+            }
+
+            @Override
+            public void onError(Throwable t, @Nullable ResponseBody error) {
+                view.hideProgress();
+                if (error != null) {
+                    try {
+                        DefaultResponse defaultResponse = new Gson().fromJson(error.string(), DefaultResponse.class);
+                        view.showErrorMessage("Error", defaultResponse.getMessage());
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+        });
+    }
+
+    private List<Long> extractPoisIds() {
+        List<Long> poiIds = new ArrayList<>();
+        if (waypointPois != null) {
+            for (int i = 0; i < waypointPois.size(); i++) {
+                poiIds.add(waypointPois.get(i).getId());
+            }
+        }
+
+        return poiIds;
     }
 
     public void findPlaces(String newText, String key, final boolean from) {
@@ -219,7 +265,7 @@ public class CreateRoutePresenter extends IPresenter<ICreateRouteView> {
             }
 
             @Override
-            public void onError(Throwable t) {
+            public void onError(Throwable t, ResponseBody responseBody) {
                 view.showErrorMessage("Error", t.getMessage());
             }
         });

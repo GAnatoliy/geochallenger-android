@@ -1,6 +1,7 @@
 package com.dev.geochallenger.models;
 
 import com.dev.geochallenger.models.api.GeoApi;
+import com.dev.geochallenger.models.entities.DefaultResponse;
 import com.dev.geochallenger.models.entities.Poi;
 import com.dev.geochallenger.models.entities.cities.PlacesEntity;
 import com.dev.geochallenger.models.entities.cities.detailed.PlaceDetailedEntity;
@@ -52,17 +53,21 @@ public class RetrofitModel implements IModel {
     }
 
     @Override
-    public void getPoiList(final OnDataLoaded<List<Poi>> dataLoaded) {
+    public void getPoiList(final OnDataLoaded<List<Poi>> callback) {
         final Call<List<Poi>> listCall = service.listPois("", null, null, null, null);
         listCall.enqueue(new Callback<List<Poi>>() {
             @Override
             public void onResponse(Call<List<Poi>> call, Response<List<Poi>> response) {
-                dataLoaded.onSuccess(response.body());
+                if (response.isSuccessful()) {
+                    callback.onSuccess(response.body());
+                } else {
+                    callback.onError(new Throwable("error"), response.errorBody());
+                }
             }
 
             @Override
             public void onFailure(Call<List<Poi>> call, Throwable t) {
-                dataLoaded.onError(t);
+                callback.onError(t, null);
             }
         });
     }
@@ -73,12 +78,16 @@ public class RetrofitModel implements IModel {
         listCall.enqueue(new Callback<List<Poi>>() {
             @Override
             public void onResponse(Call<List<Poi>> call, Response<List<Poi>> response) {
-                callback.onSuccess(response.body());
+                if (response.isSuccessful()) {
+                    callback.onSuccess(response.body());
+                } else {
+                    callback.onError(new Throwable("error"), response.errorBody());
+                }
             }
 
             @Override
             public void onFailure(Call<List<Poi>> call, Throwable t) {
-                callback.onError(t);
+                callback.onError(t, null);
             }
         });
     }
@@ -89,12 +98,16 @@ public class RetrofitModel implements IModel {
         listCall.enqueue(new Callback<List<Poi>>() {
             @Override
             public void onResponse(Call<List<Poi>> call, Response<List<Poi>> response) {
-                callback.onSuccess(response.body());
+                if (response.isSuccessful()) {
+                    callback.onSuccess(response.body());
+                } else {
+                    callback.onError(new Throwable("error"), response.errorBody());
+                }
             }
 
             @Override
             public void onFailure(Call<List<Poi>> call, Throwable t) {
-                callback.onError(t);
+                callback.onError(t, null);
             }
         });
     }
@@ -106,76 +119,116 @@ public class RetrofitModel implements IModel {
         listCall.enqueue(new Callback<List<Poi>>() {
             @Override
             public void onResponse(Call<List<Poi>> call, Response<List<Poi>> response) {
-                callback.onSuccess(response.body());
+                if (response.isSuccessful()) {
+                    callback.onSuccess(response.body());
+                } else {
+                    callback.onError(new Throwable("error"), response.errorBody());
+                }
             }
 
             @Override
             public void onFailure(Call<List<Poi>> call, Throwable t) {
-                callback.onError(t);
+                callback.onError(t, null);
             }
         });
     }
 
     @Override
-    public void getPoiDetails(String id, final OnDataLoaded<Poi> dataLoaded) {
+    public void getPoiDetails(String id, final OnDataLoaded<Poi> callback) {
         final Call<Poi> poiCall = service.listPoiById(id);
         poiCall.enqueue(new Callback<Poi>() {
             @Override
             public void onResponse(Call<Poi> call, Response<Poi> response) {
-                dataLoaded.onSuccess(response.body());
+                if (response.isSuccessful()) {
+                    callback.onSuccess(response.body());
+                } else {
+                    callback.onError(new Throwable("error"), response.errorBody());
+                }
             }
 
             @Override
             public void onFailure(Call<Poi> call, Throwable t) {
-                dataLoaded.onError(t);
+                callback.onError(t, null);
             }
         });
     }
 
     @Override
-    public void calculateRoute(String origin, String destination, String waypoints, String key, final OnDataLoaded<GoogleDirectionsEntity> dataLoaded) {
+    public void calculateRoute(String origin, String destination, String waypoints, String key, final OnDataLoaded<GoogleDirectionsEntity> callback) {
         final Call<GoogleDirectionsEntity> poiCall = service.calculateRoute(origin, destination, waypoints, key);
         poiCall.enqueue(new Callback<GoogleDirectionsEntity>() {
             @Override
             public void onResponse(Call<GoogleDirectionsEntity> call, Response<GoogleDirectionsEntity> response) {
-                dataLoaded.onSuccess(response.body());
+                if (response.isSuccessful()) {
+                    callback.onSuccess(response.body());
+                } else {
+                    callback.onError(new Throwable("error"), response.errorBody());
+                }
             }
 
             @Override
             public void onFailure(Call<GoogleDirectionsEntity> call, Throwable t) {
-                dataLoaded.onError(t);
+                callback.onError(t, null);
             }
         });
     }
 
     @Override
-    public void getPlaces(String input, String key, final OnDataLoaded<PlacesEntity> dataLoaded) {
+    public void getPlaces(String input, String key, final OnDataLoaded<PlacesEntity> callback) {
         final Call<PlacesEntity> cities = service.getPlaces(input, "en", key);
         cities.enqueue(new Callback<PlacesEntity>() {
             @Override
             public void onResponse(Call<PlacesEntity> call, Response<PlacesEntity> response) {
-                dataLoaded.onSuccess(response.body());
+                if (response.isSuccessful()) {
+                    callback.onSuccess(response.body());
+                } else {
+                    callback.onError(new Throwable("error"), response.errorBody());
+                }
             }
 
             @Override
             public void onFailure(Call<PlacesEntity> call, Throwable t) {
-                dataLoaded.onError(t);
+                callback.onError(t, null);
             }
         });
     }
 
     @Override
-    public void getPlace(String placeid, String key, final OnDataLoaded<PlaceDetailedEntity> dataLoaded) {
+    public void getPlace(String placeid, String key, final OnDataLoaded<PlaceDetailedEntity> callback) {
         final Call<PlaceDetailedEntity> cities = service.getPlaceDetailed(placeid, key);
         cities.enqueue(new Callback<PlaceDetailedEntity>() {
             @Override
             public void onResponse(Call<PlaceDetailedEntity> call, Response<PlaceDetailedEntity> response) {
-                dataLoaded.onSuccess(response.body());
+                if (response.isSuccessful()) {
+                    callback.onSuccess(response.body());
+                } else {
+                    callback.onError(new Throwable("error"), response.errorBody());
+                }
             }
 
             @Override
             public void onFailure(Call<PlaceDetailedEntity> call, Throwable t) {
-                dataLoaded.onError(t);
+                callback.onError(t, null);
+            }
+        });
+    }
+
+    @Override
+    public void createRoute(Route route, String token, final OnDataLoaded<DefaultResponse> callback) {
+        final Call<DefaultResponse> response = service.createRoute("Bearer " + token, route);
+        response.enqueue(new Callback<DefaultResponse>() {
+            @Override
+            public void onResponse(Call<DefaultResponse> call, Response<DefaultResponse> response) {
+                if (response.isSuccessful()) {
+                    callback.onSuccess(response.body());
+                } else {
+                    callback.onError(new Throwable("error"), response.errorBody());
+                }
+            }
+
+            @Override
+            public void onFailure(Call<DefaultResponse> call, Throwable t) {
+                callback.onError(t, null);
             }
         });
     }

@@ -1,5 +1,7 @@
 package com.dev.geochallenger.models.api;
 
+import com.dev.geochallenger.models.Route;
+import com.dev.geochallenger.models.entities.DefaultResponse;
 import com.dev.geochallenger.models.entities.Poi;
 import com.dev.geochallenger.models.entities.cities.PlacesEntity;
 import com.dev.geochallenger.models.entities.cities.detailed.PlaceDetailedEntity;
@@ -8,7 +10,9 @@ import com.dev.geochallenger.models.entities.directions.GoogleDirectionsEntity;
 import java.util.List;
 
 import retrofit2.Call;
+import retrofit2.http.Body;
 import retrofit2.http.GET;
+import retrofit2.http.Header;
 import retrofit2.http.Headers;
 import retrofit2.http.POST;
 import retrofit2.http.Path;
@@ -70,4 +74,11 @@ public interface GeoApi {
             "Content-Type: application/json"})
     @GET("api/pois")
     Call<List<Poi>> listPois(@Query("query") String query);
+
+    @Headers({
+            "Accept: application/json",
+            "Content-Type: application/json"})
+    @POST("api/routes")
+    Call<DefaultResponse> createRoute(@Header("WWW-Authenticate") String bearerToken,
+                                      @Body Route route);
 }
