@@ -1,4 +1,4 @@
-package com.dev.geochallenger.models;
+package com.dev.geochallenger.models.entities.routes;
 
 import java.util.List;
 

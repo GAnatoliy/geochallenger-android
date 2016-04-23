@@ -1,12 +1,13 @@
 package com.dev.geochallenger.models.interfaces;
 
 
-import com.dev.geochallenger.models.Route;
+import com.dev.geochallenger.models.entities.routes.Route;
 import com.dev.geochallenger.models.entities.DefaultResponse;
 import com.dev.geochallenger.models.entities.Poi;
 import com.dev.geochallenger.models.entities.cities.PlacesEntity;
 import com.dev.geochallenger.models.entities.cities.detailed.PlaceDetailedEntity;
 import com.dev.geochallenger.models.entities.directions.GoogleDirectionsEntity;
+import com.dev.geochallenger.models.entities.routes.RouteResponse;
 
 import java.util.List;
 
@@ -29,4 +30,10 @@ public interface IModel {
     void getPlace(String placeid, String key, final OnDataLoaded<PlaceDetailedEntity> dataLoaded);
 
     void createRoute(Route route, String token, OnDataLoaded<DefaultResponse> callback);
+
+    void updateRoute(int routeId, Route route, String token, OnDataLoaded<DefaultResponse> callback);
+
+    void deleteRoute(int routeId, String token, OnDataLoaded<DefaultResponse> callback);
+
+    void getRoutesList(String token, OnDataLoaded<List<RouteResponse>> callback);
 }

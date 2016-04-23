@@ -215,7 +215,7 @@ public class CreateRoutePresenter extends IPresenter<ICreateRouteView> {
     public void createRoute(String name) {
         view.showProgress();
 
-        com.dev.geochallenger.models.Route route = new com.dev.geochallenger.models.Route();
+        com.dev.geochallenger.models.entities.routes.Route route = new com.dev.geochallenger.models.entities.routes.Route();
         route.setDistanceInMeters(routeDistance);
         route.setEndPointLatitude(selectedLocation.latitude);
         route.setEndPointLongitude(selectedLocation.longitude);
