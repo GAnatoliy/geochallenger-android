@@ -84,7 +84,10 @@ public class MainActivity extends ABaseActivityView<MainPresenter> implements IM
     private MapView mapView;
     private GoogleMap map;
     private SearchView searchView;
-    private String SCOPE = "oauth2:https://www.googleapis.com/auth/userinfo.profile";
+    //    private String SCOPE = "oauth2:https://www.googleapis.com/auth/userinfo.profile,https://www.googleapis.com/auth/userinfo.email";
+    String SCOPE = "oauth2: https://www.googleapis.com/auth/userinfo.profile " +
+            "https://www.googleapis.com/auth/userinfo.email " +
+            "https://www.googleapis.com/auth/plus.login";
     private PlacesEntity placesEntity;
     private BottomSheetBehavior<View> bottomSheetBehavior;
     private Marker customMarker;
@@ -575,8 +578,8 @@ public class MainActivity extends ABaseActivityView<MainPresenter> implements IM
 //        }
     }
 
-    public Bitmap resizeMapIcons(int drawableId, int width, int height){
-        Bitmap imageBitmap = BitmapFactory.decodeResource(getResources(),drawableId);
+    public Bitmap resizeMapIcons(int drawableId, int width, int height) {
+        Bitmap imageBitmap = BitmapFactory.decodeResource(getResources(), drawableId);
         Bitmap resizedBitmap = Bitmap.createScaledBitmap(imageBitmap, width, height, false);
         return resizedBitmap;
     }
