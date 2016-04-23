@@ -5,22 +5,28 @@
     android:background="@drawable/bg"
     android:orientation="vertical">
 
-    <ImageView
-        android:id="@+id/imageViewAvatar"
-        android:layout_width="100dp"
-        android:layout_height="100dp"
-        android:layout_centerHorizontal="true"
-        android:layout_marginTop="20dp"
-        android:background="@drawable/ava_surface"
-        android:padding="20dp"
-        android:src="@drawable/male_user_white" />
+    <RelativeLayout
+        android:id="@+id/imageViewAvatarContainer"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
 
+        <ImageView
+            android:id="@+id/imageViewAvatar"
+            android:layout_width="100dp"
+            android:layout_height="100dp"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="20dp"
+            android:background="@drawable/ava_surface"
+            android:padding="20dp"
+            android:src="@drawable/male_user_white" />
+
+    </RelativeLayout>
 
     <LinearLayout
         android:id="@+id/nameContainer"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/imageViewAvatar"
+        android:layout_below="@+id/imageViewAvatarContainer"
         android:layout_marginTop="10dp"
         android:visibility="gone">
 

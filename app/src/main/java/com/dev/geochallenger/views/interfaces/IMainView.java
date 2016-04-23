@@ -35,5 +35,7 @@ public interface IMainView extends IView {
     void updateUserToken(LoginResponce loginResponce);
 
     void updateUserData(UserResponce loginResponce);
+
+    void invalidToken(String token);
 }
 

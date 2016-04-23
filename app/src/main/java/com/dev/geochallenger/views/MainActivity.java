@@ -1,6 +1,7 @@
 package com.dev.geochallenger.views;
 
 import android.accounts.AccountManager;
+import android.app.Activity;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -19,6 +20,7 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -46,7 +48,9 @@ import com.dev.geochallenger.views.adapters.RecyclerRelatedPhotosAdapter;
 import com.dev.geochallenger.views.controlers.SearchControler;
 import com.dev.geochallenger.views.interfaces.ABaseActivityView;
 import com.dev.geochallenger.views.interfaces.IMainView;
+import com.google.android.gms.auth.GoogleAuthException;
 import com.google.android.gms.auth.GoogleAuthUtil;
+import com.google.android.gms.auth.UserRecoverableAuthException;
 import com.google.android.gms.common.AccountPicker;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
@@ -63,6 +67,7 @@ import com.lapism.searchview.adapter.SearchAdapter;
 import com.lapism.searchview.adapter.SearchItem;
 import com.lapism.searchview.view.SearchView;
 
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -70,10 +75,11 @@ import java.util.Map;
 public class MainActivity extends ABaseActivityView<MainPresenter> implements IMainView, GoogleApiClient.OnConnectionFailedListener {
 
     private static final String TAG = MainActivity.class.getSimpleName();
-    private static final int REQUEST_CODE_PICK_ACCOUNT = 1000;
-
     private static final int MENU_MY_ROUTES_INDEX = 0;
     private static final int MENU_LOG_OUT_INDEX = 1;
+
+    private static final int REQUEST_AUTHORIZATION = 1;
+    private static final int REQUEST_CODE_PICK_ACCOUNT = 2;
 
     private MapView mapView;
     private GoogleMap map;
@@ -325,6 +331,8 @@ public class MainActivity extends ABaseActivityView<MainPresenter> implements IM
         searchControler.init();
     }
 
+    String mEmail;
+
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
@@ -332,19 +340,33 @@ public class MainActivity extends ABaseActivityView<MainPresenter> implements IM
         if (requestCode == REQUEST_CODE_PICK_ACCOUNT) {
             if (resultCode == RESULT_OK) {
                 showProgress();
-                final String mEmail = data.getStringExtra(AccountManager.KEY_ACCOUNT_NAME);
+
+                mEmail = data.getStringExtra(AccountManager.KEY_ACCOUNT_NAME);
                 new Thread(new Runnable() {
                     @Override
                     public void run() {
                         String token = "";
                         try {
                             token = GoogleAuthUtil.getToken(MainActivity.this, mEmail, SCOPE);
+                            Log.d(TAG, "REQUEST_CODE_PICK_ACCOUNT: token: " + token + " mEmail: " + mEmail);
                             presenter.login(mEmail, token);
+                        } catch (UserRecoverableAuthException e) {
+                            startActivityForResult(e.getIntent(), REQUEST_AUTHORIZATION);
                         } catch (Exception e) {
                             e.printStackTrace();
                         }
                     }
                 }).start();
+            }
+        }
+        if (requestCode == REQUEST_AUTHORIZATION) {
+            if (resultCode == Activity.RESULT_OK) {
+                Bundle extra = data.getExtras();
+                String oneTimeToken = extra.getString("authtoken");
+                Log.d(TAG, "REQUEST_AUTHORIZATION: token: " + oneTimeToken + " mEmail: " + mEmail);
+                presenter.login(mEmail, oneTimeToken);
+            } else {
+                hideProgress();
             }
         }
     }
@@ -486,6 +508,24 @@ public class MainActivity extends ABaseActivityView<MainPresenter> implements IM
     }
 
     @Override
+    public void invalidToken(final String token) {
+        Thread thread = new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    GoogleAuthUtil.clearToken(getApplicationContext(), token);
+                } catch (GoogleAuthException e) {
+                    e.printStackTrace();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        });
+        thread.start();
+
+    }
+
+    @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.menu_main, menu);
         return true;
@@ -504,7 +544,7 @@ public class MainActivity extends ABaseActivityView<MainPresenter> implements IM
 
     @Override
     public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
-
+        hideProgress();
     }
 
     @Override

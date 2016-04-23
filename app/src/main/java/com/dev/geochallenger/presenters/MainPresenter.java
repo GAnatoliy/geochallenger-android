@@ -3,6 +3,7 @@ package com.dev.geochallenger.presenters;
 import android.location.Address;
 import android.support.annotation.Nullable;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 
@@ -20,6 +21,7 @@ import com.dev.geochallenger.presenters.interfaces.IPresenter;
 import com.dev.geochallenger.views.interfaces.IMainView;
 import com.google.android.gms.maps.model.LatLng;
 
+import java.io.IOException;
 import java.util.List;
 
 import okhttp3.ResponseBody;
@@ -142,6 +144,7 @@ public class MainPresenter extends IPresenter<IMainView> {
             @Override
             public void onError(Throwable t, ResponseBody responseBody) {
                 view.showErrorMessage("Error", t.getMessage());
+                view.hideProgress();
             }
         });
     }
@@ -156,11 +159,12 @@ public class MainPresenter extends IPresenter<IMainView> {
             @Override
             public void onError(Throwable t, ResponseBody responseBody) {
                 view.showErrorMessage("Error", t.getMessage());
+                view.hideProgress();
             }
         });
     }
 
-    public void login(String email, String token) {
+    public void login(String email, final String token) {
         model.login(email, token, new OnDataLoaded<LoginResponce>() {
             @Override
             public void onSuccess(LoginResponce loginResponce) {
@@ -169,7 +173,13 @@ public class MainPresenter extends IPresenter<IMainView> {
 
             @Override
             public void onError(Throwable t, @Nullable ResponseBody error) {
-                view.showErrorMessage("Error", t.getMessage());
+                view.invalidToken(token);
+                try {
+                    view.showErrorMessage("Error", error.string());
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+                view.hideProgress();
             }
         });
     }
@@ -184,6 +194,7 @@ public class MainPresenter extends IPresenter<IMainView> {
             @Override
             public void onError(Throwable t, @Nullable ResponseBody error) {
                 view.showErrorMessage("Error", t.getMessage());
+                view.hideProgress();
             }
         });
     }
