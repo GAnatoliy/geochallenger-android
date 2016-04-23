@@ -279,12 +279,6 @@ public class MainActivity extends ABaseActivityView<MainPresenter> implements IM
         String readMore = " SHOW MORE";
         Spannable readMoreSpan = new SpannableString(readMore);
         readMoreSpan.setSpan(new ForegroundColorSpan(Color.BLUE), 0, readMore.length(), Spannable.SPAN_EXCLUSIVE_INCLUSIVE);
-//        readMoreSpan.setSpan(new ClickableSpan() {
-//            @Override
-//            public void onClick(View widget) {
-//                Log.d("asdasd", "asdsa");
-//            }
-//        }, 0, readMore.length(), Spannable.SPAN_EXCLUSIVE_INCLUSIVE);
         detailedText.append(readMoreSpan);
 
         detailedText.setOnClickListener(new View.OnClickListener() {
@@ -294,8 +288,18 @@ public class MainActivity extends ABaseActivityView<MainPresenter> implements IM
             }
         });
 
-
         bottomLargeSheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED);
+
+        View editButton = findViewById(R.id.editButton);
+        editButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(MainActivity.this, CreatePoiActivity.class);
+                startActivity(intent);
+            }
+        });
+
+
     }
 
     public void getAccount() {

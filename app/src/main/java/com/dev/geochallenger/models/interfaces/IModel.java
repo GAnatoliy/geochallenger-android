@@ -1,6 +1,7 @@
 package com.dev.geochallenger.models.interfaces;
 
 
+import com.dev.geochallenger.models.entities.PoiRequest;
 import com.dev.geochallenger.models.entities.login.LoginResponce;
 import com.dev.geochallenger.models.entities.login.UserResponce;
 import com.dev.geochallenger.models.entities.routes.Route;
@@ -42,4 +43,6 @@ public interface IModel {
     void login(String uid, String token, OnDataLoaded<LoginResponce> callback);
 
     void getUser(String token, OnDataLoaded<UserResponce> callback);
+
+    void createPoi(PoiRequest poiRequest, String token, final OnDataLoaded<Poi> callback);
 }

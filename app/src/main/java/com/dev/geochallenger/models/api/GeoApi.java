@@ -1,5 +1,6 @@
 package com.dev.geochallenger.models.api;
 
+import com.dev.geochallenger.models.entities.PoiRequest;
 import com.dev.geochallenger.models.entities.login.LoginResponce;
 import com.dev.geochallenger.models.entities.login.UserResponce;
 import com.dev.geochallenger.models.entities.routes.Route;
@@ -46,12 +47,6 @@ public interface GeoApi {
             "Content-Type: application/json"})
     @GET("api/pois/{id}")
     Call<Poi> listPoiById(@Path("id") String _id);
-
-    @Headers({
-            "Accept: application/json",
-            "Content-Type: application/json"})
-    @POST("poi/{id}")
-    void createPoi(@Path("id") String _id);
 
     @Headers({
             "Accept: application/json",
@@ -123,4 +118,10 @@ public interface GeoApi {
     Call<UserResponce> getUser(@Header("authorization") String bearerToken);
 
 
+    @Headers({
+            "Accept: application/json",
+            "Content-Type: application/json"})
+    @POST("api/pois")
+    Call<Poi> createPoi(@Header("authorization") String bearerToken,
+                   @Body PoiRequest request);
 }

@@ -3,6 +3,7 @@ package com.dev.geochallenger.models;
 import com.dev.geochallenger.models.api.GeoApi;
 import com.dev.geochallenger.models.entities.DefaultResponse;
 import com.dev.geochallenger.models.entities.Poi;
+import com.dev.geochallenger.models.entities.PoiRequest;
 import com.dev.geochallenger.models.entities.cities.PlacesEntity;
 import com.dev.geochallenger.models.entities.cities.detailed.PlaceDetailedEntity;
 import com.dev.geochallenger.models.entities.directions.GoogleDirectionsEntity;
@@ -332,6 +333,26 @@ public class RetrofitModel implements IModel {
 
             @Override
             public void onFailure(Call<UserResponce> call, Throwable t) {
+                callback.onError(t, null);
+            }
+        });
+    }
+
+    @Override
+    public void createPoi(PoiRequest poiRequest, String token, final OnDataLoaded<Poi> callback) {
+        final Call<Poi> response = service.createPoi("bearer " + token, poiRequest);
+        response.enqueue(new Callback<Poi>() {
+            @Override
+            public void onResponse(Call<Poi> call, Response<Poi> response) {
+                if (response.isSuccessful()) {
+                    callback.onSuccess(response.body());
+                } else {
+                    callback.onError(new Throwable("error"), response.errorBody());
+                }
+            }
+
+            @Override
+            public void onFailure(Call<Poi> call, Throwable t) {
                 callback.onError(t, null);
             }
         });
