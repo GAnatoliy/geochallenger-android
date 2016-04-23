@@ -77,17 +77,21 @@ public class MainPresenter extends IPresenter<IMainView> {
     }
 
 
-    public void onMapLongClick(LatLng latLng) {
+    public void onLocationSelected(LatLng latLng, final boolean isPoiSelected) {
         selectedPlaceLocation = latLng;
-        view.setCustomMarker(latLng);
-        view.showPlaceDetails();
+        if (!isPoiSelected) {
+            view.setCustomMarker(latLng);
+            view.showPlaceDetails();
+        }
         geocoder.getAddress(latLng, new IGeocoder.IGeocoderListener() {
 
             @Override
             public void onAddressFetched(Address address) {
                 selectedPlaceAddress = address;
-                if (!isStopped) {
-                    view.updatePlaceDetailsWithAddress(address);
+                if (!isPoiSelected) {
+                    if (!isStopped) {
+                        view.updatePlaceDetailsWithAddress(address);
+                    }
                 }
             }
 

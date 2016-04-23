@@ -10,7 +10,6 @@ import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.BottomSheetBehavior;
-import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -19,8 +18,8 @@ import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
@@ -38,7 +37,6 @@ import com.dev.geochallenger.views.adapters.RecyclerRelatedPhotosAdapter;
 import com.dev.geochallenger.views.controlers.SearchControler;
 import com.dev.geochallenger.views.interfaces.ABaseActivityView;
 import com.dev.geochallenger.views.interfaces.IMainView;
-import com.google.android.gms.auth.GoogleAuthException;
 import com.google.android.gms.auth.GoogleAuthUtil;
 import com.google.android.gms.common.AccountPicker;
 import com.google.android.gms.common.ConnectionResult;
@@ -55,11 +53,9 @@ import com.lapism.searchview.adapter.SearchAdapter;
 import com.lapism.searchview.adapter.SearchItem;
 import com.lapism.searchview.view.SearchView;
 
-import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Random;
 
 public class MainActivity extends ABaseActivityView<MainPresenter> implements IMainView, GoogleApiClient.OnConnectionFailedListener {
 
@@ -78,6 +74,7 @@ public class MainActivity extends ABaseActivityView<MainPresenter> implements IM
     private PlaceDetailedEntity selectedLatLng;
     private Map<Marker, Poi> markers = new HashMap<>();
     private BottomSheetBehavior<View> bottomLargeSheetBehavior;
+    private ViewGroup llGotoPoi;
 
     @Override
     protected MainPresenter createPresenter() {
@@ -105,6 +102,13 @@ public class MainActivity extends ABaseActivityView<MainPresenter> implements IM
         bottomLargeSheetBehavior = BottomSheetBehavior.from(findViewById(R.id.nsvLargeMainActivity));
         tvSelectedPlaceCity = (TextView) findViewById(R.id.tvMainPlaceDetailsCity);
         tvSelectedPlace = (TextView) findViewById(R.id.tvMainPlaceDetails);
+        llGotoPoi = (ViewGroup) findViewById(R.id.ll_detailed_poi_gotto);
+        llGotoPoi.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                presenter.createRouteClicked();
+            }
+        });
 
         // Gets the MapView from the XML layout and creates it
         mapView = (MapView) findViewById(R.id.mvFeed);
@@ -141,7 +145,7 @@ public class MainActivity extends ABaseActivityView<MainPresenter> implements IM
         map.setOnMapLongClickListener(new GoogleMap.OnMapLongClickListener() {
             @Override
             public void onMapLongClick(LatLng latLng) {
-                presenter.onMapLongClick(latLng);
+                presenter.onLocationSelected(latLng, false);
             }
         });
 
@@ -161,6 +165,7 @@ public class MainActivity extends ABaseActivityView<MainPresenter> implements IM
                     if (state == BottomSheetBehavior.STATE_COLLAPSED || state == BottomSheetBehavior.STATE_SETTLING) {
                         bottomLargeSheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED);
                         setDetailedPoiInfo(markers.get(marker));
+                        presenter.onLocationSelected(marker.getPosition(), true);
                     }
                 }
                 return true;
