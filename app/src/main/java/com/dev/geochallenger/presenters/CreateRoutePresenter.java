@@ -188,8 +188,11 @@ public class CreateRoutePresenter extends IPresenter<ICreateRouteView> {
     }
 
     public int toggleWaypoints(LatLng point) {
-        Poi poi = getPoiByLocation(point);
+        return toggleWaypoints(getPoiByLocation(point));
 
+    }
+
+    public int toggleWaypoints(Poi poi) {
         if (poi != null) {
             if (waypoints.contains(poi)) {
                 waypoints.remove(poi);
@@ -203,6 +206,7 @@ public class CreateRoutePresenter extends IPresenter<ICreateRouteView> {
 
         return waypoints.size();
     }
+
 
     private Poi getPoiByLocation(LatLng location) {
         for (int i = 0; i < poisNearMe.size(); i++) {

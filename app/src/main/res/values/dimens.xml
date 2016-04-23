@@ -9,5 +9,8 @@
     <dimen name="custom_marker_size">15dp</dimen>
     <dimen name="marker_width">30dp</dimen>
     <dimen name="marker_height">44dp</dimen>
+    <dimen name="create_route_bottom_sheet_expanded_scroll">250dp</dimen>
+    <dimen name="create_route_bottom_sheet_collapsed_scroll">100dp</dimen>
+    <dimen name="create_route_bottom_sheet_text_height">800dp</dimen>
 
 </resources>

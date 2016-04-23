@@ -4,12 +4,16 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
+import android.graphics.Rect;
 import android.location.Address;
 import android.location.Location;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.design.widget.BottomSheetBehavior;
+import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.FloatingActionButton;
+import android.support.v4.view.ViewCompat;
+import android.support.v4.widget.NestedScrollView;
 import android.text.Editable;
 import android.text.Spannable;
 import android.text.SpannableString;
@@ -74,6 +78,8 @@ public class CreateRouteActivity extends ABaseActivityView<CreateRoutePresenter>
     private Marker destinationMarker;
     private RouteResponse routeResponse;
     private BottomSheetBehavior<View> bottomLargeSheetBehavior;
+    private View bottomSheet;
+    private CoordinatorLayout coordinatorLayout;
 
     @Override
     protected CreateRoutePresenter createPresenter() {
@@ -97,7 +103,9 @@ public class CreateRouteActivity extends ABaseActivityView<CreateRoutePresenter>
         tvPoisCount = (TextView) findViewById(R.id.tvCreateRouteItemsCount);
         fabCreateRoute = (FloatingActionButton) findViewById(R.id.fabCreateRoute);
         distanceBanner = (ViewGroup) findViewById(R.id.flCreateRouteBanner);
-        bottomLargeSheetBehavior = BottomSheetBehavior.from(findViewById(R.id.nsvPoiDetails));
+        bottomSheet = findViewById(R.id.nsvPoiDetails);
+        bottomLargeSheetBehavior = BottomSheetBehavior.from(bottomSheet);
+        coordinatorLayout = (CoordinatorLayout)findViewById(R.id.clCreatePath);
         fabCreateRoute.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -230,10 +238,6 @@ public class CreateRouteActivity extends ABaseActivityView<CreateRoutePresenter>
             public boolean onMarkerClick(Marker marker) {
                 final int state = bottomLargeSheetBehavior.getState();
                 if (state == BottomSheetBehavior.STATE_COLLAPSED || state == BottomSheetBehavior.STATE_SETTLING) {
-/*
-                    int selectedPoisCount = presenter.toggleWaypoints(marker.getPosition());
-                    setSelectedPoisCount(selectedPoisCount);
-*/
                     presenter.getPoiDetails(marker.getPosition());
                 }
 
@@ -246,6 +250,20 @@ public class CreateRouteActivity extends ABaseActivityView<CreateRoutePresenter>
         TextView tvMainPlaceDetailsTitle = (TextView) findViewById(R.id.tvMainPlaceDetailsTitle);
         TextView tvMainPlaceDetailsAddress = (TextView) findViewById(R.id.tvMainPlaceDetailsAddress);
         final TextView detailedText = (TextView) findViewById(R.id.detailedText);
+        findViewById(R.id.ll_detailed_poi_gotto).setVisibility(View.GONE);
+        FloatingActionButton addWaypoint = (FloatingActionButton) findViewById(R.id.fabAddWaypoint);
+        addWaypoint.setImageResource(android.R.drawable.ic_input_add);
+        addWaypoint.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                int selectedPoisCount = presenter.toggleWaypoints(poi);
+                setSelectedPoisCount(selectedPoisCount);
+                if (bottomLargeSheetBehavior.getState() == BottomSheetBehavior.STATE_EXPANDED) {
+                    bottomLargeSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
+                }
+            }
+        });
+
 
         tvMainPlaceDetailsTitle.setText(poi.getTitle());
         tvMainPlaceDetailsAddress.setText(poi.getAddress());

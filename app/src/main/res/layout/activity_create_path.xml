@@ -3,7 +3,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_height="match_parent"
     android:layout_width="match_parent"
-    xmlns:app="http://schemas.android.com/apk/res-auto">
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/clCreatePath">
 
     <RelativeLayout
         android:layout_width="match_parent"
@@ -192,7 +193,8 @@
             android:layout_height="56dp"
             android:layout_gravity="top|end"
             android:layout_marginRight="@dimen/fab_margin"
-            android:src="@drawable/key_2" />
+            android:src="@drawable/key_2"
+            android:id="@+id/fabAddWaypoint"/>
     </FrameLayout>
 
 
