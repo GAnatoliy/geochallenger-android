@@ -2,15 +2,20 @@ package com.dev.geochallenger.presenters;
 
 import android.location.Address;
 import android.support.annotation.Nullable;
+import android.text.TextUtils;
+import android.view.MenuItem;
+import android.view.View;
 
 import com.dev.geochallenger.models.entities.Poi;
 import com.dev.geochallenger.models.entities.cities.PlacesEntity;
 import com.dev.geochallenger.models.entities.cities.detailed.PlaceDetailedEntity;
 import com.dev.geochallenger.models.entities.login.LoginResponce;
+import com.dev.geochallenger.models.entities.login.UserResponce;
 import com.dev.geochallenger.models.interfaces.IGeocoder;
 import com.dev.geochallenger.models.interfaces.IModel;
 import com.dev.geochallenger.models.interfaces.OnDataLoaded;
 import com.dev.geochallenger.models.repositories.TokenRepository;
+import com.dev.geochallenger.models.repositories.interfaces.ITokenRepository;
 import com.dev.geochallenger.presenters.interfaces.IPresenter;
 import com.dev.geochallenger.views.interfaces.IMainView;
 import com.google.android.gms.maps.model.LatLng;
@@ -25,15 +30,17 @@ import okhttp3.ResponseBody;
 public class MainPresenter extends IPresenter<IMainView> {
     private IModel model;
     private IGeocoder geocoder;
+    private final ITokenRepository iTokenRepository;
     private boolean isStopped;
     private LatLng selectedPlaceLocation;
     private Address selectedPlaceAddress;
     private android.location.Location myLocation;
 
-    public MainPresenter(IMainView view, IModel iModel, IGeocoder geocoder) {
+    public MainPresenter(IMainView view, IModel iModel, IGeocoder geocoder, ITokenRepository iTokenRepository) {
         super(view);
         this.model = iModel;
         this.geocoder = geocoder;
+        this.iTokenRepository = iTokenRepository;
     }
 
     @Override
@@ -49,6 +56,10 @@ public class MainPresenter extends IPresenter<IMainView> {
                 view.showErrorMessage("Error", t.getMessage());
             }
         });
+
+        if (!TextUtils.isEmpty(iTokenRepository.getToken())) {
+            getUser(iTokenRepository.getToken());
+        }
     }
 
     public void findPlaces(String newText, String key) {
@@ -153,13 +164,29 @@ public class MainPresenter extends IPresenter<IMainView> {
         model.login(email, token, new OnDataLoaded<LoginResponce>() {
             @Override
             public void onSuccess(LoginResponce loginResponce) {
-                view.updateUserAccound(  loginResponce);
+                view.updateUserToken(loginResponce);
             }
 
             @Override
             public void onError(Throwable t, @Nullable ResponseBody error) {
-
+                view.showErrorMessage("Error", t.getMessage());
             }
         });
     }
+
+    public void getUser(String token) {
+        model.getUser(token, new OnDataLoaded<UserResponce>() {
+            @Override
+            public void onSuccess(UserResponce loginResponce) {
+                view.updateUserData(loginResponce);
+            }
+
+            @Override
+            public void onError(Throwable t, @Nullable ResponseBody error) {
+                view.showErrorMessage("Error", t.getMessage());
+            }
+        });
+    }
+
+
 }

@@ -16,6 +16,7 @@ import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -38,7 +39,9 @@ import com.dev.geochallenger.models.entities.cities.Predictions;
 import com.dev.geochallenger.models.entities.cities.detailed.PlaceDetailedEntity;
 import com.dev.geochallenger.models.entities.cities.detailed.Viewport;
 import com.dev.geochallenger.models.entities.login.LoginResponce;
+import com.dev.geochallenger.models.entities.login.UserResponce;
 import com.dev.geochallenger.models.repositories.TokenRepository;
+import com.dev.geochallenger.models.repositories.interfaces.ITokenRepository;
 import com.dev.geochallenger.presenters.MainPresenter;
 import com.dev.geochallenger.views.adapters.RecyclerRelatedPhotosAdapter;
 import com.dev.geochallenger.views.controlers.SearchControler;
@@ -87,7 +90,7 @@ public class MainActivity extends ABaseActivityView<MainPresenter> implements IM
 
     @Override
     protected MainPresenter createPresenter() {
-        return new MainPresenter(this, RetrofitModel.getInstance(), new Geocoder(this));
+        return new MainPresenter(this, RetrofitModel.getInstance(), new Geocoder(this), new TokenRepository(this));
     }
 
     @Override
@@ -192,24 +195,54 @@ public class MainActivity extends ABaseActivityView<MainPresenter> implements IM
         userAvatar.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                drawerLayout.closeDrawer(Gravity.LEFT);
-                getAccount();
+                if (!TextUtils.isEmpty(new TokenRepository(MainActivity.this).getToken())) {
+                    drawerLayout.closeDrawer(Gravity.LEFT);
+                    getAccount();
+                }
             }
         });
+    }
+
+    public void updateNavigationDrawerInfo() {
+        final MenuItem logOutButton = navigationView.getMenu().getItem(2);
+
+        final View nameContainer = navigationView.getHeaderView(0).findViewById(R.id.nameContainer);
+
+        final TokenRepository tokenRepository = new TokenRepository(getApplicationContext());
+        logOutButton.setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
+            @Override
+            public boolean onMenuItemClick(MenuItem item) {
+                drawerLayout.closeDrawer(Gravity.LEFT);
+                logOutButton.setVisible(false);
+                nameContainer.setVisibility(View.GONE);
+                tokenRepository.clearToken();
+                return true;
+            }
+        });
+        if (!TextUtils.isEmpty(tokenRepository.getToken())) {
+            logOutButton.setVisible(true);
+            nameContainer.setVisibility(View.VISIBLE);
+        } else {
+            logOutButton.setVisible(false);
+            nameContainer.setVisibility(View.GONE);
+        }
     }
 
     public void setDetailedPoiInfo(Poi poi) {
         TextView tvMainPlaceDetailsTitle = (TextView) findViewById(R.id.tvMainPlaceDetailsTitle);
         TextView tvMainPlaceDetailsAddress = (TextView) findViewById(R.id.tvMainPlaceDetailsAddress);
         TextView detailedText = (TextView) findViewById(R.id.detailedText);
-        RecyclerView relatedPhotosRecyclerView = (RecyclerView) findViewById(R.id.relatedPhotosRecycler);
 
         tvMainPlaceDetailsTitle.setText(poi.getTitle());
         tvMainPlaceDetailsAddress.setText(poi.getAddress());
         detailedText.setText(poi.getContentPreview());
 
+        RecyclerView relatedPhotosRecyclerView = (RecyclerView) findViewById(R.id.relatedPhotosRecycler);
+        final LinearLayoutManager layout = new LinearLayoutManager(MainActivity.this, LinearLayoutManager.HORIZONTAL, false);
+        relatedPhotosRecyclerView.setLayoutManager(layout);
+        relatedPhotosRecyclerView.setHasFixedSize(true);
+
         RecyclerRelatedPhotosAdapter recyclerRelatedPhotosAdapter = new RecyclerRelatedPhotosAdapter(MainActivity.this);
-        relatedPhotosRecyclerView.setLayoutManager(new LinearLayoutManager(MainActivity.this, LinearLayoutManager.HORIZONTAL, false));
         relatedPhotosRecyclerView.setAdapter(recyclerRelatedPhotosAdapter);
     }
 
@@ -282,6 +315,7 @@ public class MainActivity extends ABaseActivityView<MainPresenter> implements IM
 
         if (requestCode == REQUEST_CODE_PICK_ACCOUNT) {
             if (resultCode == RESULT_OK) {
+                showProgress();
                 final String mEmail = data.getStringExtra(AccountManager.KEY_ACCOUNT_NAME);
                 new Thread(new Runnable() {
                     @Override
@@ -388,30 +422,11 @@ public class MainActivity extends ABaseActivityView<MainPresenter> implements IM
             @Override
             public void run() {
 
-//                setBottomType(true);
                 bottomLargeSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
                 bottomSheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED);
             }
         }, 100);
     }
-
-//    public void setBottomType(boolean small) {
-//        if (small) {
-//            int height = getResources().getDimensionPixelSize(R.dimen.smallDetailedBottomSheetHeight);
-//            CoordinatorLayout.LayoutParams lp = new CoordinatorLayout.LayoutParams(bottomSheetBehaviorView.getWidth(), height);
-//            bottomSheetBehaviorView.setLayoutParams(lp);
-//
-//            smallBottomLayout.setVisibility(View.VISIBLE);
-//            detailedBottomLayout.setVisibility(View.GONE);
-//        } else {
-//            int height = getResources().getDimensionPixelSize(R.dimen.largeDetailedBottomSheetHeight);
-//            CoordinatorLayout.LayoutParams lp = new CoordinatorLayout.LayoutParams(bottomSheetBehaviorView.getWidth(), height);
-//            bottomSheetBehaviorView.setLayoutParams(lp);
-//
-//            smallBottomLayout.setVisibility(View.GONE);
-//            detailedBottomLayout.setVisibility(View.VISIBLE);
-//        }
-//    }
 
     @Override
     public void updatePlaceDetailsWithAddress(Address address) {
@@ -431,10 +446,24 @@ public class MainActivity extends ABaseActivityView<MainPresenter> implements IM
     }
 
     @Override
-    public void updateUserAccound(LoginResponce loginResponce) {
+    public void updateUserToken(LoginResponce loginResponce) {
         TokenRepository tokenRepository = new TokenRepository(getApplication());
         tokenRepository.setToken(loginResponce.getAccess_token());
+        presenter.getUser(loginResponce.getAccess_token());
+    }
 
+    @Override
+    public void updateUserData(UserResponce loginResponce) {
+        TextView points = (TextView) navigationView.getHeaderView(0).findViewById(R.id.points);
+        TextView name = (TextView) navigationView.getHeaderView(0).findViewById(R.id.name);
+        View nameContainer = navigationView.getHeaderView(0).findViewById(R.id.nameContainer);
+
+        nameContainer.setVisibility(View.VISIBLE);
+        points.setText(loginResponce.getPoints() + "\nPOINTS");
+        name.setText(loginResponce.getName());
+        updateNavigationDrawerInfo();
+
+        hideProgress();
     }
 
     @Override
@@ -467,6 +496,11 @@ public class MainActivity extends ABaseActivityView<MainPresenter> implements IM
             if (customMarker != null) {
                 customMarker.remove();
             }
+            return;
+        }
+
+        if (bottomLargeSheetBehavior.getState() == BottomSheetBehavior.STATE_EXPANDED) {
+            bottomLargeSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
             return;
         }
 

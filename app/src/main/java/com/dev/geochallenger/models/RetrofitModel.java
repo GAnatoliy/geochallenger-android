@@ -7,6 +7,7 @@ import com.dev.geochallenger.models.entities.cities.PlacesEntity;
 import com.dev.geochallenger.models.entities.cities.detailed.PlaceDetailedEntity;
 import com.dev.geochallenger.models.entities.directions.GoogleDirectionsEntity;
 import com.dev.geochallenger.models.entities.login.LoginResponce;
+import com.dev.geochallenger.models.entities.login.UserResponce;
 import com.dev.geochallenger.models.entities.routes.Route;
 import com.dev.geochallenger.models.entities.routes.RouteResponse;
 import com.dev.geochallenger.models.interfaces.IModel;
@@ -218,7 +219,7 @@ public class RetrofitModel implements IModel {
 
     @Override
     public void createRoute(Route route, String token, final OnDataLoaded<DefaultResponse> callback) {
-        final Call<DefaultResponse> response = service.createRoute("Bearer " + token, route);
+        final Call<DefaultResponse> response = service.createRoute("bearer " + token, route);
         response.enqueue(new Callback<DefaultResponse>() {
             @Override
             public void onResponse(Call<DefaultResponse> call, Response<DefaultResponse> response) {
@@ -238,7 +239,7 @@ public class RetrofitModel implements IModel {
 
     @Override
     public void updateRoute(int routeId, Route route, String token, final OnDataLoaded<DefaultResponse> callback) {
-        final Call<DefaultResponse> response = service.updateRoute(routeId, "Bearer " + token, route);
+        final Call<DefaultResponse> response = service.updateRoute(routeId, "bearer " + token, route);
         response.enqueue(new Callback<DefaultResponse>() {
             @Override
             public void onResponse(Call<DefaultResponse> call, Response<DefaultResponse> response) {
@@ -258,7 +259,7 @@ public class RetrofitModel implements IModel {
 
     @Override
     public void deleteRoute(int routeId, String token, final OnDataLoaded<DefaultResponse> callback) {
-        final Call<DefaultResponse> response = service.deleteRoute(routeId, "Bearer " + token);
+        final Call<DefaultResponse> response = service.deleteRoute(routeId, "bearer " + token);
         response.enqueue(new Callback<DefaultResponse>() {
             @Override
             public void onResponse(Call<DefaultResponse> call, Response<DefaultResponse> response) {
@@ -278,7 +279,7 @@ public class RetrofitModel implements IModel {
 
     @Override
     public void getRoutesList(String token, final OnDataLoaded<List<RouteResponse>> callback) {
-        final Call<List<RouteResponse>> response = service.getRoutesList("Bearer " + token);
+        final Call<List<RouteResponse>> response = service.getRoutesList("bearer " + token);
         response.enqueue(new Callback<List<RouteResponse>>() {
             @Override
             public void onResponse(Call<List<RouteResponse>> call, Response<List<RouteResponse>> response) {
@@ -298,7 +299,7 @@ public class RetrofitModel implements IModel {
 
     @Override
     public void login(String uid, String token, final OnDataLoaded<LoginResponce> callback) {
-        final Call<LoginResponce> response = service.login(uid, token);
+        final Call<LoginResponce> response = service.login("password", uid, token);
         response.enqueue(new Callback<LoginResponce>() {
             @Override
             public void onResponse(Call<LoginResponce> call, Response<LoginResponce> response) {
@@ -311,6 +312,26 @@ public class RetrofitModel implements IModel {
 
             @Override
             public void onFailure(Call<LoginResponce> call, Throwable t) {
+                callback.onError(t, null);
+            }
+        });
+    }
+
+    @Override
+    public void getUser(String token, final OnDataLoaded<UserResponce> callback) {
+        final Call<UserResponce> response = service.getUser("bearer " + token);
+        response.enqueue(new Callback<UserResponce>() {
+            @Override
+            public void onResponse(Call<UserResponce> call, Response<UserResponce> response) {
+                if (response.isSuccessful()) {
+                    callback.onSuccess(response.body());
+                } else {
+                    callback.onError(new Throwable("error"), response.errorBody());
+                }
+            }
+
+            @Override
+            public void onFailure(Call<UserResponce> call, Throwable t) {
                 callback.onError(t, null);
             }
         });

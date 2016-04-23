@@ -8,6 +8,7 @@ import com.dev.geochallenger.models.entities.Poi;
 import com.dev.geochallenger.models.entities.cities.PlacesEntity;
 import com.dev.geochallenger.models.entities.cities.detailed.PlaceDetailedEntity;
 import com.dev.geochallenger.models.entities.login.LoginResponce;
+import com.dev.geochallenger.models.entities.login.UserResponce;
 import com.google.android.gms.maps.model.LatLng;
 
 import java.util.List;
@@ -31,6 +32,8 @@ public interface IMainView extends IView {
 
     void showCreateRouteScreen(LatLng selectedPlaceLocation, @Nullable Address selectedPlaceAddress, @Nullable Location myLocation);
 
-    void updateUserAccound(LoginResponce loginResponce);
+    void updateUserToken(LoginResponce loginResponce);
+
+    void updateUserData(UserResponce loginResponce);
 }
 

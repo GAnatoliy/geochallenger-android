@@ -1,25 +1,23 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <group
-        android:checkableBehavior="single">
-
-        <item
-            android:id="@+id/drawer_home"
-            android:checked="true"
-            android:icon="@drawable/directions"
-            android:title="test"/>
+    <group android:checkableBehavior="single">
 
         <item
             android:id="@+id/drawer_favourite"
             android:icon="@drawable/directions"
-            android:title="test"/>
-        ...
+            android:title="test" />
 
         <item
             android:id="@+id/drawer_settings"
             android:icon="@drawable/directions"
-            android:title="test"/>
+            android:title="test" />
+
+        <item
+            android:id="@+id/drawerLogOut"
+            android:checked="true"
+            android:icon="@drawable/directions"
+            android:title="Log out" />
 
     </group>
 </menu>

@@ -2,6 +2,7 @@ package com.dev.geochallenger.models.interfaces;
 
 
 import com.dev.geochallenger.models.entities.login.LoginResponce;
+import com.dev.geochallenger.models.entities.login.UserResponce;
 import com.dev.geochallenger.models.entities.routes.Route;
 import com.dev.geochallenger.models.entities.DefaultResponse;
 import com.dev.geochallenger.models.entities.Poi;
@@ -39,4 +40,6 @@ public interface IModel {
     void getRoutesList(String token, OnDataLoaded<List<RouteResponse>> callback);
 
     void login(String uid, String token, OnDataLoaded<LoginResponce> callback);
+
+    void getUser(String token, OnDataLoaded<UserResponce> callback);
 }
