@@ -16,7 +16,6 @@ public class TokenRepository implements ITokenRepository {
     private SharedPreferences preferences;
 
     /**
-     *
      * @param context - use Application context
      */
     public TokenRepository(Context context) {
@@ -25,7 +24,7 @@ public class TokenRepository implements ITokenRepository {
 
     @Override
     public void setToken(String token) {
-        preferences.edit().putString(TOKEN_PREFERENCE,token).commit();
+        preferences.edit().putString(TOKEN_PREFERENCE, token).apply();
     }
 
     @Override
@@ -35,6 +34,6 @@ public class TokenRepository implements ITokenRepository {
 
     @Override
     public void clearToken() {
-        preferences.edit().remove(TOKEN_PREFERENCE);
+        preferences.edit().remove(TOKEN_PREFERENCE).apply();
     }
 }

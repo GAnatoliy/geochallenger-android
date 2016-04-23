@@ -252,7 +252,6 @@ public class MainActivity extends ABaseActivityView<MainPresenter> implements IM
         RecyclerView relatedPhotosRecyclerView = (RecyclerView) findViewById(R.id.relatedPhotosRecycler);
         final LinearLayoutManager layout = new LinearLayoutManager(MainActivity.this, LinearLayoutManager.HORIZONTAL, false);
         relatedPhotosRecyclerView.setLayoutManager(layout);
-        relatedPhotosRecyclerView.setHasFixedSize(true);
 
         RecyclerRelatedPhotosAdapter recyclerRelatedPhotosAdapter = new RecyclerRelatedPhotosAdapter(MainActivity.this);
         relatedPhotosRecyclerView.setAdapter(recyclerRelatedPhotosAdapter);

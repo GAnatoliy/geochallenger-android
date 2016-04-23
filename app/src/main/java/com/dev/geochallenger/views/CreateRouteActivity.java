@@ -1,6 +1,8 @@
 package com.dev.geochallenger.views;
 
 import android.content.DialogInterface;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.location.Address;
 import android.location.Location;
@@ -35,12 +37,16 @@ import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapView;
 import com.google.android.gms.maps.MapsInitializer;
+import com.google.android.gms.maps.model.BitmapDescriptor;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.Polyline;
 import com.google.android.gms.maps.model.PolylineOptions;
+
+import org.w3c.dom.Text;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -58,10 +64,13 @@ public class CreateRouteActivity extends ABaseActivityView<CreateRoutePresenter>
     private List<Marker> markers = new ArrayList<>();
     private CreateRouteSearchAdapter autoCompleteToAdapter;
     private TextView tvDistance;
+    private TextView tvPoisCount;
     private FloatingActionButton fabCreateRoute;
     private ViewGroup distanceBanner;
     private AutoCompleteTextView autoCompleteTextViewFrom;
     private AutoCompleteTextView autoCompleteTextViewTo;
+    private Marker originMarker;
+    private Marker destinationMarker;
 
     @Override
     protected CreateRoutePresenter createPresenter() {
@@ -76,10 +85,8 @@ public class CreateRouteActivity extends ABaseActivityView<CreateRoutePresenter>
         selectedLocation = (LatLng) getIntent().getParcelableExtra(ExtraConstants.SELECTED_LOCATION);
         selectedAddress = (Address) getIntent().getParcelableExtra(ExtraConstants.SELECTED_ADDRESS);
 
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
-
         tvDistance = (TextView)findViewById(R.id.tvCreateRouteDistance);
+        tvPoisCount = (TextView) findViewById(R.id.tvCreateRouteItemsCount);
         fabCreateRoute = (FloatingActionButton)findViewById(R.id.fabCreateRoute);
         distanceBanner = (ViewGroup)findViewById(R.id.flCreateRouteBanner);
 
@@ -87,6 +94,12 @@ public class CreateRouteActivity extends ABaseActivityView<CreateRoutePresenter>
             @Override
             public void onClick(View v) {
                 showCreateRouteDialog();
+            }
+        });
+        findViewById(R.id.iv_create_route_back).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                onBackPressed();
             }
         });
 
@@ -211,7 +224,8 @@ public class CreateRouteActivity extends ABaseActivityView<CreateRoutePresenter>
         map.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
             @Override
             public boolean onMarkerClick(Marker marker) {
-                presenter.toggleWaypoints(marker.getPosition());
+                int selectedPoisCount = presenter.toggleWaypoints(marker.getPosition());
+                tvPoisCount.setText(getString(R.string.create_route_pois_count, selectedPoisCount));
                 return true;
             }
         });
@@ -255,8 +269,46 @@ public class CreateRouteActivity extends ABaseActivityView<CreateRoutePresenter>
 
                 tvDistance.setText(String.format("%.2f KM", distance));
                 distanceBanner.setVisibility(View.VISIBLE);
+
+                if (lineOptions != null) {
+                    List<LatLng> points = lineOptions.getPoints();
+                    if (points != null && points.size() > 1) {
+                        setOriginMarker(points.get(0));
+                        setDestinationMarker(points.get(points.size()-1));
+                    }
+                }
             }
         });
+    }
+
+    private void setOriginMarker(LatLng latLng) {
+        if (originMarker != null) {
+            originMarker.remove();
+        }
+        MarkerOptions snippet = new MarkerOptions()
+                .position(latLng)
+                .icon(BitmapDescriptorFactory.fromBitmap(resizeMapIcons(R.drawable.my_pos_small, getDestinationMarkerSize(), getDestinationMarkerSize())));
+        originMarker = map.addMarker(snippet);
+    }
+
+    private int getDestinationMarkerSize() {
+        return getResources().getDimensionPixelSize(R.dimen.custom_marker_size);
+    }
+
+    public Bitmap resizeMapIcons(int drawableId,int width, int height){
+        Bitmap imageBitmap = BitmapFactory.decodeResource(getResources(),drawableId);
+        Bitmap resizedBitmap = Bitmap.createScaledBitmap(imageBitmap, width, height, false);
+        return resizedBitmap;
+    }
+
+    private void setDestinationMarker(LatLng latLng) {
+        if (destinationMarker != null) {
+            destinationMarker.remove();
+        }
+        MarkerOptions snippet = new MarkerOptions()
+                .position(latLng)
+                .icon(BitmapDescriptorFactory.fromBitmap(resizeMapIcons(R.drawable.dest_small, getDestinationMarkerSize(), getDestinationMarkerSize())));
+        destinationMarker = map.addMarker(snippet);
     }
 
     private void moveToBounds(List<LatLng> points) {
@@ -301,7 +353,10 @@ public class CreateRouteActivity extends ABaseActivityView<CreateRoutePresenter>
                 final MarkerOptions snippet = new MarkerOptions()
                         .position(new LatLng(poi.getLatitude(), poi.getLongitude()))
                         .title(poi.getTitle())
-                        .snippet(poi.getAddress());
+                        .snippet(poi.getAddress())
+                        .icon(BitmapDescriptorFactory.fromBitmap(resizeMapIcons(poi.isWaypoint() ? R.drawable.added : R.drawable.poi,
+                                getResources().getDimensionPixelSize(R.dimen.marker_width),
+                                getResources().getDimensionPixelSize(R.dimen.marker_height))));
                 markers.add(map.addMarker(snippet));
             }
         }

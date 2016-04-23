@@ -1,5 +1,7 @@
 package com.dev.geochallenger.models.entities;
 
+import com.google.gson.annotations.Expose;
+
 /**
  * Created by a_dibrivnyj on 4/16/16.
  */
@@ -14,6 +16,9 @@ public class Poi {
     private String contentPreview;
     private String createdAtUtc;
     private int ownerId;
+
+    @Expose
+    private boolean isWaypoint;
 
     public String getTitle() {
         return title;
@@ -77,5 +82,25 @@ public class Poi {
 
     public void setOwnerId(int ownerId) {
         this.ownerId = ownerId;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (o instanceof Poi) {
+            if (((Poi)o).longitude == this.longitude
+                    && ((Poi)o).latitude == this.latitude) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    public boolean isWaypoint() {
+        return isWaypoint;
+    }
+
+    public void setWaypoint(boolean waypoint) {
+        isWaypoint = waypoint;
     }
 }
