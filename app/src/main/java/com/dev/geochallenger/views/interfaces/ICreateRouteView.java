@@ -30,4 +30,8 @@ public interface ICreateRouteView extends IView {
     void setOrigin(String origin);
 
     void setDestination(String destination);
+
+    void showMyRoutes();
+
+    void setSelectedPoisCount(int size);
 }

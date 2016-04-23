@@ -15,34 +15,21 @@ public class DirectionsJSONParser {
     /**
      * Receives a JSONObject and returns a list of lists containing latitude and longitude
      */
-    public List<List<HashMap<String, String>>> parse(GoogleDirectionsEntity directionsEntity) {
+    public List<List<HashMap<String, String>>> parse(String routePath) {
 
         List<List<HashMap<String, String>>> routes = new ArrayList<List<HashMap<String, String>>>();
-        List<Route> routeList = null;
-        List<Leg> legList = null;
-        List<Step> stepList = null;
-
         try {
-            routeList = directionsEntity.getRoutes();
+            List<LatLng> list = decodePoly(routePath);
+            List path = new ArrayList<HashMap<String, String>>();
 
-
-            /** Traversing all routes */
-            if (routeList != null) {
-                for (int i = 0; i < routeList.size(); i++) {
-
-                    List<LatLng> list = decodePoly(routeList.get(i).getOverviewPolyline().getPoints());
-                    List path = new ArrayList<HashMap<String, String>>();
-
-                    /** Traversing all points */
-                    for (int l = 0; l < list.size(); l++) {
-                        HashMap<String, String> hm = new HashMap<String, String>();
-                        hm.put("lat", Double.toString(((LatLng) list.get(l)).latitude));
-                        hm.put("lng", Double.toString(((LatLng) list.get(l)).longitude));
-                        path.add(hm);
-                    }
-                    routes.add(path);
-                }
+            /** Traversing all points */
+            for (int l = 0; l < list.size(); l++) {
+                HashMap<String, String> hm = new HashMap<String, String>();
+                hm.put("lat", Double.toString(((LatLng) list.get(l)).latitude));
+                hm.put("lng", Double.toString(((LatLng) list.get(l)).longitude));
+                path.add(hm);
             }
+            routes.add(path);
         } catch (Exception e) {
             e.printStackTrace();
         }

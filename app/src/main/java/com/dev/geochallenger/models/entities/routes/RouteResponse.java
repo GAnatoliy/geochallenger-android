@@ -1,5 +1,8 @@
 package com.dev.geochallenger.models.entities.routes;
 
+import com.dev.geochallenger.models.entities.Poi;
+import com.google.gson.annotations.Expose;
+
 import java.util.List;
 
 /**
@@ -10,11 +13,17 @@ public class RouteResponse {
     private String name;
     private double startPointLatitude;
     private double startPointLongitude;
+
+    @Expose
+    private String startAddress;
     private double endPointLatitude;
     private double endPointLongitude;
+
+    @Expose
+    private String endAddress;
     private double distanceInMeters;
     private String routePath;
-    private List<Long> pois;
+    private List<Poi> pois;
 
     public String getName() {
         return name;
@@ -44,11 +53,27 @@ public class RouteResponse {
         return routePath;
     }
 
-    public List<Long> getPois() {
+    public List<Poi> getPois() {
         return pois;
     }
 
     public int getId() {
         return id;
+    }
+
+    public String getStartAddress() {
+        return startAddress;
+    }
+
+    public void setStartAddress(String startAddress) {
+        this.startAddress = startAddress;
+    }
+
+    public String getEndAddress() {
+        return endAddress;
+    }
+
+    public void setEndAddress(String endAddress) {
+        this.endAddress = endAddress;
     }
 }

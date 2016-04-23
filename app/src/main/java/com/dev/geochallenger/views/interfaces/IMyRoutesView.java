@@ -11,4 +11,5 @@ public interface IMyRoutesView extends IView {
 
     public void updateRoutesList(final List<RouteResponse> routeResponses);
 
+    void openRoute(RouteResponse route);
 }

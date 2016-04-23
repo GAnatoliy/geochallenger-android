@@ -3,6 +3,7 @@ package com.dev.geochallenger.presenters;
 import android.location.Address;
 import android.location.Location;
 import android.support.annotation.Nullable;
+import android.text.TextUtils;
 
 import com.dev.geochallenger.models.entities.DefaultResponse;
 import com.dev.geochallenger.models.entities.Poi;
@@ -11,6 +12,8 @@ import com.dev.geochallenger.models.entities.cities.detailed.PlaceDetailedEntity
 import com.dev.geochallenger.models.entities.directions.GoogleDirectionsEntity;
 import com.dev.geochallenger.models.entities.directions.Leg;
 import com.dev.geochallenger.models.entities.directions.Route;
+import com.dev.geochallenger.models.entities.routes.RouteResponse;
+import com.dev.geochallenger.models.interfaces.IGeocoder;
 import com.dev.geochallenger.models.interfaces.IModel;
 import com.dev.geochallenger.models.interfaces.OnDataLoaded;
 import com.dev.geochallenger.models.parsers.DirectionsJSONParser;
@@ -35,51 +38,115 @@ import okhttp3.ResponseBody;
 public class CreateRoutePresenter extends IPresenter<ICreateRouteView> {
 
     private IModel restClient;
-    private List<Poi> waypoints = new ArrayList<>();
     private String source;
     private String destination;
     private double routeDistance;
     private Location myLocation;
     private ITokenRepository tokenRepository;
+    private RouteResponse routeToEdit;
+    private IGeocoder geocoder;
     private LatLng selectedLocation;
     private Address selectedAddress;
-    private String routePath;
+    private String routePath = "";
     private List<Poi> poisNearMe;
+    private List<Poi> waypoints = new ArrayList<>();
 
     public CreateRoutePresenter(ICreateRouteView view, IModel restClient, LatLng selectedLocation,
-                                Address selectedAddress, Location myLocation, ITokenRepository tokenRepository) {
+                                Address selectedAddress, Location myLocation, ITokenRepository tokenRepository,
+                                RouteResponse routeResponse, IGeocoder geocoder) {
         super(view);
         this.restClient = restClient;
         this.selectedLocation = selectedLocation;
         this.selectedAddress = selectedAddress;
         this.myLocation = myLocation;
         this.tokenRepository = tokenRepository;
+        routeToEdit = routeResponse;
+        this.geocoder = geocoder;
     }
 
     @Override
     public void init() {
         view.initMap();
-        if (selectedLocation != null && myLocation != null) {
+        if (!checkIfInEditingMode()) {
+            if (selectedLocation != null && myLocation != null) {
 
-            getPathForCities(myLocation.getLatitude() + "," + myLocation.getLongitude(), selectedLocation.latitude + "," + selectedLocation.longitude);
-        }
-        if (myLocation != null) {
-            view.setOrigin("My location");
-        }
-        if (selectedAddress != null && selectedAddress.getMaxAddressLineIndex() >= 0) {
-            String address = "";
-            int maxAddressLineIndex = selectedAddress.getMaxAddressLineIndex();
-
-            address += maxAddressLineIndex >= 0 ? selectedAddress.getAddressLine(0) : "";
-            if (!address.equals("")) {
-                address += maxAddressLineIndex >= 1 ? ", " + selectedAddress.getAddressLine(1) : "";
-            } else {
-                address += maxAddressLineIndex >= 1 ? selectedAddress.getAddressLine(1) : "";
+                getPathForCities(myLocation.getLatitude() + "," + myLocation.getLongitude(), selectedLocation.latitude + "," + selectedLocation.longitude);
             }
-            view.setDestination(address);
-        } else if (selectedLocation != null) {
-            view.setDestination(String.format("%.4f,%.4f", selectedLocation.latitude, selectedLocation.longitude));
+            if (myLocation != null) {
+                geocoder.getAddress(new LatLng(myLocation.getLatitude(), myLocation.getLongitude()), new IGeocoder.IGeocoderListener() {
+                    @Override
+                    public void onAddressFetched(Address address) {
+                        if (address != null && address.getMaxAddressLineIndex() >= 0) {
+                            String addressString = "";
+                            int maxAddressLineIndex = address.getMaxAddressLineIndex();
+
+                            addressString += maxAddressLineIndex >= 0 ? address.getAddressLine(0) : "";
+                            if (!addressString.equals("")) {
+                                addressString += maxAddressLineIndex >= 1 ? ", " + address.getAddressLine(1) : "";
+                            } else {
+                                addressString += maxAddressLineIndex >= 1 ? address.getAddressLine(1) : "";
+                            }
+                            view.setOrigin(addressString);
+                        }
+                    }
+
+                    @Override
+                    public void onError(Exception e) {
+                        view.setOrigin("My location");
+                    }
+                });
+            }
+            if (selectedAddress != null && selectedAddress.getMaxAddressLineIndex() >= 0) {
+                String address = "";
+                int maxAddressLineIndex = selectedAddress.getMaxAddressLineIndex();
+
+                address += maxAddressLineIndex >= 0 ? selectedAddress.getAddressLine(0) : "";
+                if (!address.equals("")) {
+                    address += maxAddressLineIndex >= 1 ? ", " + selectedAddress.getAddressLine(1) : "";
+                } else {
+                    address += maxAddressLineIndex >= 1 ? selectedAddress.getAddressLine(1) : "";
+                }
+                view.setDestination(address);
+            } else if (selectedLocation != null) {
+                view.setDestination(String.format("%.4f,%.4f", selectedLocation.latitude, selectedLocation.longitude));
+            }
         }
+    }
+
+    private boolean checkIfInEditingMode() {
+        if (routeToEdit != null) {
+
+            if (!TextUtils.isEmpty(routeToEdit.getStartAddress())) {
+                source = routeToEdit.getStartAddress();
+            } else {
+                source = String.format("%.4f,%.4f", routeToEdit.getStartPointLatitude(), routeToEdit.getStartPointLongitude());
+            }
+
+            if (!TextUtils.isEmpty(routeToEdit.getEndAddress())) {
+                destination = routeToEdit.getEndAddress();
+            } else {
+                destination = String.format("%.4f,%.4f", routeToEdit.getEndPointLatitude(), routeToEdit.getEndPointLongitude());
+            }
+
+            routeDistance = routeToEdit.getDistanceInMeters();
+
+            myLocation = new Location("");
+            myLocation.setLatitude(routeToEdit.getStartPointLatitude());
+            myLocation.setLongitude(routeToEdit.getStartPointLongitude());
+
+            selectedLocation = new LatLng(routeToEdit.getEndPointLatitude(), routeToEdit.getEndPointLongitude());
+
+            routePath = routeToEdit.getRoutePath();
+            waypoints = routeToEdit.getPois();
+            view.setOrigin(source);
+            view.setDestination(destination);
+
+            view.setSelectedPoisCount(waypoints.size());
+            convertPathAndDraw();
+            return true;
+
+        }
+        return false;
     }
 
     public void getPathForCities(String source, String destination) {
@@ -154,6 +221,9 @@ public class CreateRoutePresenter extends IPresenter<ICreateRouteView> {
             public void run() {
                 try {
 
+                    double distance = 0;
+                    routePath = "";
+
                     List<Route> entityRoutes = entity.getRoutes();
 
                     /** Traversing all routes */
@@ -162,14 +232,6 @@ public class CreateRoutePresenter extends IPresenter<ICreateRouteView> {
                             routePath += entityRoutes.get(i).getOverviewPolyline().getPoints();
                         }
                     }
-
-                    List<List<HashMap<String, String>>> routes = new DirectionsJSONParser().parse(entity);
-
-                    ArrayList<LatLng> points = null;
-                    PolylineOptions lineOptions = new PolylineOptions();
-                    MarkerOptions markerOptions = new MarkerOptions();
-                    double distance = 0;
-                    String duration = "";
 
                     List<Route> routeList = entity.getRoutes();
                     if (routeList != null) {
@@ -183,35 +245,51 @@ public class CreateRoutePresenter extends IPresenter<ICreateRouteView> {
                         }
                     }
 
-                    // Traversing through all the routes
-                    for (int i = 0; i < routes.size(); i++) {
-                        points = new ArrayList<LatLng>();
-
-                        // Fetching i-th route
-                        List<HashMap<String, String>> path = routes.get(i);
-
-                        // Fetching all the points in i-th route
-                        for (int j = 0; j < path.size(); j++) {
-                            HashMap<String, String> point = path.get(j);
-                            double lat = Double.parseDouble(point.get("lat"));
-                            double lng = Double.parseDouble(point.get("lng"));
-                            LatLng position = new LatLng(lat, lng);
-
-                            points.add(position);
-                        }
-
-                        // Adding all the points in the route to LineOptions
-                        lineOptions.addAll(points);
-                    }
-
                     routeDistance = distance;
-                    view.drawRouteInUiThread(lineOptions, distance * 0.001);
+
+                    convertPathAndDraw();
+
                 } catch (Exception e) {
                     e.printStackTrace();
                     view.hideProgressInUiThread();
                 }
             }
         }).start();
+    }
+
+    private void convertPathAndDraw() {
+
+        List<List<HashMap<String, String>>> routes = new DirectionsJSONParser().parse(routePath);
+
+        ArrayList<LatLng> points = null;
+        PolylineOptions lineOptions = new PolylineOptions();
+        MarkerOptions markerOptions = new MarkerOptions();
+        String duration = "";
+
+
+        // Traversing through all the routes
+        for (int i = 0; i < routes.size(); i++) {
+            points = new ArrayList<LatLng>();
+
+            // Fetching i-th route
+            List<HashMap<String, String>> path = routes.get(i);
+
+            // Fetching all the points in i-th route
+            for (int j = 0; j < path.size(); j++) {
+                HashMap<String, String> point = path.get(j);
+                double lat = Double.parseDouble(point.get("lat"));
+                double lng = Double.parseDouble(point.get("lng"));
+                LatLng position = new LatLng(lat, lng);
+
+                points.add(position);
+            }
+
+            // Adding all the points in the route to LineOptions
+            lineOptions.addAll(points);
+        }
+
+        view.drawRouteInUiThread(lineOptions, routeDistance * 0.001);
+
     }
 
     public void getPoisByViewPort(Double topLeftLatitude, Double topLeftLongitude, Double bottomRightLatitude, Double bottomRightLongitude) {
@@ -251,10 +329,11 @@ public class CreateRoutePresenter extends IPresenter<ICreateRouteView> {
         route.setRoutePath(routePath);
         route.setPoisIds(extractPoisIds());
 
-        restClient.createRoute(route, tokenRepository.getToken(), new OnDataLoaded<DefaultResponse>() {
+        OnDataLoaded<DefaultResponse> callback = new OnDataLoaded<DefaultResponse>() {
             @Override
             public void onSuccess(DefaultResponse defaultResponse) {
                 view.hideProgress();
+                view.showMyRoutes();
             }
 
             @Override
@@ -269,7 +348,12 @@ public class CreateRoutePresenter extends IPresenter<ICreateRouteView> {
                     }
                 }
             }
-        });
+        };
+        if (routeToEdit == null) {
+            restClient.createRoute(route, tokenRepository.getToken(), callback);
+        } else {
+            restClient.updateRoute(routeToEdit.getId(), route, tokenRepository.getToken(), callback);
+        }
     }
 
     private List<Long> extractPoisIds() {

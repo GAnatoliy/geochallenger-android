@@ -51,4 +51,9 @@ public class MyRoutesPresenter extends IPresenter<IMyRoutesView> {
             }
         });
     }
+
+    public void routeClicked(RouteResponse route) {
+        //todo: load datails maybe
+        view.openRoute(route);
+    }
 }

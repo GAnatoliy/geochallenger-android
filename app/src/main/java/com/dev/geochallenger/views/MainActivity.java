@@ -529,9 +529,11 @@ public class MainActivity extends ABaseActivityView<MainPresenter> implements IM
         TextView name = (TextView) navigationView.getHeaderView(0).findViewById(R.id.name);
         View nameContainer = navigationView.getHeaderView(0).findViewById(R.id.nameContainer);
 
-        nameContainer.setVisibility(View.VISIBLE);
-        points.setText(loginResponce.getPoints() + "\nPOINTS");
-        name.setText(loginResponce.getName());
+        if (loginResponce != null) {
+            nameContainer.setVisibility(View.VISIBLE);
+            points.setText(loginResponce.getPoints() + "\nPOINTS");
+            name.setText(loginResponce.getName());
+        }
         updateNavigationDrawerInfo();
 
         hideProgress();

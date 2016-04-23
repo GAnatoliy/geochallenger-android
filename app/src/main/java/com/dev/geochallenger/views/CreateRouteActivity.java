@@ -1,6 +1,7 @@
 package com.dev.geochallenger.views;
 
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
@@ -25,9 +26,11 @@ import android.widget.TextView;
 import com.dev.geochallenger.R;
 import com.dev.geochallenger.models.ExtraConstants;
 import com.dev.geochallenger.models.RetrofitModel;
+import com.dev.geochallenger.models.api.Geocoder;
 import com.dev.geochallenger.models.entities.Poi;
 import com.dev.geochallenger.models.entities.cities.PlacesEntity;
 import com.dev.geochallenger.models.entities.cities.Predictions;
+import com.dev.geochallenger.models.entities.routes.RouteResponse;
 import com.dev.geochallenger.models.repositories.TokenRepository;
 import com.dev.geochallenger.presenters.CreateRoutePresenter;
 import com.dev.geochallenger.views.adapters.CreateRouteSearchAdapter;
@@ -46,6 +49,7 @@ import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.Polyline;
 import com.google.android.gms.maps.model.PolylineOptions;
+import com.google.gson.Gson;
 
 import org.w3c.dom.Text;
 
@@ -72,10 +76,12 @@ public class CreateRouteActivity extends ABaseActivityView<CreateRoutePresenter>
     private AutoCompleteTextView autoCompleteTextViewTo;
     private Marker originMarker;
     private Marker destinationMarker;
+    private RouteResponse routeResponse;
 
     @Override
     protected CreateRoutePresenter createPresenter() {
-        return new CreateRoutePresenter(this, RetrofitModel.getInstance(), selectedLocation, selectedAddress, myLocation, new TokenRepository(getApplicationContext()));
+        return new CreateRoutePresenter(this, RetrofitModel.getInstance(), selectedLocation, selectedAddress,
+                myLocation, new TokenRepository(getApplicationContext()), routeResponse, new Geocoder(this));
     }
 
     @Override
@@ -85,6 +91,10 @@ public class CreateRouteActivity extends ABaseActivityView<CreateRoutePresenter>
         myLocation = (Location) getIntent().getParcelableExtra(ExtraConstants.MY_LOCATION);
         selectedLocation = (LatLng) getIntent().getParcelableExtra(ExtraConstants.SELECTED_LOCATION);
         selectedAddress = (Address) getIntent().getParcelableExtra(ExtraConstants.SELECTED_ADDRESS);
+        String routeString = getIntent().getStringExtra(ExtraConstants.ROUTE);
+        if (!TextUtils.isEmpty(routeString)) {
+            routeResponse = new Gson().fromJson(routeString, RouteResponse.class);
+        }
 
         tvDistance = (TextView)findViewById(R.id.tvCreateRouteDistance);
         tvPoisCount = (TextView) findViewById(R.id.tvCreateRouteItemsCount);
@@ -94,7 +104,11 @@ public class CreateRouteActivity extends ABaseActivityView<CreateRoutePresenter>
         fabCreateRoute.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                showCreateRouteDialog();
+                String origin = autoCompleteTextViewFrom.getText().toString();
+                String destination = autoCompleteTextViewTo.getText().toString();
+                if (!TextUtils.isEmpty(origin) && !TextUtils.isEmpty(destination)) {
+                    presenter.createRoute(origin + "|" + destination);
+                }
             }
         });
         findViewById(R.id.iv_create_route_back).setOnClickListener(new View.OnClickListener() {
@@ -117,34 +131,6 @@ public class CreateRouteActivity extends ABaseActivityView<CreateRoutePresenter>
         MapsInitializer.initialize(this);
 
         setSearchFrom();
-    }
-
-    private void showCreateRouteDialog() {
-
-        final EditText input = new EditText(this);
-        LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(
-                LinearLayout.LayoutParams.MATCH_PARENT,
-                LinearLayout.LayoutParams.WRAP_CONTENT);
-        input.setLayoutParams(lp);
-        AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setTitle(R.string.dialog_create_route_title);
-        builder.setMessage(R.string.dialog_create_route_message);
-        builder.setView(input);
-        builder.setPositiveButton(R.string.dialog_create_route_positive, new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                if (!TextUtils.isEmpty(input.getText())) {
-                    presenter.createRoute(input.getText().toString());
-                }
-            }
-        });
-        builder.setNegativeButton(R.string.dialog_create_route_negative, new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                dialog.dismiss();
-            }
-        });
-        builder.show();
     }
 
     public void setSearchFrom() {
@@ -246,10 +232,13 @@ public class CreateRouteActivity extends ABaseActivityView<CreateRoutePresenter>
             @Override
             public boolean onMarkerClick(Marker marker) {
                 int selectedPoisCount = presenter.toggleWaypoints(marker.getPosition());
-                tvPoisCount.setText(getString(R.string.create_route_pois_count, selectedPoisCount));
+                setSelectedPoisCount(selectedPoisCount);
                 return true;
             }
         });
+    }
+    public void setSelectedPoisCount(int count) {
+        tvPoisCount.setText(getString(R.string.create_route_pois_count, count));
     }
 
     @Override
@@ -272,32 +261,37 @@ public class CreateRouteActivity extends ABaseActivityView<CreateRoutePresenter>
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                if (currentRoute != null) {
-                    currentRoute.remove();
-                }
-                lineOptions.width(4);
-                lineOptions.color(getRouteColor());
-                currentRoute = map.addPolyline(lineOptions);
-                moveToBounds(lineOptions.getPoints());
-
                 new Handler().postDelayed(new Runnable() {
                     @Override
                     public void run() {
-                        LatLngBounds latLngBounds = map.getProjection().getVisibleRegion().latLngBounds;
-                        presenter.getPoisByViewPort(latLngBounds.northeast.latitude, latLngBounds.southwest.longitude, latLngBounds.southwest.latitude, latLngBounds.northeast.longitude);
-                    }
-                }, 2000);
+                        if (currentRoute != null) {
+                            currentRoute.remove();
+                        }
+                        lineOptions.width(4);
+                        lineOptions.color(getRouteColor());
+                        currentRoute = map.addPolyline(lineOptions);
+                        moveToBounds(lineOptions.getPoints());
 
-                tvDistance.setText(String.format("%.2f KM", distance));
-                distanceBanner.setVisibility(View.VISIBLE);
+                        new Handler().postDelayed(new Runnable() {
+                            @Override
+                            public void run() {
+                                LatLngBounds latLngBounds = map.getProjection().getVisibleRegion().latLngBounds;
+                                presenter.getPoisByViewPort(latLngBounds.northeast.latitude, latLngBounds.southwest.longitude, latLngBounds.southwest.latitude, latLngBounds.northeast.longitude);
+                            }
+                        }, 2000);
 
-                if (lineOptions != null) {
-                    List<LatLng> points = lineOptions.getPoints();
-                    if (points != null && points.size() > 1) {
-                        setOriginMarker(points.get(0));
-                        setDestinationMarker(points.get(points.size()-1));
+                        tvDistance.setText(String.format("%.2f KM", distance));
+                        distanceBanner.setVisibility(View.VISIBLE);
+
+                        if (lineOptions != null) {
+                            List<LatLng> points = lineOptions.getPoints();
+                            if (points != null && points.size() > 1) {
+                                setOriginMarker(points.get(0));
+                                setDestinationMarker(points.get(points.size()-1));
+                            }
+                        }
                     }
-                }
+                }, 1000);
             }
         });
     }
@@ -391,6 +385,12 @@ public class CreateRouteActivity extends ABaseActivityView<CreateRoutePresenter>
     @Override
     public void setDestination(String destination) {
         autoCompleteTextViewTo.setText(destination);
+    }
+
+    @Override
+    public void showMyRoutes() {
+        finish();
+        startActivity(new Intent(this, MyRoutesActivity.class));
     }
 
     private void removeOldMarkers() {
