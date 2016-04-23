@@ -9,4 +9,5 @@ public interface ICreatePoiView extends IView {
 
     void poiCreated(Poi poi);
 
+    void poiUpdated(Poi poi);
 }

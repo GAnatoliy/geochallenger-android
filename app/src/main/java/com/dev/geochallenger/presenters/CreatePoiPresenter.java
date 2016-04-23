@@ -10,6 +10,8 @@ import com.dev.geochallenger.models.repositories.interfaces.ITokenRepository;
 import com.dev.geochallenger.presenters.interfaces.IPresenter;
 import com.dev.geochallenger.views.interfaces.ICreatePoiView;
 
+import java.io.IOException;
+
 import okhttp3.ResponseBody;
 
 /**
@@ -39,7 +41,35 @@ public class CreatePoiPresenter extends IPresenter<ICreatePoiView> {
 
             @Override
             public void onError(Throwable t, @Nullable ResponseBody error) {
+                view.hideProgress();
+                if (error != null) {
+                    try {
+                        view.showErrorMessage("Error", error.string());
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+        });
+    }
 
+    public void updatePoi(PoiRequest poiRequest, long id) {
+        iModel.updatePoi(poiRequest, iTokenRepository.getToken(), id, new OnDataLoaded<Poi>() {
+            @Override
+            public void onSuccess(Poi poi) {
+                view.poiUpdated(poi);
+            }
+
+            @Override
+            public void onError(Throwable t, @Nullable ResponseBody error) {
+                view.hideProgress();
+                if (error != null) {
+                    try {
+                        view.showErrorMessage("Error", error.string());
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                }
             }
         });
     }

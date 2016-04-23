@@ -10,4 +10,7 @@ public interface ExtraConstants {
     String SELECTED_ADDRESS = "selected_address";
     String ROUTE = "route";
 
+    String TITLE = "title";
+    String DESCRIPTION = "description";
+    java.lang.String ID = "id";
 }

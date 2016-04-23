@@ -123,5 +123,14 @@ public interface GeoApi {
             "Content-Type: application/json"})
     @POST("api/pois")
     Call<Poi> createPoi(@Header("authorization") String bearerToken,
-                   @Body PoiRequest request);
+                        @Body PoiRequest request);
+
+
+    @Headers({
+            "Accept: application/json",
+            "Content-Type: application/json"})
+    @PUT("api/pois/{id}")
+    Call<Poi> updatePoi(@Header("authorization") String bearerToken,
+                        @Body PoiRequest request, @Path("id") String _id);
+
 }

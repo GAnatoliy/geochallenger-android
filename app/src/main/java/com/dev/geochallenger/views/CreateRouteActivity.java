@@ -93,13 +93,11 @@ public class CreateRouteActivity extends ABaseActivityView<CreateRoutePresenter>
             routeResponse = new Gson().fromJson(routeString, RouteResponse.class);
         }
 
-        tvDistance = (TextView)findViewById(R.id.tvCreateRouteDistance);
+        tvDistance = (TextView) findViewById(R.id.tvCreateRouteDistance);
         tvPoisCount = (TextView) findViewById(R.id.tvCreateRouteItemsCount);
-        fabCreateRoute = (FloatingActionButton)findViewById(R.id.fabCreateRoute);
-        distanceBanner = (ViewGroup)findViewById(R.id.flCreateRouteBanner);
+        fabCreateRoute = (FloatingActionButton) findViewById(R.id.fabCreateRoute);
+        distanceBanner = (ViewGroup) findViewById(R.id.flCreateRouteBanner);
         bottomLargeSheetBehavior = BottomSheetBehavior.from(findViewById(R.id.nsvPoiDetails));
-
-
         fabCreateRoute.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -274,7 +272,6 @@ public class CreateRouteActivity extends ABaseActivityView<CreateRoutePresenter>
         editButton.setVisibility(View.GONE);
     }
 
-
     public void setSelectedPoisCount(int count) {
         tvPoisCount.setText(getString(R.string.create_route_pois_count, count));
     }
@@ -325,7 +322,7 @@ public class CreateRouteActivity extends ABaseActivityView<CreateRoutePresenter>
                             List<LatLng> points = lineOptions.getPoints();
                             if (points != null && points.size() > 1) {
                                 setOriginMarker(points.get(0));
-                                setDestinationMarker(points.get(points.size()-1));
+                                setDestinationMarker(points.get(points.size() - 1));
                             }
                         }
                     }
@@ -348,8 +345,8 @@ public class CreateRouteActivity extends ABaseActivityView<CreateRoutePresenter>
         return getResources().getDimensionPixelSize(R.dimen.custom_marker_size);
     }
 
-    public Bitmap resizeMapIcons(int drawableId,int width, int height){
-        Bitmap imageBitmap = BitmapFactory.decodeResource(getResources(),drawableId);
+    public Bitmap resizeMapIcons(int drawableId, int width, int height) {
+        Bitmap imageBitmap = BitmapFactory.decodeResource(getResources(), drawableId);
         Bitmap resizedBitmap = Bitmap.createScaledBitmap(imageBitmap, width, height, false);
         return resizedBitmap;
     }
@@ -385,7 +382,7 @@ public class CreateRouteActivity extends ABaseActivityView<CreateRoutePresenter>
             }
         });
     }
-    
+
     @Override
     public void populateAutocompeteList(boolean from, PlacesEntity placesEntity) {
         final List<Predictions> predictionses = Arrays.asList(placesEntity.getPredictions());
@@ -432,7 +429,7 @@ public class CreateRouteActivity extends ABaseActivityView<CreateRoutePresenter>
     }
 
     private void removeOldMarkers() {
-        for(int i = 0; i < markers.size(); i++) {
+        for (int i = 0; i < markers.size(); i++) {
             markers.get(i).remove();
         }
     }

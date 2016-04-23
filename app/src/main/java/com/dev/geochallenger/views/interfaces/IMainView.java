@@ -39,5 +39,7 @@ public interface IMainView extends IView {
     void invalidToken(String token);
 
     void setDetailedPoiInfo(Poi poi);
+
+    void showCreatePoiScreen(LatLng selectedPlaceLocation);
 }
 

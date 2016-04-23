@@ -3,12 +3,14 @@ package com.dev.geochallenger.views;
 import android.location.Address;
 import android.location.Location;
 import android.os.Bundle;
+import android.text.TextUtils;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.EditText;
 import android.widget.Toast;
 
 import com.dev.geochallenger.R;
+import com.dev.geochallenger.models.ExtraConstants;
 import com.dev.geochallenger.models.RetrofitModel;
 import com.dev.geochallenger.models.api.Geocoder;
 import com.dev.geochallenger.models.entities.Poi;
@@ -22,7 +24,10 @@ import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapView;
 import com.google.android.gms.maps.MapsInitializer;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Marker;
+import com.google.android.gms.maps.model.MarkerOptions;
 
 /**
  * Created by a_dibrivnyj on 4/23/16.
@@ -33,6 +38,10 @@ public class CreatePoiActivity extends ABaseActivityView<CreatePoiPresenter> imp
     private GoogleMap map;
     private EditText descriptionEditText;
     private EditText titleEditText;
+    private LatLng selectedLocation;
+    private Marker selectedMarker;
+
+    private long id = -1;
 
     @Override
     protected CreatePoiPresenter createPresenter() {
@@ -47,6 +56,13 @@ public class CreatePoiActivity extends ABaseActivityView<CreatePoiPresenter> imp
     @Override
     protected void onViewCreated(Bundle savedInstanceState) {
         super.onViewCreated(savedInstanceState);
+
+        selectedLocation = (LatLng) getIntent().getParcelableExtra(ExtraConstants.SELECTED_LOCATION);
+        final String title = getIntent().getExtras().getString(ExtraConstants.TITLE);
+        final String description = getIntent().getExtras().getString(ExtraConstants.DESCRIPTION);
+
+        id = getIntent().getExtras().getLong(ExtraConstants.ID);
+
 
         mapView = (MapView) findViewById(R.id.mvFeed);
         mapView.onCreate(savedInstanceState);
@@ -64,11 +80,35 @@ public class CreatePoiActivity extends ABaseActivityView<CreatePoiPresenter> imp
             }
         });
 
+
         MapsInitializer.initialize(this);
 
-        descriptionEditText = (EditText) findViewById(R.id.descriptionEditText);
         titleEditText = (EditText) findViewById(R.id.titleEditText);
+        descriptionEditText = (EditText) findViewById(R.id.descriptionEditText);
 
+        titleEditText.setText(title);
+        descriptionEditText.setText(description);
+
+        map.setOnMapLongClickListener(new GoogleMap.OnMapLongClickListener() {
+            @Override
+            public void onMapLongClick(LatLng latLng) {
+                selectedLocation = latLng;
+                if (selectedMarker != null) {
+                    selectedMarker.remove();
+                }
+                drawMarker(latLng);
+            }
+        });
+        drawMarker(selectedLocation);
+    }
+
+    public void drawMarker(LatLng location) {
+        final MarkerOptions snippet = new MarkerOptions()
+                .position(location)
+                .title("")
+                .snippet("");
+
+        selectedMarker = map.addMarker(snippet);
     }
 
     @Override
@@ -101,10 +141,9 @@ public class CreatePoiActivity extends ABaseActivityView<CreatePoiPresenter> imp
             @Override
             public boolean onMenuItemClick(MenuItem item) {
                 showProgress();
-                final Location myLocation = map.getMyLocation();
 
                 Geocoder geocoder = new Geocoder(getApplicationContext());
-                geocoder.getAddress(new LatLng(myLocation.getLatitude(), myLocation.getLongitude()), new IGeocoder.IGeocoderListener() {
+                geocoder.getAddress(selectedLocation, new IGeocoder.IGeocoderListener() {
                     @Override
                     public void onAddressFetched(Address address) {
                         PoiRequest poiRequest = new PoiRequest();
@@ -124,9 +163,13 @@ public class CreatePoiActivity extends ABaseActivityView<CreatePoiPresenter> imp
                         } else {
                             poiRequest.setAddress("");
                         }
-                        poiRequest.setLatitude((float) myLocation.getLatitude());
-                        poiRequest.setLongitude((float) myLocation.getLongitude());
-                        presenter.createPoi(poiRequest);
+                        poiRequest.setLatitude((float) selectedLocation.latitude);
+                        poiRequest.setLongitude((float) selectedLocation.longitude);
+                        if (id != -1) {
+                            presenter.updatePoi(poiRequest, id);
+                        } else {
+                            presenter.createPoi(poiRequest);
+                        }
                     }
 
                     @Override
@@ -135,7 +178,6 @@ public class CreatePoiActivity extends ABaseActivityView<CreatePoiPresenter> imp
                     }
                 });
 
-                Toast.makeText(CreatePoiActivity.this, "create", Toast.LENGTH_SHORT).show();
                 return true;
             }
         }).setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS);
@@ -145,6 +187,14 @@ public class CreatePoiActivity extends ABaseActivityView<CreatePoiPresenter> imp
     @Override
     public void poiCreated(Poi poi) {
         hideProgress();
+        Toast.makeText(CreatePoiActivity.this, "Poi created", Toast.LENGTH_SHORT).show();
+        finish();
+    }
+
+    @Override
+    public void poiUpdated(Poi poi) {
+        hideProgress();
+        Toast.makeText(CreatePoiActivity.this, "Poi updated", Toast.LENGTH_SHORT).show();
         finish();
     }
 }

@@ -226,4 +226,8 @@ public class MainPresenter extends IPresenter<IMainView> {
             });
         }
     }
+
+    public void createPoiClicked() {
+        view.showCreatePoiScreen(selectedPlaceLocation);
+    }
 }

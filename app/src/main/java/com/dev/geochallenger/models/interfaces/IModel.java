@@ -45,4 +45,6 @@ public interface IModel {
     void getUser(String token, OnDataLoaded<UserResponce> callback);
 
     void createPoi(PoiRequest poiRequest, String token, final OnDataLoaded<Poi> callback);
+
+    void updatePoi(PoiRequest poiRequest, String token, long id, final OnDataLoaded<Poi> callback);
 }

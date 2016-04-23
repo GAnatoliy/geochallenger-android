@@ -127,6 +127,14 @@ public class MainActivity extends ABaseActivityView<MainPresenter> implements IM
             }
         });
 
+        FloatingActionButton fabPaperplane = (FloatingActionButton) findViewById(R.id.fabPaperplane);
+        fabPaperplane.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                presenter.createPoiClicked();
+            }
+        });
+
         bottomSheetBehavior = BottomSheetBehavior.from(findViewById(R.id.nsvMainActivity));
         bottomLargeSheetBehavior = BottomSheetBehavior.from(findViewById(R.id.nsvLargeMainActivity));
         tvSelectedPlaceCity = (TextView) findViewById(R.id.tvMainPlaceDetailsCity);
@@ -295,11 +303,20 @@ public class MainActivity extends ABaseActivityView<MainPresenter> implements IM
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(MainActivity.this, CreatePoiActivity.class);
+                intent.putExtra(ExtraConstants.SELECTED_LOCATION, new LatLng(poi.getLatitude(), poi.getLongitude()));
+                intent.putExtra(ExtraConstants.TITLE, poi.getTitle());
+                intent.putExtra(ExtraConstants.DESCRIPTION, poi.getContent());
+                intent.putExtra(ExtraConstants.ID, poi.getId());
                 startActivity(intent);
             }
         });
+    }
 
-
+    @Override
+    public void showCreatePoiScreen(LatLng selectedPlaceLocation) {
+        Intent intent = new Intent(MainActivity.this, CreatePoiActivity.class);
+        intent.putExtra(ExtraConstants.SELECTED_LOCATION, selectedPlaceLocation);
+        startActivity(intent);
     }
 
     public void getAccount() {
