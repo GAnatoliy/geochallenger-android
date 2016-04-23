@@ -34,7 +34,7 @@ import okhttp3.ResponseBody;
 public class CreateRoutePresenter extends IPresenter<ICreateRouteView> {
 
     private IModel restClient;
-    private List<LatLng> waypoints = new ArrayList<>();
+    private List<Poi> waypoints = new ArrayList<>();
     private String source;
     private String destination;
     private double routeDistance;
@@ -43,7 +43,7 @@ public class CreateRoutePresenter extends IPresenter<ICreateRouteView> {
     private LatLng selectedLocation;
     private Address selectedAddress;
     private String routePath;
-    private List<Poi> waypointPois;
+    private List<Poi> poisNearMe;
 
     public CreateRoutePresenter(ICreateRouteView view, IModel restClient, LatLng selectedLocation,
                                 Address selectedAddress, Location myLocation, ITokenRepository tokenRepository) {
@@ -108,25 +108,43 @@ public class CreateRoutePresenter extends IPresenter<ICreateRouteView> {
             convertedString.append("|");
         }
         for (int i = 0; i < waypoints.size(); i++) {
-            LatLng latLng = waypoints.get(i);
+            Poi poi = waypoints.get(i);
             //convertedString.append("via:");
-            convertedString.append(latLng.latitude);
+            convertedString.append(poi.getLatitude());
             convertedString.append(",");
-            convertedString.append(latLng.longitude);
+            convertedString.append(poi.getLongitude());
             convertedString.append("|");
         }
 
         return convertedString.length() > 0 ? convertedString.substring(0, convertedString.length() - 1) : null;
     }
 
-    public void toggleWaypoints(LatLng point) {
-        if (waypoints.contains(point)) {
-            waypoints.remove(point);
-        } else {
-            waypoints.add(point);
+    public int toggleWaypoints(LatLng point) {
+        Poi poi = getPoiByLocation(point);
+
+        if (poi != null) {
+            if (waypoints.contains(poi)) {
+                waypoints.remove(poi);
+
+            } else {
+                waypoints.add(poi);
+            }
         }
 
         getPathForCities(source, destination);
+
+        return waypoints.size();
+    }
+
+    private Poi getPoiByLocation(LatLng location) {
+        for (int i = 0; i < poisNearMe.size(); i++) {
+            Poi poi = poisNearMe.get(i);
+            if (poi.getLatitude() == location.latitude
+                    && poi.getLongitude() == location.longitude) {
+                return poi;
+            }
+        }
+        return null;
     }
 
     private void parseDirections(final GoogleDirectionsEntity entity) {
@@ -136,7 +154,6 @@ public class CreateRoutePresenter extends IPresenter<ICreateRouteView> {
                 try {
 
                     List<Route> entityRoutes = entity.getRoutes();
-
 
                     /** Traversing all routes */
                     if (entityRoutes != null) {
@@ -200,7 +217,15 @@ public class CreateRoutePresenter extends IPresenter<ICreateRouteView> {
         restClient.getPoiList(topLeftLatitude, topLeftLongitude, bottomRightLatitude, bottomRightLongitude, new OnDataLoaded<List<Poi>>() {
             @Override
             public void onSuccess(List<Poi> pois) {
-                waypointPois = pois;
+                if (pois != null) {
+                    for (int i = 0; i < pois.size(); i++) {
+                        Poi poi = pois.get(i);
+                        if (waypoints.contains(poi)) {
+                            poi.setWaypoint(true);
+                        }
+                    }
+                }
+                poisNearMe = pois;
                 view.showPois(pois);
                 view.hideProgress();
             }
@@ -248,9 +273,9 @@ public class CreateRoutePresenter extends IPresenter<ICreateRouteView> {
 
     private List<Long> extractPoisIds() {
         List<Long> poiIds = new ArrayList<>();
-        if (waypointPois != null) {
-            for (int i = 0; i < waypointPois.size(); i++) {
-                poiIds.add(waypointPois.get(i).getId());
+        if (waypoints != null) {
+            for (int i = 0; i < waypoints.size(); i++) {
+                poiIds.add(waypoints.get(i).getId());
             }
         }
 

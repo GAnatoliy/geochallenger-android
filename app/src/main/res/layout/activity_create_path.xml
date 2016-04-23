@@ -9,15 +9,43 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="#110132"
-        android:padding="20dp">
+        android:paddingTop="10dp"
+        android:paddingBottom="10dp"
+        android:paddingRight="8dp">
+
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:src="@drawable/line_small"
+            android:layout_marginTop="15dp"
+            android:layout_marginBottom="15dp"
+            android:paddingLeft="8.5dp"
+            android:paddingRight="9dp"
+            android:layout_alignTop="@+id/iv_create_route_from_icon"
+            android:layout_alignBottom="@+id/iv_create_route_dest_icon"
+            android:layout_alignLeft="@+id/iv_create_route_from_icon"
+            android:layout_alignRight="@+id/iv_create_route_from_icon"/>
+
+        <ImageView
+            android:id="@+id/iv_create_route_back"
+            android:layout_width="45dp"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:adjustViewBounds="true"
+            android:src="@drawable/back"
+            android:paddingLeft="15dp"/>
+
 
         <LinearLayout
             android:id="@+id/llFromContainer"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_toRightOf="@+id/iv_create_route_back"
             android:background="#332354"
             android:paddingLeft="10dp"
-            android:paddingRight="10dp">
+            android:paddingRight="10dp"
+            android:layout_alignLeft="@+id/iv_create_route_from_icon"
+            android:layout_marginLeft="15dp">
 
             <TextView
                 android:layout_width="40dp"
@@ -32,15 +60,27 @@
                 android:layout_height="wrap_content"
                 android:background="#332354"
                 android:minHeight="30dp"
-                android:textColor="@android:color/white" />
+                android:textColor="@android:color/white"
+                android:singleLine="true"/>
         </LinearLayout>
+
+        <ImageView
+            android:layout_width="20dp"
+            android:layout_height="20dp"
+            android:id="@+id/iv_create_route_from_icon"
+            android:src="@drawable/my_pos_small"
+            android:layout_toRightOf="@+id/iv_create_route_back"
+            android:layout_alignTop="@+id/llFromContainer"
+            android:layout_alignBottom="@+id/llFromContainer"/>
 
         <LinearLayout
             android:id="@+id/llToContainer"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_below="@id/llFromContainer"
-            android:layout_marginTop="10dp"
+            android:layout_marginTop="20dp"
+            android:layout_alignLeft="@+id/iv_create_route_dest_icon"
+            android:layout_marginLeft="15dp"
             android:background="#332354"
             android:paddingLeft="10dp"
             android:paddingRight="10dp">
@@ -58,41 +98,59 @@
                 android:layout_height="wrap_content"
                 android:background="#332354"
                 android:minHeight="30dp"
-                android:textColor="@android:color/white" />
+                android:textColor="@android:color/white"
+                android:singleLine="true"/>
         </LinearLayout>
+
+        <ImageView
+            android:layout_width="20dp"
+            android:layout_height="20dp"
+            android:id="@+id/iv_create_route_dest_icon"
+            android:src="@drawable/dest_small"
+            android:layout_toRightOf="@+id/iv_create_route_back"
+            android:layout_alignTop="@+id/llToContainer"
+            android:layout_alignBottom="@+id/llToContainer"/>
 
     </RelativeLayout>
 
     <com.google.android.gms.maps.MapView
         android:id="@+id/mvCreatePath"
-        android:layout_below="@+id/rlCreateRoutesSearch"
         android:layout_width="fill_parent"
-        android:layout_height="fill_parent" />
+        android:layout_height="fill_parent"
+        android:layout_below="@+id/rlCreateRoutesSearch" />
 
 
     <FrameLayout
         android:id="@+id/flCreateRouteBanner"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:clipToPadding="true"
         android:layout_alignParentBottom="true"
-        android:visibility="gone">
+        android:clipToPadding="true"
+        android:visibility="visible">
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="28dp"
             android:background="#ffffff"
+            android:padding="16dp"
             android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/tvCreateRouteItemsCount"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                tools:text="@string/unknown"
+                android:textColor="@color/font_color"
+                android:textSize="24sp" />
 
             <TextView
                 android:id="@+id/tvCreateRouteDistance"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:padding="16dp"
-                android:textSize="20sp"
                 android:text="@string/unknown"
-                android:textColor="@color/font_color"/>
+                android:textColor="@color/font_color"
+                android:textSize="16sp" />
         </LinearLayout>
 
         <android.support.design.widget.FloatingActionButton
@@ -101,7 +159,7 @@
             android:layout_height="56dp"
             android:layout_gravity="top|end"
             android:layout_marginRight="@dimen/fab_margin"
-            android:src="@android:drawable/ic_dialog_email" />
+            android:src="@drawable/pin" />
     </FrameLayout>
 
 </RelativeLayout>
