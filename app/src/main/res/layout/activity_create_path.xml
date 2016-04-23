@@ -197,5 +197,4 @@
             android:id="@+id/fabAddWaypoint"/>
     </FrameLayout>
 
-
 </android.support.design.widget.CoordinatorLayout>

@@ -113,7 +113,8 @@
                 android:layout_height="56dp"
                 android:layout_gravity="top|end"
                 android:layout_marginRight="@dimen/fab_margin"
-                android:src="@drawable/key_2" />
+                android:src="@drawable/key_2"
+                android:id="@+id/fabChallenge"/>
         </FrameLayout>
     </android.support.design.widget.CoordinatorLayout>
 

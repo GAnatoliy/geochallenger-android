@@ -1,0 +1,171 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:context="com.dev.geochallenger.views.ChallengeActivity">
+
+    <ImageView
+        android:id="@+id/iv_challenge"
+        android:layout_width="match_parent"
+        android:layout_height="180dp"
+        android:scaleType="centerCrop"
+        android:src="@drawable/bg" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/colorAccent"
+        android:orientation="vertical"
+        android:padding="18dp">
+
+        <TextView
+            android:id="@+id/tv_challenge_title"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:lines="2"
+            android:textAllCaps="true"
+            android:textColor="@android:color/white"
+            android:textSize="20sp"
+            android:textStyle="bold"
+            tools:text="sdfsdf sdfsdf sdfsdf sdfsdf sdfsdf" />
+
+        <TextView
+            android:id="@+id/tv_challenge_address"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:lines="1"
+            android:textAllCaps="true"
+            android:textColor="@android:color/white"
+            android:textSize="14sp"
+            android:textStyle="bold"
+            tools:text="sdfsdf sdfsdf sdfsdf sdfsdf sdfsdf" />
+    </LinearLayout>
+
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <RelativeLayout
+            android:id="@+id/rl_challenge_checkin"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <ImageView
+                android:id="@+id/iv_checkin_icon"
+                android:layout_width="25dp"
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
+                android:layout_margin="18dp"
+                android:adjustViewBounds="true"
+                android:src="@drawable/pointer" />
+
+            <TextView
+                android:id="@+id/tv_challenge_checkin_title"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:layout_toLeftOf="@+id/btn_checkin"
+                android:layout_toRightOf="@+id/iv_checkin_icon"
+                android:text="@string/checking_title"
+                android:textAllCaps="true"
+                android:textColor="@android:color/black"
+                android:textSize="16sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/tv_challenge_checkin_description"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/tv_challenge_checkin_title"
+                android:layout_marginTop="4dp"
+                android:layout_toLeftOf="@+id/btn_checkin"
+                android:layout_toRightOf="@+id/iv_checkin_icon"
+                android:text="@string/checking_description"
+                android:textAllCaps="true"
+                android:textColor="@android:color/black"
+                android:textSize="10sp" />
+
+
+            <TextView
+                android:id="@+id/tv_challenge_checkin_points"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_alignLeft="@+id/btn_checkin"
+                android:layout_alignRight="@+id/btn_checkin"
+                android:layout_marginTop="12dp"
+                android:text="@string/checking_points"
+                android:textAllCaps="true"
+                android:textColor="@color/hint_color"
+                android:textSize="12sp" />
+
+            <Button
+                android:id="@+id/btn_checkin"
+                android:layout_width="70dp"
+                android:layout_height="38dp"
+                android:layout_alignParentRight="true"
+                android:layout_below="@+id/tv_challenge_checkin_points"
+                android:layout_margin="12dp"
+                android:background="@color/button_bg"
+                android:text="@string/check_button"
+                android:textColor="@android:color/white" />
+
+        </RelativeLayout>
+
+        <FrameLayout
+            android:id="@+id/fl_challenge_checkin_complete"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@color/button_bg"
+            android:visibility="gone">
+
+            <RelativeLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center">
+
+                <ImageView
+                    android:id="@+id/iv_checkin_icon_complete"
+                    android:layout_width="32dp"
+                    android:layout_height="wrap_content"
+                    android:layout_centerVertical="true"
+                    android:layout_margin="20dp"
+                    android:adjustViewBounds="true"
+                    android:src="@drawable/pointer_2" />
+
+                <TextView
+                    android:id="@+id/tv_challenge_complete_title"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textAllCaps="true"
+                    android:layout_toRightOf="@+id/iv_checkin_icon_complete"
+                    android:layout_alignTop="@+id/iv_checkin_icon_complete"
+                    android:textColor="@android:color/white"
+                    android:textSize="24sp"
+                    android:textStyle="bold"
+                    android:text="@string/challenge_checkin_complete_title"/>
+
+                <TextView
+                    android:id="@+id/tv_challenge_complete_description"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textAllCaps="true"
+                    android:layout_toRightOf="@+id/iv_checkin_icon_complete"
+                    android:layout_below="@+id/tv_challenge_complete_title"
+                    android:textColor="@android:color/white"
+                    android:textSize="16sp"
+                    android:textStyle="bold"
+                    android:text="@string/challenge_checkin_complete_description"/>
+
+
+            </RelativeLayout>
+
+        </FrameLayout>
+    </FrameLayout>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="@color/hint_color" />
+</LinearLayout>

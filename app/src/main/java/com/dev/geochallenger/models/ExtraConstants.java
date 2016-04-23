@@ -13,4 +13,5 @@ public interface ExtraConstants {
     String TITLE = "title";
     String DESCRIPTION = "description";
     java.lang.String ID = "id";
+    String POI = "poi";
 }

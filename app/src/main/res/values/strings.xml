@@ -10,4 +10,10 @@
     <string name="dialog_create_route_negative">Cancel</string>
     <string name="dialog_positive">Ok</string>
     <string name="create_route_pois_count">%d POINTS</string>
+    <string name="checking_title">Check via geotagging</string>
+    <string name="checking_description">You shoud be on this POI to pass a challenge by geotagging</string>
+    <string name="check_button">Check</string>
+    <string name="checking_points">+10 points</string>
+    <string name="challenge_checkin_complete_title">SUCCESS!</string>
+    <string name="challenge_checkin_complete_description">You got 10 points</string>
 </resources>
