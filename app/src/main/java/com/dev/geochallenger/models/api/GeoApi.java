@@ -133,4 +133,11 @@ public interface GeoApi {
     Call<Poi> updatePoi(@Header("authorization") String bearerToken,
                         @Body PoiRequest request, @Path("id") String _id);
 
+    @Headers({
+            "Accept: application/json",
+            "Content-Type: application/json"})
+    @POST("api/pois/{poiId}/checkin")
+    Call<DefaultResponse> checkinPoi(@Path("poiId") long poiId,
+                        @Header("authorization") String bearerToken,
+                        @Body Object request);
 }
