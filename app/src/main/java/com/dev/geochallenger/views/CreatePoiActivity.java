@@ -1,9 +1,12 @@
 package com.dev.geochallenger.views;
 
 import android.content.Intent;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.location.Address;
 import android.location.Location;
 import android.os.Bundle;
+import android.support.v7.app.ActionBar;
 import android.text.TextUtils;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -58,6 +61,9 @@ public class CreatePoiActivity extends ABaseActivityView<CreatePoiPresenter> imp
     @Override
     protected void onViewCreated(Bundle savedInstanceState) {
         super.onViewCreated(savedInstanceState);
+
+        final ActionBar supportActionBar = getSupportActionBar();
+        supportActionBar.setBackgroundDrawable(new ColorDrawable(Color.parseColor("#111133")));
 
         selectedLocation = (LatLng) getIntent().getParcelableExtra(ExtraConstants.SELECTED_LOCATION);
         final String title = getIntent().getExtras().getString(ExtraConstants.TITLE);

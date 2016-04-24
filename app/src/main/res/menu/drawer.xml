@@ -4,10 +4,14 @@
     <group android:checkableBehavior="single">
 
         <item
-            android:id="@+id/drawer_settings"
             android:checkable="false"
             android:icon="@drawable/directions"
             android:title="MY ROUTES" />
+
+        <item
+            android:checkable="false"
+            android:icon="@drawable/cup"
+            android:title="LEADERBOARD" />
 
         <item
             android:id="@+id/drawerLogOut"

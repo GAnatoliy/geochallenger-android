@@ -53,7 +53,16 @@
             android:label="MY ROUTES"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme.ActionBar" />
-        <activity android:name=".views.ChallengeActivity"></activity>
+
+        <activity android:name=".views.ChallengeActivity" />
+
+        <activity
+            android:name=".views.LeaderboardActivity"
+            android:label="LEADERBOARD"
+            android:screenOrientation="portrait"
+            android:theme="@style/AppTheme.ActionBar" />
+
+
     </application>
 
 </manifest>

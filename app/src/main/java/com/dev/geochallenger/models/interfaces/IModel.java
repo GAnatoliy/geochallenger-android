@@ -1,6 +1,7 @@
 package com.dev.geochallenger.models.interfaces;
 
 
+import com.dev.geochallenger.models.entities.LeaderBoardItem;
 import com.dev.geochallenger.models.entities.PoiRequest;
 import com.dev.geochallenger.models.entities.login.LoginResponce;
 import com.dev.geochallenger.models.entities.login.UserResponce;
@@ -49,4 +50,6 @@ public interface IModel {
     void updatePoi(PoiRequest poiRequest, String token, long id, final OnDataLoaded<Poi> callback);
 
     void checkinPoi(long poi, String token, Object object, OnDataLoaded<DefaultResponse> callback);
+
+    void getLeaderBoard(OnDataLoaded<List<LeaderBoardItem>> callback);
 }

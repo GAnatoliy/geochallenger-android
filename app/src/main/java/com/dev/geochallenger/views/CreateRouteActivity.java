@@ -5,6 +5,7 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.graphics.Rect;
+import android.graphics.drawable.ColorDrawable;
 import android.location.Address;
 import android.location.Location;
 import android.os.Bundle;
@@ -14,6 +15,7 @@ import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.view.ViewCompat;
 import android.support.v4.widget.NestedScrollView;
+import android.support.v7.app.ActionBar;
 import android.text.Editable;
 import android.text.Spannable;
 import android.text.SpannableString;
@@ -91,6 +93,9 @@ public class CreateRouteActivity extends ABaseActivityView<CreateRoutePresenter>
     protected void onViewCreated(Bundle savedInstanceState) {
         super.onViewCreated(savedInstanceState);
 
+        final ActionBar supportActionBar = getSupportActionBar();
+        supportActionBar.setBackgroundDrawable(new ColorDrawable(Color.parseColor("#111133")));
+
         myLocation = (Location) getIntent().getParcelableExtra(ExtraConstants.MY_LOCATION);
         selectedLocation = (LatLng) getIntent().getParcelableExtra(ExtraConstants.SELECTED_LOCATION);
         selectedAddress = (Address) getIntent().getParcelableExtra(ExtraConstants.SELECTED_ADDRESS);
@@ -105,7 +110,7 @@ public class CreateRouteActivity extends ABaseActivityView<CreateRoutePresenter>
         distanceBanner = (ViewGroup) findViewById(R.id.flCreateRouteBanner);
         bottomSheet = findViewById(R.id.nsvPoiDetails);
         bottomLargeSheetBehavior = BottomSheetBehavior.from(bottomSheet);
-        coordinatorLayout = (CoordinatorLayout)findViewById(R.id.clCreatePath);
+        coordinatorLayout = (CoordinatorLayout) findViewById(R.id.clCreatePath);
         fabCreateRoute.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

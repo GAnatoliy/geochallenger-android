@@ -80,7 +80,8 @@ public class MainActivity extends ABaseActivityView<MainPresenter> implements IM
 
     private static final String TAG = MainActivity.class.getSimpleName();
     private static final int MENU_MY_ROUTES_INDEX = 0;
-    private static final int MENU_LOG_OUT_INDEX = 1;
+    private static final int MENU_LEADERBOARD = 1;
+    private static final int MENU_LOG_OUT_INDEX = 2;
 
     private static final int REQUEST_AUTHORIZATION = 1;
     private static final int REQUEST_CODE_PICK_ACCOUNT = 2;
@@ -233,6 +234,17 @@ public class MainActivity extends ABaseActivityView<MainPresenter> implements IM
             public boolean onMenuItemClick(MenuItem item) {
                 drawerLayout.closeDrawer(Gravity.LEFT);
                 Intent intent = new Intent(MainActivity.this, MyRoutesActivity.class);
+                startActivity(intent);
+                return true;
+            }
+        });
+
+        final MenuItem leaderBoardButton = navigationView.getMenu().getItem(MENU_LEADERBOARD);
+        leaderBoardButton.setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
+            @Override
+            public boolean onMenuItemClick(MenuItem item) {
+                drawerLayout.closeDrawer(Gravity.LEFT);
+                Intent intent = new Intent(MainActivity.this, LeaderboardActivity.class);
                 startActivity(intent);
                 return true;
             }

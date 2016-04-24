@@ -2,6 +2,7 @@ package com.dev.geochallenger.models;
 
 import com.dev.geochallenger.models.api.GeoApi;
 import com.dev.geochallenger.models.entities.DefaultResponse;
+import com.dev.geochallenger.models.entities.LeaderBoardItem;
 import com.dev.geochallenger.models.entities.Poi;
 import com.dev.geochallenger.models.entities.PoiRequest;
 import com.dev.geochallenger.models.entities.cities.PlacesEntity;
@@ -393,6 +394,26 @@ public class RetrofitModel implements IModel {
 
             @Override
             public void onFailure(Call<DefaultResponse> call, Throwable t) {
+                callback.onError(t, null);
+            }
+        });
+    }
+
+    @Override
+    public void getLeaderBoard(final OnDataLoaded<List<LeaderBoardItem>> callback) {
+        final Call<List<LeaderBoardItem>> leaderboard = service.getLeaderboard(String.valueOf(30));
+        leaderboard.enqueue(new Callback<List<LeaderBoardItem>>() {
+            @Override
+            public void onResponse(Call<List<LeaderBoardItem>> call, Response<List<LeaderBoardItem>> response) {
+                if (response.isSuccessful()) {
+                    callback.onSuccess(response.body());
+                } else {
+                    callback.onError(new Throwable("error"), response.errorBody());
+                }
+            }
+
+            @Override
+            public void onFailure(Call<List<LeaderBoardItem>> call, Throwable t) {
                 callback.onError(t, null);
             }
         });

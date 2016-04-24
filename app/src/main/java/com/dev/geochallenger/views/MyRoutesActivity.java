@@ -1,6 +1,8 @@
 package com.dev.geochallenger.views;
 
 import android.content.Intent;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.support.v7.app.ActionBar;
 import android.support.v7.widget.LinearLayoutManager;
@@ -41,8 +43,8 @@ public class MyRoutesActivity extends ABaseActivityView<MyRoutesPresenter> imple
     protected void onViewCreated(Bundle savedInstanceState) {
         super.onViewCreated(savedInstanceState);
 
-
         final ActionBar supportActionBar = getSupportActionBar();
+        supportActionBar.setBackgroundDrawable(new ColorDrawable(Color.parseColor("#111133")));
         supportActionBar.setDisplayHomeAsUpEnabled(true);
 
         myRoutesRecyclerView = (RecyclerView) findViewById(R.id.myRouteRecyclerView);

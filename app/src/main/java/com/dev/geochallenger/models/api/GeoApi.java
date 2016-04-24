@@ -1,5 +1,6 @@
 package com.dev.geochallenger.models.api;
 
+import com.dev.geochallenger.models.entities.LeaderBoardItem;
 import com.dev.geochallenger.models.entities.PoiRequest;
 import com.dev.geochallenger.models.entities.login.LoginResponce;
 import com.dev.geochallenger.models.entities.login.UserResponce;
@@ -138,6 +139,14 @@ public interface GeoApi {
             "Content-Type: application/json"})
     @POST("api/pois/{poiId}/checkin")
     Call<DefaultResponse> checkinPoi(@Path("poiId") long poiId,
-                        @Header("authorization") String bearerToken,
-                        @Body Object request);
+                                     @Header("authorization") String bearerToken,
+                                     @Body Object request);
+
+    @Headers({
+            "Accept: application/json",
+            "Content-Type: application/json"})
+    @GET("api/users/top")
+    Call<List<LeaderBoardItem>> getLeaderboard(@Query("take") String take);
+
+
 }
