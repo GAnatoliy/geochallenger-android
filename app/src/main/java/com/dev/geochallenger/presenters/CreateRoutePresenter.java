@@ -419,7 +419,7 @@ public class CreateRoutePresenter extends IPresenter<ICreateRouteView> {
         poi.setLatitude((float) position.latitude);
         poi.setLongitude((float) position.longitude);
         int indexOf = poisNearMe.indexOf(poi);
-        if (indexOf > 0) {
+        if (indexOf > -1) {
             Poi selectedPoi = poisNearMe.get(indexOf);
             if (selectedPoi != null) {
                 view.showProgress();
