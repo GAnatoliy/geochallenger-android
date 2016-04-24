@@ -1,5 +1,6 @@
 package com.dev.geochallenger.views;
 
+import android.content.Intent;
 import android.location.Address;
 import android.location.Location;
 import android.os.Bundle;
@@ -28,6 +29,7 @@ import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.gson.Gson;
 
 /**
  * Created by a_dibrivnyj on 4/23/16.
@@ -61,8 +63,7 @@ public class CreatePoiActivity extends ABaseActivityView<CreatePoiPresenter> imp
         final String title = getIntent().getExtras().getString(ExtraConstants.TITLE);
         final String description = getIntent().getExtras().getString(ExtraConstants.DESCRIPTION);
 
-        id = getIntent().getExtras().getLong(ExtraConstants.ID);
-
+        id = getIntent().getExtras().getLong(ExtraConstants.ID, -1);
 
         mapView = (MapView) findViewById(R.id.mvFeed);
         mapView.onCreate(savedInstanceState);
@@ -187,14 +188,28 @@ public class CreatePoiActivity extends ABaseActivityView<CreatePoiPresenter> imp
     @Override
     public void poiCreated(Poi poi) {
         hideProgress();
+
         Toast.makeText(CreatePoiActivity.this, "Poi created", Toast.LENGTH_SHORT).show();
+
+        Intent intent = new Intent();
+        final Gson gson = new Gson();
+        intent.putExtra("poi", gson.toJson(poi));
+        setResult(RESULT_OK, intent);
+
         finish();
     }
 
     @Override
     public void poiUpdated(Poi poi) {
         hideProgress();
+
         Toast.makeText(CreatePoiActivity.this, "Poi updated", Toast.LENGTH_SHORT).show();
+
+        Intent intent = new Intent();
+        final Gson gson = new Gson();
+        intent.putExtra("poi", gson.toJson(poi));
+        setResult(RESULT_OK, intent);
+
         finish();
     }
 }

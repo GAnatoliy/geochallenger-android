@@ -41,5 +41,7 @@ public interface IMainView extends IView {
     void setDetailedPoiInfo(Poi poi);
 
     void showCreatePoiScreen(LatLng selectedPlaceLocation);
+
+    void updateCreatedMarker(Poi selectedPlaceLocation);
 }
 

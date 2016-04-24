@@ -54,7 +54,6 @@ import com.dev.geochallenger.views.interfaces.IMainView;
 import com.google.android.gms.auth.GoogleAuthException;
 import com.google.android.gms.auth.GoogleAuthUtil;
 import com.google.android.gms.auth.UserRecoverableAuthException;
-import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.android.gms.common.AccountPicker;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
@@ -313,6 +312,7 @@ public class MainActivity extends ABaseActivityView<MainPresenter> implements IM
         editButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                bottomLargeSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
                 Intent intent = new Intent(MainActivity.this, CreatePoiActivity.class);
                 intent.putExtra(ExtraConstants.SELECTED_LOCATION, new LatLng(poi.getLatitude(), poi.getLongitude()));
                 intent.putExtra(ExtraConstants.TITLE, poi.getTitle());
@@ -325,9 +325,28 @@ public class MainActivity extends ABaseActivityView<MainPresenter> implements IM
 
     @Override
     public void showCreatePoiScreen(LatLng selectedPlaceLocation) {
+        bottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
         Intent intent = new Intent(MainActivity.this, CreatePoiActivity.class);
         intent.putExtra(ExtraConstants.SELECTED_LOCATION, selectedPlaceLocation);
         startActivityForResult(intent, REQUEST_CREATE_POI);
+    }
+
+    @Override
+    public void updateCreatedMarker(Poi poi) {
+        if (customMarker != null) {
+            customMarker.remove();
+            customMarker = null;
+        }
+
+        final MarkerOptions snippet = new MarkerOptions()
+                .position(new LatLng(poi.getLatitude(), poi.getLongitude()))
+                .title(poi.getTitle())
+                .snippet(poi.getAddress())
+                .icon(BitmapDescriptorFactory.fromBitmap(resizeMapIcons(R.drawable.poi,
+                        getResources().getDimensionPixelSize(R.dimen.marker_width),
+                        getResources().getDimensionPixelSize(R.dimen.marker_height))));
+        final Marker marker = map.addMarker(snippet);
+        markers.put(marker, poi);
     }
 
     public void getAccount() {
@@ -434,7 +453,9 @@ public class MainActivity extends ABaseActivityView<MainPresenter> implements IM
 
         if (requestCode == REQUEST_CREATE_POI) {
             if (resultCode == Activity.RESULT_OK) {
-
+                final String poiString = data.getExtras().getString("poi");
+                final Poi poi = new Gson().fromJson(poiString, Poi.class);
+                presenter.updateSelectedLocation(poi);
             } else {
                 hideProgress();
             }
@@ -521,6 +542,7 @@ public class MainActivity extends ABaseActivityView<MainPresenter> implements IM
     public void setCustomMarker(LatLng latLng) {
         if (customMarker != null) {
             customMarker.remove();
+            customMarker = null;
         }
         final MarkerOptions snippet = new MarkerOptions()
                 .position(latLng);
@@ -626,6 +648,7 @@ public class MainActivity extends ABaseActivityView<MainPresenter> implements IM
             bottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
             if (customMarker != null) {
                 customMarker.remove();
+                customMarker = null;
             }
             return;
         }

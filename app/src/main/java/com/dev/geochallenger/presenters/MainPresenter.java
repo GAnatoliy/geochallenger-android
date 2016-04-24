@@ -230,4 +230,8 @@ public class MainPresenter extends IPresenter<IMainView> {
     public void createPoiClicked() {
         view.showCreatePoiScreen(selectedPlaceLocation);
     }
+
+    public void updateSelectedLocation(Poi poi) {
+        view.updateCreatedMarker(poi);
+    }
 }
