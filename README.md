@@ -1,6 +1,7 @@
 # geochallenger-android
 
-This project is solution of Geotagging Space and Aviation (Nasa Space Apps Challenge)
+This project is solution of Geotagging Space and Aviation (Nasa Space Apps Challenge) 
+https://2016.spaceappschallenge.org/challenges/earth/geotagging-space-and-aviation/projects/geochallenger-knowledge-through-adventure
 
 Client is implement on the android.
 
