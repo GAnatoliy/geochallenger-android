@@ -252,7 +252,6 @@ public class CreateRouteActivity extends ABaseActivityView<CreateRoutePresenter>
         final TextView detailedText = (TextView) findViewById(R.id.detailedText);
         findViewById(R.id.ll_detailed_poi_gotto).setVisibility(View.GONE);
         FloatingActionButton addWaypoint = (FloatingActionButton) findViewById(R.id.fabAddWaypoint);
-        addWaypoint.setImageResource(android.R.drawable.ic_input_add);
         addWaypoint.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
