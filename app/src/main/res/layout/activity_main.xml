@@ -63,7 +63,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_below="@+id/fabPaperplaneContainer"
-                android:layout_marginTop="10dp"
+                android:layout_marginTop="20dp"
                 android:background="#ffffff"
                 android:orientation="vertical">
 
@@ -89,7 +89,8 @@
                 android:layout_width="56dp"
                 android:layout_height="56dp"
                 android:layout_alignParentRight="true"
-                android:layout_marginTop="40dp"
+                android:layout_marginRight="10dp"
+                android:layout_marginTop="60dp"
                 android:src="@drawable/rocket" />
 
         </RelativeLayout>
@@ -105,16 +106,16 @@
             <include
                 layout="@layout/detailed_poi_layout"
                 android:layout_width="match_parent"
-                android:layout_height="600dp"
+                android:layout_height="400dp"
                 android:layout_marginTop="28dp" />
 
             <android.support.design.widget.FloatingActionButton
+                android:id="@+id/fabChallenge"
                 android:layout_width="56dp"
                 android:layout_height="56dp"
                 android:layout_gravity="top|end"
                 android:layout_marginRight="@dimen/fab_margin"
-                android:src="@drawable/key_2"
-                android:id="@+id/fabChallenge"/>
+                android:src="@drawable/key_2" />
         </FrameLayout>
     </android.support.design.widget.CoordinatorLayout>
 

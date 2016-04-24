@@ -85,6 +85,7 @@ public class MainActivity extends ABaseActivityView<MainPresenter> implements IM
 
     private static final int REQUEST_AUTHORIZATION = 1;
     private static final int REQUEST_CODE_PICK_ACCOUNT = 2;
+    private static final int REQUEST_CREATE_POI = 3;
 
     private MapView mapView;
     private GoogleMap map;
@@ -326,7 +327,7 @@ public class MainActivity extends ABaseActivityView<MainPresenter> implements IM
     public void showCreatePoiScreen(LatLng selectedPlaceLocation) {
         Intent intent = new Intent(MainActivity.this, CreatePoiActivity.class);
         intent.putExtra(ExtraConstants.SELECTED_LOCATION, selectedPlaceLocation);
-        startActivity(intent);
+        startActivityForResult(intent, REQUEST_CREATE_POI);
     }
 
     public void getAccount() {
@@ -426,6 +427,14 @@ public class MainActivity extends ABaseActivityView<MainPresenter> implements IM
                 String oneTimeToken = extra.getString("authtoken");
                 Log.d(TAG, "REQUEST_AUTHORIZATION: token: " + oneTimeToken + " mEmail: " + mEmail);
                 presenter.login(mEmail, oneTimeToken);
+            } else {
+                hideProgress();
+            }
+        }
+
+        if (requestCode == REQUEST_CREATE_POI) {
+            if (resultCode == Activity.RESULT_OK) {
+
             } else {
                 hideProgress();
             }
