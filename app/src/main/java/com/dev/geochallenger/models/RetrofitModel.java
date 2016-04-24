@@ -377,4 +377,24 @@ public class RetrofitModel implements IModel {
             }
         });
     }
+
+    @Override
+    public void checkinPoi(long poi, String token, Object object, final OnDataLoaded<DefaultResponse> callback) {
+        final Call<DefaultResponse> response = service.checkinPoi(poi, "bearer " + token, object);
+        response.enqueue(new Callback<DefaultResponse>() {
+            @Override
+            public void onResponse(Call<DefaultResponse> call, Response<DefaultResponse> response) {
+                if (response.isSuccessful()) {
+                    callback.onSuccess(response.body());
+                } else {
+                    callback.onError(new Throwable("error"), response.errorBody());
+                }
+            }
+
+            @Override
+            public void onFailure(Call<DefaultResponse> call, Throwable t) {
+                callback.onError(t, null);
+            }
+        });
+    }
 }
