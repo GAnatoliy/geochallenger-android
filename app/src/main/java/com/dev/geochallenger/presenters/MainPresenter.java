@@ -48,6 +48,14 @@ public class MainPresenter extends IPresenter<IMainView> {
 
     @Override
     public void init() {
+        initAllPois();
+
+        if (!TextUtils.isEmpty(iTokenRepository.getToken())) {
+            getUser(iTokenRepository.getToken());
+        }
+    }
+
+    public void initAllPois() {
         model.getPoiList(new OnDataLoaded<List<Poi>>() {
             @Override
             public void onSuccess(List<Poi> pois) {
@@ -59,11 +67,8 @@ public class MainPresenter extends IPresenter<IMainView> {
                 view.showErrorMessage("Error", t.getMessage());
             }
         });
-
-        if (!TextUtils.isEmpty(iTokenRepository.getToken())) {
-            getUser(iTokenRepository.getToken());
-        }
     }
+
 
     public void findPlaces(String newText, String key) {
         model.getPlaces(newText, key, new OnDataLoaded<PlacesEntity>() {

@@ -395,12 +395,18 @@ public class MainActivity extends ABaseActivityView<MainPresenter> implements IM
 
                 final TextView textView = (TextView) searchLocationlayout.findViewById(R.id.textView);
                 textView.setText(selectedPredictions.getDescription().split(", ")[0]);
-                textView.setTextColor(Color.WHITE);
-                textView.setBackgroundColor(Color.parseColor("#332354"));
 
                 final LinearLayout linearLayout = (LinearLayout) findViewById(R.id.llLocationContainer);
                 linearLayout.removeAllViews();
-                linearLayout.addView(textView);
+                linearLayout.addView(searchLocationlayout);
+
+                searchLocationlayout.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        linearLayout.removeAllViews();
+                        presenter.initAllPois();
+                    }
+                });
             }
         });
         searchControler.setOnMenuClickListener(new SearchView.SearchMenuListener() {
