@@ -50,7 +50,7 @@
             android:theme="@style/AppTheme.ActionBar" />
         <activity
             android:name=".views.CreatePoiActivity"
-            android:label="MY ROUTES"
+            android:label="CREATE POI"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme.ActionBar" />
 

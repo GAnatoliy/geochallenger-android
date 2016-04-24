@@ -78,6 +78,7 @@ public class CreatePoiActivity extends ABaseActivityView<CreatePoiPresenter> imp
         map.setMyLocationEnabled(true);
         map.getUiSettings().setZoomControlsEnabled(true);
         map.getUiSettings().setAllGesturesEnabled(true);
+/*
         map.setOnMyLocationChangeListener(new GoogleMap.OnMyLocationChangeListener() {
             @Override
             public void onMyLocationChange(Location location) {
@@ -86,6 +87,7 @@ public class CreatePoiActivity extends ABaseActivityView<CreatePoiPresenter> imp
                 map.setOnMyLocationChangeListener(null);
             }
         });
+*/
 
 
         MapsInitializer.initialize(this);
@@ -106,7 +108,10 @@ public class CreatePoiActivity extends ABaseActivityView<CreatePoiPresenter> imp
                 drawMarker(latLng);
             }
         });
-        drawMarker(selectedLocation);
+        if (selectedLocation != null) {
+            drawMarker(selectedLocation);
+                map.animateCamera(CameraUpdateFactory.newLatLngZoom(selectedLocation, 13));
+        }
     }
 
     public void drawMarker(LatLng location) {

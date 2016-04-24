@@ -13,8 +13,6 @@ import android.os.Handler;
 import android.support.design.widget.BottomSheetBehavior;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.FloatingActionButton;
-import android.support.v4.view.ViewCompat;
-import android.support.v4.widget.NestedScrollView;
 import android.support.v7.app.ActionBar;
 import android.text.Editable;
 import android.text.Spannable;
@@ -92,9 +90,6 @@ public class CreateRouteActivity extends ABaseActivityView<CreateRoutePresenter>
     @Override
     protected void onViewCreated(Bundle savedInstanceState) {
         super.onViewCreated(savedInstanceState);
-
-        final ActionBar supportActionBar = getSupportActionBar();
-        supportActionBar.setBackgroundDrawable(new ColorDrawable(Color.parseColor("#111133")));
 
         myLocation = (Location) getIntent().getParcelableExtra(ExtraConstants.MY_LOCATION);
         selectedLocation = (LatLng) getIntent().getParcelableExtra(ExtraConstants.SELECTED_LOCATION);
@@ -251,12 +246,17 @@ public class CreateRouteActivity extends ABaseActivityView<CreateRoutePresenter>
         });
     }
 
-    public void setDetailedPoiInfo(final Poi poi) {
+    public void setDetailedPoiInfo(final Poi poi, boolean waypoint) {
         TextView tvMainPlaceDetailsTitle = (TextView) findViewById(R.id.tvMainPlaceDetailsTitle);
         TextView tvMainPlaceDetailsAddress = (TextView) findViewById(R.id.tvMainPlaceDetailsAddress);
         final TextView detailedText = (TextView) findViewById(R.id.detailedText);
         findViewById(R.id.ll_detailed_poi_gotto).setVisibility(View.GONE);
         FloatingActionButton addWaypoint = (FloatingActionButton) findViewById(R.id.fabAddWaypoint);
+        if (waypoint) {
+            addWaypoint.setImageResource(R.drawable.ic_clear_white_24dp);
+        } else {
+            addWaypoint.setImageResource(R.drawable.ic_add_white_24dp);
+        }
         addWaypoint.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -389,10 +389,12 @@ public class CreateRouteActivity extends ABaseActivityView<CreateRoutePresenter>
         for (int i = 0; i < points.size(); i++) {
             builder.include(points.get(i));
         }
-        LatLngBounds bounds = builder.build();
-        int padding = getResources().getDimensionPixelSize(R.dimen.route_offset); // offset from edges of the map in pixels
-        CameraUpdate cu = CameraUpdateFactory.newLatLngBounds(bounds, padding);
-        map.animateCamera(cu);
+        if (points.size() > 0) {
+            LatLngBounds bounds = builder.build();
+            int padding = getResources().getDimensionPixelSize(R.dimen.route_offset); // offset from edges of the map in pixels
+            CameraUpdate cu = CameraUpdateFactory.newLatLngBounds(bounds, padding);
+            map.animateCamera(cu);
+        }
     }
 
     @Override

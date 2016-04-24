@@ -207,6 +207,10 @@ public class CreateRoutePresenter extends IPresenter<ICreateRouteView> {
         return waypoints.size();
     }
 
+    public boolean isWaypoint(Poi poi) {
+        return waypoints.contains(poi);
+    }
+
 
     private Poi getPoiByLocation(LatLng location) {
         for (int i = 0; i < poisNearMe.size(); i++) {
@@ -426,8 +430,9 @@ public class CreateRoutePresenter extends IPresenter<ICreateRouteView> {
                 restClient.getPoiDetails(String.valueOf(selectedPoi.getId()), new OnDataLoaded<Poi>() {
                     @Override
                     public void onSuccess(Poi poi) {
+
                         view.hideProgress();
-                        view.setDetailedPoiInfo(poi);
+                        view.setDetailedPoiInfo(poi, isWaypoint(poi));
 
                     }
 
